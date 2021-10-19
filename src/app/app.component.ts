@@ -6,5 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'quiz-mkr';
+  sidenavLinks = [
+    { id: 1, path: '/home', title: 'Home', icon: 'house' },
+    { id: 2, path: '/creator', title: 'Creator', icon: 'asterisk' },
+  ]
 }
