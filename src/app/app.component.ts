@@ -1,6 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+const THEME_KEY = 'quizmkr-theme';
+
+const isDarkTheme = (): boolean => {
+  const userTheme = localStorage.getItem(THEME_KEY);
+  return userTheme === 'dark' || !userTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,10 +20,15 @@ export class AppComponent implements OnInit, OnDestroy {
     { id: 2, path: '/creator', title: 'Creator', icon: 'asterisk' },
     { id: 3, path: '/assessment', title: 'Assessment', icon: 'lightbulb' },
   ];
-  darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  userTheme = localStorage.getItem('quizmkr-theme');
+  darkMode: boolean;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {
+    this.darkMode = isDarkTheme();
+    if (!this.darkMode) {
+      const htmlElement = document.documentElement;
+      htmlElement.classList.remove('sl-theme-dark');
+    }
+  }
 
   ngOnInit(): void {
     window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.darkModeListener);
@@ -27,15 +39,15 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   darkModeListener(e: MediaQueryListEvent): void {
-    if (!this.userTheme) {
+    const userTheme = localStorage.getItem(THEME_KEY);
+    if (!userTheme) {
       this.darkMode = e.matches;
     }
   }
 
   toggleTheme(): void {
-    const htmlElement = document.documentElement;
-    this.userTheme = this.darkMode ? 'light' : 'dark';
     this.darkMode = !this.darkMode;
+    const htmlElement = document.documentElement;
     if (this.darkMode) {
       if (!htmlElement.classList.contains('sl-theme-dark')) {
         htmlElement.classList.add('sl-theme-dark');
@@ -43,6 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
     } else {
       htmlElement.classList.remove('sl-theme-dark');
     }
+    localStorage.setItem(THEME_KEY, this.darkMode ? 'dark' : 'light');
   }
 
   isRouteActive(link: any): boolean {
