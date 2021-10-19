@@ -1,11 +1,19 @@
 <div class="quizmkr">
-    <div class="quizmkr-sidenav">
-            <button *ngFor="let link of sidenavLinks" class="quizmkr-sidenav-button" [routerLink]="[link.path]">
-                <span class="hidden">{{ link.title }}</span>
-                <sl-icon name="{{ link.icon }}"></sl-icon>
-            </button>
-    </div>
+    <div class="quizmkr-spacer"></div>
     <div class="quizmkr-main">
+        <div class="text-4xl text-center py-12 flex flex-row items-center place-content-center gap-x-2">
+            {{ appTitle }} <sl-icon-button name="{{ darkMode ? 'moon' : 'sun' }}" (click)="toggleTheme()">
+            </sl-icon-button>
+        </div>
+        <div>
+            <sl-button-group>
+                <sl-button *ngFor="let link of menuLinks" size="large"
+                    type="{{ isRouteActive(link) ? 'primary' : 'default' }}" (click)="onNavigate(link)">
+                    <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
+                </sl-button>
+            </sl-button-group>
+        </div>
         <router-outlet></router-outlet>
     </div>
+    <div class="quizmkr-spacer"></div>
 </div>

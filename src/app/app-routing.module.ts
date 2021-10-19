@@ -7,6 +7,7 @@ import { HomeComponent } from './components/home/home.component';
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'creator', component: CreatorComponent },
+  { path: 'assessment', component: AssessmentComponent },
   { path: 'assessment/:id', component: AssessmentComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];
