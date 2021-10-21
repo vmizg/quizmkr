@@ -7,10 +7,10 @@
         <div>
             <sl-button-group>
                 <sl-button *ngFor="let link of menuLinks" size="large"
-                    type="{{ isRouteActive(link) ? 'primary' : 'default' }}" (click)="onNavigate(link)">
+                    type="{{ isRouteActive(link) ? 'primary' : 'default' }}" outline (click)="onNavigate(link)">
                     <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
                 </sl-button>
-                <sl-button size="large" (click)="toggleTheme()">
+                <sl-button size="large" type="warning" outline (click)="toggleTheme()">
                     <sl-icon name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
                 </sl-button>
             </sl-button-group>
