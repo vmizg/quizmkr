@@ -8,13 +8,16 @@ import { HomeComponent } from './components/home/home.component';
 import { CreatorComponent } from './components/creator/creator.component';
 import { AssessmentComponent } from './components/assessment/assessment.component';
 import { ApiService } from './services/api.service';
+import { QuestionsComponent } from './components/creator/questions/questions.component';
+import { PendingChangesGuard } from './guards/pending-changes.guard';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     CreatorComponent,
-    AssessmentComponent
+    AssessmentComponent,
+    QuestionsComponent
   ],
   imports: [
     BrowserModule,
@@ -22,7 +25,8 @@ import { ApiService } from './services/api.service';
     AppRoutingModule
   ],
   providers: [
-    ApiService
+    ApiService,
+    PendingChangesGuard
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

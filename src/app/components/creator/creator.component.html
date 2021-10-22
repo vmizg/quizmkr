@@ -13,7 +13,7 @@
                 Options
             </div>
             <div class="grid gap-4">
-                <sl-input label="Quiz title" (sl-input)="handleTitleInput($event)" [value]="title"></sl-input>
+                <sl-input label="Quiz title" (sl-input)="handleTitleInput($event)" [value]="title" required></sl-input>
                 <sl-textarea label="Short description" (sl-input)="handleDescInput($event)" [value]="desc">
                 </sl-textarea>
             </div>
@@ -38,8 +38,9 @@
         </sl-card>
         <sl-card>
             <div class="flex flex-row justify-between">
-                <sl-button (click)="handleReset()" type="neutral" outline>Reset</sl-button>
-                <sl-button class="w-48" (click)="handleSubmit()" type="primary" [disabled]="!title">Submit
+                <sl-button class="w-full" (click)="handleSubmit()" type="primary">
+                    <sl-spinner *ngIf="submitting" slot="prefix"></sl-spinner>
+                    {{ submitting ? 'Submitting...' : 'Submit' }}
                 </sl-button>
             </div>
         </sl-card>

@@ -4,13 +4,13 @@
         <div class="text-4xl text-center font-light py-12 flex flex-row items-center place-content-center gap-x-2">
             {{ appTitle }}
         </div>
-        <div>
+        <div class="flex flex-row place-content-center">
             <sl-button-group>
                 <sl-button *ngFor="let link of menuLinks" size="large"
-                    type="{{ isRouteActive(link) ? 'primary' : 'default' }}" outline (click)="onNavigate(link)">
+                    type="{{ isRouteActive(link) ? 'primary' : 'default' }}" (click)="onNavigate(link)">
                     <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
                 </sl-button>
-                <sl-button size="large" type="warning" outline (click)="toggleTheme()">
+                <sl-button size="large" type="warning" (click)="toggleTheme()">
                     <sl-icon name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
                 </sl-button>
             </sl-button-group>

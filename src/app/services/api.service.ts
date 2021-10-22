@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { BaseQuiz } from '../models/quiz';
 import { generateId } from '../utilities';
 
@@ -10,12 +11,20 @@ import { generateId } from '../utilities';
 export class ApiService {
   constructor(private http: HttpClient) { }
 
-  createQuiz(quiz: Omit<BaseQuiz, 'id'>): Observable<any> {
+  createQuiz(quiz: Omit<BaseQuiz, 'id'>) {
     const id = `q-${generateId()}`;
-    return this.http.post('/api/quizzes', { ...quiz, id });
+    const data: BaseQuiz = { ...quiz, id };
+    return this.http.post('/api/quizzes', data).pipe(
+      map(() => data),
+      catchError(() => of(null))
+    );
   }
 
-  getQuizzes(): Observable<BaseQuiz[]> {
+  getQuizzes() {
     return this.http.get('/api/quizzes') as Observable<BaseQuiz[]>;
+  }
+
+  getQuiz(id: string) {
+    return this.http.get(`/api/quizzes/${id}`) as Observable<BaseQuiz>;
   }
 }

@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { generateId } from 'src/app/utilities';
 
@@ -15,7 +16,9 @@ export class CreatorComponent implements OnInit {
   tags: Set<string> = new Set();
   tag = '';
 
-  constructor(private apiService: ApiService) { }
+  submitting = false;
+
+  constructor(private apiService: ApiService, private router: Router) { }
 
   ngOnInit(): void { }
 
@@ -60,14 +63,20 @@ export class CreatorComponent implements OnInit {
   }
 
   handleSubmit() {
+    if (!this.title) {
+      return;
+    }
+    this.submitting = true;
+    setTimeout(() => this.submitting = false, 2000);
     this.apiService.createQuiz({
       title: this.title,
       description: this.desc,
       tags: Array.from(this.tags),
-    }).subscribe(() => {
-      console.log('yay');
-    }, (err) => {
-      console.log(err);
+    }).subscribe((result) => {
+      this.submitting = false;
+      if (result) {
+        this.router.navigate(['creator', result.id]);
+      }
     });
   }
 }
