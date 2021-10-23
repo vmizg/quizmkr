@@ -21,10 +21,20 @@ export class ApiService {
   }
 
   getQuizzes() {
-    return this.http.get('/api/quizzes') as Observable<BaseQuiz[]>;
+    return this.http.get('/api/quizzes').pipe(
+      map((result) => result as BaseQuiz[])
+    );
   }
 
   getQuiz(id: string) {
-    return this.http.get(`/api/quizzes/${id}`) as Observable<BaseQuiz>;
+    return this.http.get(`/api/quizzes/${id}`).pipe(
+      map((result) => result as BaseQuiz)
+    );
+  }
+
+  deleteQuiz(id: string) {
+    return this.http.delete(`/api/quizzes/${id}`).pipe(
+      map(() => {})
+    );
   }
 }

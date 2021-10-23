@@ -1,3 +1,31 @@
-<sl-card class="py-24 text-xl">
-    Hello! This is the quiz listing page.
-</sl-card>
+<div class="flex flex-col gap-2 py-16 justify-stretch w-full max-w-4xl">
+    <sl-card>
+        <div class="flex flex-row justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-2xl">Q U I Z L S T</span>
+                <span class="text-l">Quizzes that you have created or imported will appear below</span>
+            </div>
+            <sl-avatar>
+                <sl-icon slot="icon" name="lightbulb" class="text-xl"></sl-icon>
+            </sl-avatar>
+        </div>
+    </sl-card>
+    <sl-card *ngFor="let quiz of quizzes">
+        <div class="flex flex-row justify-between items-center gap-4">
+            <div class="flex flex-row items-center gap-4">
+                <span>{{ quiz.title }}</span>
+            </div>
+            <div class="flex flex-row gap-4">
+                <sl-button type="warning" circle outline (click)="handleEditQuiz(quiz)"><sl-icon name="pencil-square"></sl-icon></sl-button>
+                <sl-button type="danger" circle outline (click)="handleDeleteQuiz(quiz)"><sl-icon name="trash"></sl-icon></sl-button>
+                <sl-button type="success" (click)="handleBeginAssessment(quiz)">Assess</sl-button>
+            </div>
+        </div>
+    </sl-card>
+    <sl-card *ngIf="!loading && (!quizzes || quizzes.length === 0)">
+        <div class="flex flex-col text-gray-500">
+            <span>You haven't created any quizzes yet.</span>
+            <a [routerLink]="['/creator']" style="color: rgb(var(--sl-color-primary-600))">Create one by clicking here!</a>
+        </div>
+    </sl-card>
+</div>

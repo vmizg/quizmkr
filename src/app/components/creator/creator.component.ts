@@ -75,7 +75,7 @@ export class CreatorComponent implements OnInit {
     }).subscribe((result) => {
       this.submitting = false;
       if (result) {
-        this.router.navigate(['creator', result.id]);
+        this.router.navigate(['/quizzes']);
       }
     });
   }
