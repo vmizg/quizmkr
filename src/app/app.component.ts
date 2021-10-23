@@ -1,5 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+
+interface MenuLink {
+  id: number | string;
+  route: string;
+  title: string;
+  icon: string;
+}
 
 const THEME_KEY = 'quizmkr-theme';
 
@@ -15,14 +22,15 @@ const isDarkTheme = (): boolean => {
 })
 export class AppComponent implements OnInit, OnDestroy {
   appTitle = 'Q U I Z M K R';
-  menuLinks = [
-    { id: 1, path: '/home', title: 'Home', icon: 'house' },
-    { id: 2, path: '/creator', title: 'Creator', icon: 'asterisk' },
-    { id: 3, path: '/assessment', title: 'Assessment', icon: 'lightbulb' },
+  menuLinks: MenuLink[] = [
+    { id: 1, route: '/home', title: 'Home', icon: 'house' },
+    { id: 2, route: '/creator', title: 'Creator', icon: 'asterisk' },
+    { id: 2, route: '/quizzes', title: 'Quizzes', icon: 'lightbulb' },
+    { id: 3, route: '/assessment', title: 'Assessment', icon: 'compass' },
   ];
   darkMode: boolean;
 
-  constructor(private router: Router) {
+  constructor(private route: ActivatedRoute, private router: Router) {
     this.darkMode = isDarkTheme();
     if (!this.darkMode) {
       const htmlElement = document.documentElement;
@@ -58,12 +66,12 @@ export class AppComponent implements OnInit, OnDestroy {
     localStorage.setItem(THEME_KEY, this.darkMode ? 'dark' : 'light');
   }
 
-  isRouteActive(link: any): boolean {
-    return this.router.isActive(link.path, true);
+  isRouteActive(link: MenuLink): boolean {
+    return this.router.isActive(this.router.createUrlTree([link.route], { relativeTo: this.route }).toString(), { paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored' });
   }
 
-  onNavigate(link: any): void {
-    const path = [link.path];
-    this.router.navigate(path);
+  onNavigate(link: MenuLink): void {
+    const route = [link.route];
+    this.router.navigate(route);
   }
 }

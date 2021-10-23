@@ -2,18 +2,10 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
+import { QOption, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-import { ComponentCanDeactivate } from '../../../guards/pending-changes.guard';
-
-interface QOption {
-  title: string;
-  correct?: boolean;
-}
-
-interface QuizQ {
-  title: string;
-  options: Set<QOption>;
-}
+import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
+import { generateColor, invertColor } from 'src/app/utilities';
 
 const getNewQuestion = () => {
   return {
@@ -37,6 +29,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, ComponentCanDeacti
   question: QuizQ = getNewQuestion();
   quizId: string = '';
   quizTitle: string = '';
+  quizColor: string = generateColor();
   edited = false;
   adding = false;
 
@@ -64,6 +57,14 @@ export class QuestionsComponent implements OnInit, OnDestroy, ComponentCanDeacti
 
   ngOnDestroy(): void {
     this.$paramsSubscription.unsubscribe();
+  }
+
+  invertColor(color: string) {
+    return invertColor(color, true);
+  }
+
+  handleColorChange(e: Event) {
+    this.quizColor = (e.target as HTMLInputElement).value;
   }
 
   handleTitleInput(e: Event) {

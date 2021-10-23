@@ -4,12 +4,14 @@ import { AssessmentComponent } from './components/assessment/assessment.componen
 import { CreatorComponent } from './components/creator/creator.component';
 import { QuestionsComponent } from './components/creator/questions/questions.component';
 import { HomeComponent } from './components/home/home.component';
+import { QuizzesComponent } from './components/quizzes/quizzes.component';
 import { PendingChangesGuard } from './guards/pending-changes.guard';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'creator', component: CreatorComponent, canDeactivate: [PendingChangesGuard] },
   { path: 'creator/:id', component: QuestionsComponent, canDeactivate: [PendingChangesGuard] },
+  { path: 'quizzes', component: QuizzesComponent },
   { path: 'assessment', component: AssessmentComponent },
   { path: 'assessment/:id', component: AssessmentComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }

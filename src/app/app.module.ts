@@ -10,6 +10,7 @@ import { AssessmentComponent } from './components/assessment/assessment.componen
 import { ApiService } from './services/api.service';
 import { QuestionsComponent } from './components/creator/questions/questions.component';
 import { PendingChangesGuard } from './guards/pending-changes.guard';
+import { QuizzesComponent } from './components/quizzes/quizzes.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { PendingChangesGuard } from './guards/pending-changes.guard';
     HomeComponent,
     CreatorComponent,
     AssessmentComponent,
-    QuestionsComponent
+    QuestionsComponent,
+    QuizzesComponent
   ],
   imports: [
     BrowserModule,
