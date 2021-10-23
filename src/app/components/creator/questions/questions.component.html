@@ -1,59 +1,71 @@
-<div class="flex flex-col gap-8 py-16  w-full max-w-4xl"
-    [style]="{ '--badge-bg-color': quizColor, '--badge-fg-color': invertColor(quizColor) }">
+<div class="flex flex-col gap-8 py-16  w-full max-w-4xl" [style]="cssVars">
     <div class="flex flex-col flex-1 gap-2">
         <sl-card>
             <div class="flex flex-row justify-between items-center">
                 <div class="flex flex-row items-center gap-4 text-2xl">
-                    <sl-color-picker *ngIf="quizTitle" value="{{ quizColor }}" (sl-change)="handleColorChange($event)">
-                        {{ quizColor }}
-                    </sl-color-picker>
-                    <sl-spinner *ngIf="!quizTitle"></sl-spinner>
-                    <span>{{ quizTitle || 'Loading...' }}</span>
-                    <sl-badge pill>{{ quizColor }}</sl-badge>
+                    <ng-container *ngIf="!quizTitle">
+                        <sl-spinner></sl-spinner>
+                        <span>Loading...</span>
+                    </ng-container>
+                    <ng-container *ngIf="quizTitle">
+                        <span>{{ quizTitle }}</span>
+                        <!-- <sl-color-picker *ngIf="quizTitle" value="{{ quizColor }}" no-format-toggle (sl-change)="handleColorChange($event)">
+                            {{ quizColor }}
+                        </sl-color-picker> -->
+                        <sl-icon-button *ngIf="quizTitle" name="pencil" label="Edit quiz" (click)="handleEditQuiz()" class="edit-quiz-button"></sl-icon-button>
+                    </ng-container>
                 </div>
                 <div class="flex flex-row items-center gap-4 text-l">
-                    <span>Creator mode</span>
+                    <span>Q U I Z C R T</span>
                     <sl-avatar>
                         <sl-icon slot="icon" name="asterisk" class="text-xl"></sl-icon>
                     </sl-avatar>
                 </div>
             </div>
         </sl-card>
-        <sl-card>
-            <div slot="header">
-                Add a question
-            </div>
-            <div class="grid gap-4">
-                <sl-textarea label="Question title" (sl-input)="handleTitleInput($event)" [value]="question.title"
-                    required>
-                </sl-textarea>
-                <div *ngFor="let option of question.options; let i = index" class="option-row">
-                    <sl-input style="width: 100%;" label="{{ i === 0 ? 'Options' : '' }}"
-                        (sl-input)="handleOptionTitleInput($event, option)" [value]="option.title"></sl-input>
-                    <sl-button type="{{ option.correct ? 'success' : 'danger' }}" outline
-                        (click)="handleCorrectToggle(option)">
-                        <sl-icon *ngIf="!option.correct" name="x-circle" label="incorrect" outline
-                            style="font-size: 1rem">
-                        </sl-icon>
-                        <sl-icon *ngIf="option.correct" name="check-circle" label="correct" outline
-                            style="font-size: 1rem">
-                        </sl-icon>
-                    </sl-button>
-                    <sl-button (click)="handleRemoveOption(option)" [disabled]="question.options.size < 2"
-                        type="neutral" outline>
-                        <sl-icon name="trash"></sl-icon>
+        <sl-form (sl-submit)="handleAddQuestion($event)" #questionForm>
+            <sl-card>
+                <div slot="header">
+                    {{ existingQuestion ? 'Edit' : 'Add' }} a question
+                </div>
+                <div class="grid gap-4">
+                    <sl-textarea name="title" label="Question statement" (sl-input)="handleEdit()"
+                        required>
+                    </sl-textarea>
+                    <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
+                        <sl-input style="width: 70%" label="{{ i === 0 ? 'Options' : '' }}"
+                            (sl-input)="handleEdit()" [name]="'option-' + i" required pattern="[^\s].*[^\s]"></sl-input>
+                        <sl-button style="width: 20%" type="{{ correctToggle.checked ? 'success' : 'danger' }}" outline
+                            (click)="correctToggle.checked = !correctToggle.checked; handleEdit()">
+                            <sl-icon *ngIf="!correctToggle.checked" name="x-circle" label="incorrect" outline
+                                style="font-size: 1rem">
+                            </sl-icon>
+                            <sl-icon *ngIf="correctToggle.checked" name="check-circle" label="correct" outline
+                                style="font-size: 1rem">
+                            </sl-icon>
+                            {{ correctToggle.checked ? 'Correct' : 'Incorrect' }}
+                            <input [name]="'correct-' + i" type="checkbox" #correctToggle hidden />
+                        </sl-button>
+                        <sl-button style="width: 10%" (click)="handleRemoveOption()" [disabled]="totalOptions < 3"
+                            type="neutral" outline>
+                            <sl-icon name="trash"></sl-icon>
+                        </sl-button>
+                    </div>
+                    <div class="option-row add-option" *ngIf="totalOptions < 7">
+                        <sl-button style="width: 70%" (click)="handleAddOption()">Add a new option</sl-button>
+                        <div style="width: 30%"></div>
+                    </div>
+                </div>
+            </sl-card>
+            <sl-card>
+                <div class="flex flex-row justify-between">
+                    <sl-button class="w-full" type="primary" submit>
+                        <sl-spinner *ngIf="adding" slot="prefix"></sl-spinner>
+                        {{ adding ? (existingQuestion ? 'Saving...' : 'Adding...') : (existingQuestion ? 'Save question' : 'Add question') }}
                     </sl-button>
                 </div>
-            </div>
-        </sl-card>
-        <sl-card>
-            <div class="flex flex-row justify-between">
-                <sl-button class="w-full" (click)="handleAddQuestion()" type="primary">
-                    <sl-spinner *ngIf="adding" slot="prefix"></sl-spinner>
-                    {{ adding ? 'Adding...' : 'Add question' }}
-                </sl-button>
-            </div>
-        </sl-card>
+            </sl-card>
+        </sl-form>
     </div>
     <div class="flex flex-col gap-2">
         <sl-card>
@@ -69,9 +81,18 @@
             </div>
         </sl-card>
         <sl-card *ngFor="let q of questions; let i = index">
-            <span>{{ i + 1 }}. {{ q.title }}</span>
+            <div class="flex flex-row items-center justify-between gap-4">
+                <div>
+                    <span>{{ i + 1 }}. {{ q.title }}</span>
+                    <span *ngIf="existingQuestion && q.id === existingQuestion.id" class="italic font-bold"> (editing)</span>
+                </div>
+                <div class="flex flex-row gap-2">
+                    <sl-button type="warning" circle outline (click)="handleEditQuestion(q)"><sl-icon name="pencil-square"></sl-icon></sl-button>
+                    <sl-button type="danger" circle outline (click)="handleDeleteQuestion(q)"><sl-icon name="trash"></sl-icon></sl-button>
+                </div>
+            </div>
         </sl-card>
-        <sl-card *ngIf="!questions || questions.size === 0" class="italic">
+        <sl-card *ngIf="!questions || questions.length === 0" class="italic">
             No questions added yet!
         </sl-card>
     </div>

@@ -24,7 +24,7 @@ export class QuizzesComponent implements OnInit {
   }
 
   handleEditQuiz(quiz: BaseQuiz): void {
-    this.router.navigate(['creator', quiz.id]);
+    this.router.navigate(['creator', quiz.id, 'questions']);
   }
 
   handleDeleteQuiz(quiz: BaseQuiz): void {

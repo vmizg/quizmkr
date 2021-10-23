@@ -32,6 +32,12 @@ export class ApiService {
     );
   }
 
+  updateQuiz(id: string, data: any) {
+    return this.http.patch(`/api/quizzes/${id}`, data).pipe(
+      map(() => {})
+    );
+  }
+
   deleteQuiz(id: string) {
     return this.http.delete(`/api/quizzes/${id}`).pipe(
       map(() => {})

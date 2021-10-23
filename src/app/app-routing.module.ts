@@ -9,11 +9,12 @@ import { PendingChangesGuard } from './guards/pending-changes.guard';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
+  { path: 'creator/:id/questions', component: QuestionsComponent, canDeactivate: [PendingChangesGuard] },
+  { path: 'creator/:id', component: CreatorComponent, canDeactivate: [PendingChangesGuard] },
   { path: 'creator', component: CreatorComponent, canDeactivate: [PendingChangesGuard] },
-  { path: 'creator/:id', component: QuestionsComponent, canDeactivate: [PendingChangesGuard] },
   { path: 'quizzes', component: QuizzesComponent },
-  { path: 'assessment', component: AssessmentComponent },
   { path: 'assessment/:id', component: AssessmentComponent },
+  { path: 'assessment', component: AssessmentComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];
 

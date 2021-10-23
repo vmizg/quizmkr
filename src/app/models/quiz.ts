@@ -4,8 +4,9 @@ export interface QOption {
 }
 
 export interface QuizQ {
+    id?: string;
     title: string;
-    options: Set<QOption>;
+    options: QOption[];
 }
 
 export interface BaseQuiz {

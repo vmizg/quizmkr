@@ -1,39 +1,44 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
 import { QOption, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
-import { generateColor, invertColor } from 'src/app/utilities';
-
-const getNewQuestion = () => {
-  return {
-    title: '',
-    options: new Set([
-      { title: '', correct: true },
-      { title: '', correct: false },
-      { title: '', correct: false },
-    ])
-  };
-};
+import { generateColor, generateId, invertColor } from 'src/app/utilities';
+import { ShoelaceFormService } from 'src/app/services/shoelace-form.service';
 
 @Component({
   selector: 'app-questions',
   templateUrl: './questions.component.html',
   styleUrls: ['./questions.component.scss']
 })
-export class QuestionsComponent implements OnInit, OnDestroy, ComponentCanDeactivate {
-  $paramsSubscription: Subscription;
-  questions: Set<QuizQ> = new Set();
-  question: QuizQ = getNewQuestion();
+export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, ComponentCanDeactivate {
+  @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
+  @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
+
+  $paramsSubscription?: Subscription;
+  $changesSubscription?: Subscription;
+
+  questions: QuizQ[] = [];
+  totalOptions = 3;
   quizId: string = '';
   quizTitle: string = '';
-  quizColor: string = generateColor();
+  quizColor: string = '';
+  cssVars = {};
   edited = false;
   adding = false;
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute) {
+  existingQuestion?: QuizQ;
+  existingQuestionToRender?: QuizQ;
+
+  constructor(
+    private apiService: ApiService,
+    private cd: ChangeDetectorRef,
+    private formService: ShoelaceFormService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {
     this.$paramsSubscription = this.route.params.pipe(
       concatMap((params) => {
         this.quizId = params.id;
@@ -41,6 +46,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, ComponentCanDeacti
       }),
       tap((quiz) => {
         this.quizTitle = quiz.title;
+        this.questions = quiz.questions || [];
       })
     ).subscribe();
   }
@@ -53,45 +59,178 @@ export class QuestionsComponent implements OnInit, OnDestroy, ComponentCanDeacti
   }
 
   ngOnInit(): void {
+    this.updateColor(generateColor());
+  }
+  
+  ngAfterViewInit(): void {
+    this.$changesSubscription = this.questionOptions.changes.subscribe(() => {
+      if (this.existingQuestionToRender) {
+        this.renderEditQuestion(this.existingQuestionToRender);
+        this.existingQuestionToRender = undefined;
+        this.cd.detectChanges();
+      }
+    });
   }
 
   ngOnDestroy(): void {
-    this.$paramsSubscription.unsubscribe();
+    this.$paramsSubscription?.unsubscribe();
+    this.$changesSubscription?.unsubscribe();
   }
 
-  invertColor(color: string) {
-    return invertColor(color, true);
+  counter(i: number) {
+    return new Array(i);
   }
 
   handleColorChange(e: Event) {
-    this.quizColor = (e.target as HTMLInputElement).value;
+    this.updateColor((e.target as HTMLInputElement).value);
   }
 
-  handleTitleInput(e: Event) {
-    this.question.title = (e.target as HTMLInputElement).value;
+  handleEditQuiz() {
+    this.router.navigate(['creator', this.quizId]);
+  }
+
+  handleEdit() {
     this.edited = true;
   }
 
-  handleOptionTitleInput(e: Event, option: QOption) {
-    option.title = (e.target as HTMLInputElement).value;
+  handleAddOption() {
+    this.totalOptions++;
     this.edited = true;
   }
 
-  handleCorrectToggle(option: QOption) {
-    option.correct = !option.correct;
+  handleRemoveOption() {
+    this.totalOptions--;
     this.edited = true;
   }
 
-  handleRemoveOption(option: QOption) {
-    this.question.options.delete(option);
-    this.edited = true;
-  }
-
-  handleAddQuestion() {
-    this.questions.add(this.question);
-    this.question = getNewQuestion();
-    for (const entry of this.questions) {
-      console.log(entry);
+  handleAddQuestion(e: Event) {
+    const { formData, formControls }: { formData: FormData, formControls: HTMLInputElement[] } = (e as CustomEvent).detail;
+  
+    const title = (formData.get('title') as string).trim();
+    if (!title) {
+      alert('Please fill out the question statement field.');
+      return;
     }
+
+    const question: QuizQ = {
+      id: generateId(),
+      title: title,
+      options: [],
+    };
+    const titleMap: any = {};
+    let totalCorrect = 0;
+
+    for (let i = 0; i < this.totalOptions; i++) {
+      const option: QOption = {
+        title: (formData.get(`option-${i}`) as string).trim(),
+        correct: (formData.get(`correct-${i}`) as string) === 'on',
+      };
+      if (!option.title) {
+        alert('Please fill out the empty option field(-s).');
+        return;
+      }
+      if (titleMap[option.title]) {
+        alert('One or more options are duplicated.');
+        return;
+      }
+      titleMap[option.title] = true;
+      if (option.correct) {
+        totalCorrect++;
+      }
+      question.options.push(option);
+    }
+
+    if (totalCorrect === question.options.length) {
+      alert('At least one option must be marked as incorrect.');
+      return;
+    } else if (totalCorrect === 0) {
+      alert('At least one option must be marked as correct.');
+      return;
+    }
+
+    let index = -1;
+    if (this.existingQuestion) {
+      index = this.questions.indexOf(this.existingQuestion);
+    }
+    if (index > -1) {
+      this.questions.splice(index, 1, question);
+    } else {
+      this.questions.push(question);
+    }
+    this.apiService.updateQuiz(this.quizId, { questions: this.questions }).subscribe();
+    this.resetForm(formControls);
+  }
+
+  handleEditQuestion(question: QuizQ): void {
+    const formControls = this.questionForm.nativeElement.getFormControls();
+    if (this.edited) {
+      if (confirm('WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.')) {
+        this.formService.resetForm(formControls);
+        this.edited = false;
+      } else {
+        return;
+      }
+    }
+
+    const totalOptions = question.options.length;
+    if (totalOptions !== this.totalOptions) {
+      // Mark for change check (ngAfterViewInit) since we are changing the total amount of inputs
+      this.existingQuestionToRender = question;
+      this.totalOptions = totalOptions;
+    } else {
+      this.renderEditQuestion(question);
+    }
+    this.existingQuestion = question;
+  }
+
+  renderEditQuestion(question: QuizQ): void {
+    const formControls = this.questionForm.nativeElement.getFormControls();
+
+    let optionIndex = 0;
+    let correctIndex = 0;
+
+    for (const control of formControls) {
+      if (!control.name) {
+        continue;
+      }
+      if (control.name === 'title') {
+        control.value = question.title;
+      } else if (control.name.startsWith('option')) {
+        control.value = question.options[optionIndex].title;
+        optionIndex++;
+      } else if (control.name.startsWith('correct')) {
+        control.checked = !!question.options[correctIndex].correct;
+        correctIndex++;
+      }
+    }
+  }
+
+  handleDeleteQuestion(question: QuizQ): void {
+    if (confirm('WARNING: are you sure you would like to delete this question?')) {
+      const index = this.questions.indexOf(question);
+      if (index > -1) {
+        this.questions.splice(index, 1);
+      }
+      if (this.existingQuestion) {
+        this.resetForm();
+      }
+    }
+  }
+
+  updateColor(color: string) {
+    this.quizColor = color;
+    this.cssVars = {
+      '--badge-bg-color': this.quizColor,
+      '--badge-fg-color': invertColor(this.quizColor, true),
+      '--badge-content': "'" + this.quizColor + "'",
+    };
+  }
+
+  resetForm(formControls?: HTMLInputElement[]) {
+    const controls = formControls || this.questionForm.nativeElement.getFormControls();
+    this.formService.resetForm(controls);
+    this.totalOptions = 3;
+    this.existingQuestion = undefined;
+    this.edited = false;
   }
 }

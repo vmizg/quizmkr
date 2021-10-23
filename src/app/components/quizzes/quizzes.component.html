@@ -12,13 +12,13 @@
     </sl-card>
     <sl-card *ngFor="let quiz of quizzes">
         <div class="flex flex-row justify-between items-center gap-4">
-            <div class="flex flex-row items-center gap-4">
-                <span>{{ quiz.title }}</span>
-            </div>
-            <div class="flex flex-row gap-4">
+            <div class="flex flex-row items-center gap-2">
                 <sl-button type="warning" circle outline (click)="handleEditQuiz(quiz)"><sl-icon name="pencil-square"></sl-icon></sl-button>
                 <sl-button type="danger" circle outline (click)="handleDeleteQuiz(quiz)"><sl-icon name="trash"></sl-icon></sl-button>
-                <sl-button type="success" (click)="handleBeginAssessment(quiz)">Assess</sl-button>
+                <span>{{ quiz.title }}</span>
+            </div>
+            <div class="flex flex-row gap-2">
+                <sl-button type="success" (click)="handleBeginAssessment(quiz)">Begin quiz</sl-button>
             </div>
         </div>
     </sl-card>
