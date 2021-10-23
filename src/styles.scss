@@ -1,6 +1,6 @@
-@import "~tailwindcss/base";
-@import "~tailwindcss/components";
-@import "~tailwindcss/utilities";
+@import '~tailwindcss/base';
+@import '~tailwindcss/components';
+@import '~tailwindcss/utilities';
 
 html,
 body {
@@ -23,7 +23,8 @@ body {
 }
 
 .sl-theme-dark body {
-  background: linear-gradient(to bottom, #323232 0%, #3F3F3F 40%, #1C1C1C 150%), linear-gradient(to top, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.25) 200%);
+  background: linear-gradient(to bottom, #323232 0%, #3f3f3f 40%, #1c1c1c 150%),
+    linear-gradient(to top, rgba(255, 255, 255, 0.4) 0%, rgba(0, 0, 0, 0.25) 200%);
   background-blend-mode: multiply;
   color: rgba(249, 250, 251);
 }
@@ -31,5 +32,6 @@ body {
 app-root {
   display: flex;
   flex-direction: column;
+  overflow: overlay;
   height: 100%;
 }

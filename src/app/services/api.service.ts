@@ -12,7 +12,7 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   createQuiz(quiz: Omit<BaseQuiz, 'id'>) {
-    const id = `q-${generateId()}`;
+    const id = generateId();
     const data: BaseQuiz = { ...quiz, id };
     return this.http.post('/api/quizzes', data).pipe(
       map(() => data),
@@ -34,7 +34,7 @@ export class ApiService {
 
   updateQuiz(id: string, data: any) {
     return this.http.patch(`/api/quizzes/${id}`, data).pipe(
-      map(() => {})
+      map((result) => result as BaseQuiz)
     );
   }
 
