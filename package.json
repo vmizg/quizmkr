@@ -1,6 +1,17 @@
 {
   "name": "quiz-mkr",
+  "description": "Q U I Z M K R - a minimalist quiz maker and assessment app",
   "version": "0.0.1",
+  "author": "vmizg",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vmizg/quiz-mkr.git"
+  },
+   "bugs": {
+    "url": "https://github.com/vmizg/quiz-mkr/issues"
+  },
+  "homepage": "https://github.com/vmizg/quiz-mkr",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -12,7 +23,6 @@
     "precommit": "run-s format:fix lint",
     "lint": "ng lint"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^12.2.10",
     "@angular/cdk": "^12.2.11",
