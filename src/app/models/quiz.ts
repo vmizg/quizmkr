@@ -4,15 +4,33 @@ export interface QOption {
 }
 
 export interface QuizQ {
-    id?: string;
+    id: string;
     title: string;
     options: QOption[];
+}
+
+export interface QuizQuestions {
+    id: string;
+    quizId: string;
+    questions: QuizQ[];
 }
 
 export interface BaseQuiz {
     id: string;
     title: string;
     description?: string;
-    questions?: QuizQ[];
     tags?: string[];
+}
+
+export interface BaseAssessmentSettings {
+    totalQuestions: number;
+    rangeFrom: number;
+    rangeTo: number;
+    randomize: boolean;
+}
+
+export interface AssessmentSettings extends BaseAssessmentSettings {
+    id: string;
+    quizId: string;
+    quizTitle: string;
 }

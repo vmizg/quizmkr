@@ -1,8 +1,8 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { forkJoin, Observable, Subscription } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
-import { QOption, QuizQ } from 'src/app/models/quiz';
+import { QOption, QuizQ, QuizQuestions } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
 import { generateColor, generateId, invertColor } from 'src/app/utilities';
@@ -20,11 +20,13 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   $paramsSubscription?: Subscription;
   $changesSubscription?: Subscription;
 
+  questionsId?: string;
   questions: QuizQ[] = [];
-  totalOptions = 3;
+  newQuiz = false;
   quizId: string = '';
   quizTitle: string = '';
   quizColor: string = '';
+  totalOptions = 3;
   cssVars = {};
   edited = false;
   adding = false;
@@ -41,12 +43,16 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   ) {
     this.$paramsSubscription = this.route.params.pipe(
       concatMap((params) => {
-        this.quizId = params.id;
-        return this.apiService.getQuiz(params.id);
+        this.quizId = params.qid;
+        return forkJoin([
+          this.apiService.getQuiz(this.quizId),
+          this.apiService.getQuestions(this.quizId)
+        ]);
       }),
-      tap((quiz) => {
+      tap(([quiz, questions]) => {
         this.quizTitle = quiz.title;
-        this.questions = quiz.questions || [];
+        this.questionsId = questions?.id;
+        this.questions = questions?.questions || [];
       })
     ).subscribe();
   }
@@ -157,8 +163,22 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     } else {
       this.questions.push(question);
     }
-    this.apiService.updateQuiz(this.quizId, { questions: this.questions }).subscribe();
-    this.resetForm(formControls);
+    let $obs: Observable<QuizQuestions | null>;
+    if (!this.questionsId) {
+      // No questions ID means that no questions have been created yet
+      $obs = this.apiService.createQuestions(this.quizId, this.questions);
+    } else {
+      $obs = this.apiService.updateQuestions(this.questionsId, this.questions);
+    }
+    $obs.subscribe((result) => {
+      if (result) {
+        this.questionsId = result.id;
+        this.resetForm(formControls);
+        this.newQuiz = false;
+      }
+    }, (err) => {
+      console.log(err);
+    });
   }
 
   handleEditQuestion(question: QuizQ): void {
@@ -206,14 +226,25 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   handleDeleteQuestion(question: QuizQ): void {
+    if (!this.questionsId) {
+      // Sanity check - this should never execute
+      return;
+    }
     if (confirm('WARNING: are you sure you would like to delete this question?')) {
-      const index = this.questions.indexOf(question);
+      const clonedQuestions = [...this.questions];
+      const index = clonedQuestions.indexOf(question);
       if (index > -1) {
-        this.questions.splice(index, 1);
+        clonedQuestions.splice(index, 1);
       }
-      if (this.existingQuestion) {
-        this.resetForm();
-      }
+      // TODO: replace with proper "delete" call when backend is available
+      this.apiService.replaceQuestions(this.questionsId, this.quizId, clonedQuestions).subscribe((result) => {
+        if (result) {
+          if (this.existingQuestion) {
+            this.resetForm();
+          }
+          this.questions = clonedQuestions;
+        }
+      });
     }
   }
 

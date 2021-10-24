@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BaseQuiz } from '../models/quiz';
+import { BaseAssessmentSettings, AssessmentSettings, BaseQuiz, QuizQ, QuizQuestions } from '../models/quiz';
 import { generateId } from '../utilities';
 
 @Injectable({
@@ -19,10 +19,25 @@ export class ApiService {
       catchError(() => of(null))
     );
   }
+  
+  createQuestions(quizId: string, questions: QuizQ[]) {
+    const id = generateId();
+    const data: QuizQuestions = { id, quizId, questions };
+    return this.http.post(`/api/quizzes/${quizId}/questions`, data).pipe(
+      map(() => data),
+      catchError(() => of(null))
+    );
+  }
 
-  getQuizzes() {
-    return this.http.get('/api/quizzes').pipe(
-      map((result) => result as BaseQuiz[])
+  getQuizzes(params?: string) {
+    return this.http.get(`/api/quizzes${params}`).pipe(
+      map((result) => result as BaseQuiz[]),
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          return of([]);
+        }
+        throw err;
+      })
     );
   }
 
@@ -32,15 +47,62 @@ export class ApiService {
     );
   }
 
+  getQuestions(quizId: string) {
+    return this.http.get(`/api/quizzes/${quizId}/questions`).pipe(
+      map((result: any) => {
+        if (result && result[0]) {
+          return result[0] as QuizQuestions;
+        }
+        return null;
+      }),
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          return of(null);
+        }
+        throw err;
+      })
+    );
+  }
+
   updateQuiz(id: string, data: any) {
     return this.http.patch(`/api/quizzes/${id}`, data).pipe(
       map((result) => result as BaseQuiz)
     );
   }
 
+  updateQuestions(id: string, questions: QuizQ[]) {
+    // TODO: remove id constraint once backend is available
+    return this.http.patch(`/api/questions/${id}`, { questions }).pipe(
+      map((result) => result as QuizQuestions),
+    );
+  }
+
+  replaceQuestions(id: string, quizId: string, questions: QuizQ[]) {
+    // TODO: replace with proper "delete" call when backend is available
+    return this.http.put(`/api/questions/${id}`, { id, quizId, questions }).pipe(
+      map(() => true),
+    );
+  }
+
   deleteQuiz(id: string) {
     return this.http.delete(`/api/quizzes/${id}`).pipe(
-      map(() => {})
+      map(() => true)
+    );
+  }
+
+  createAssessment(quizId: string, quizTitle: string, settings: BaseAssessmentSettings) {
+    const id = generateId();
+    // TODO: use url like /api/quizzes/{quizId}/assessments
+    const data: AssessmentSettings = { ...settings, quizId, quizTitle, id };
+    return this.http.post(`/api/assessments`, data).pipe(
+      map(() => data),
+      catchError(() => of(null))
+    );
+  }
+
+  getAssessments() {
+    return this.http.get(`/api/assessments`).pipe(
+      map((result) => result as AssessmentSettings[])
     );
   }
 }

@@ -6,11 +6,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 import { CreatorComponent } from './components/creator/creator.component';
-import { AssessmentComponent } from './components/assessment/assessment.component';
 import { ApiService } from './services/api.service';
 import { QuestionsComponent } from './components/creator/questions/questions.component';
 import { PendingChangesGuard } from './guards/pending-changes.guard';
 import { QuizzesComponent } from './components/quizzes/quizzes.component';
+import { AssessmentComponent } from './components/assessment/assessment.component';
+import { RunningAssessmentComponent } from './components/assessment/running/running.component';
 
 @NgModule({
   declarations: [
@@ -18,8 +19,9 @@ import { QuizzesComponent } from './components/quizzes/quizzes.component';
     HomeComponent,
     CreatorComponent,
     AssessmentComponent,
+    RunningAssessmentComponent,
     QuestionsComponent,
-    QuizzesComponent
+    QuizzesComponent,
   ],
   imports: [
     BrowserModule,

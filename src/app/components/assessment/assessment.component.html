@@ -2,12 +2,100 @@
     <sl-card>
         <div class="flex flex-row justify-between">
             <div class="flex flex-col">
-                <span class="text-2xl">Q U I Z A S M</span>
+                <div *ngIf="!quizTitle" class="flex flex-row items-center gap-4 text-2xl font-semibold">
+                    <sl-spinner></sl-spinner>
+                    <span>Loading...</span>
+                </div>
+                <span *ngIf="quizTitle" class="text-2xl font-semibold">{{ quizTitle }}</span>
                 <span class="text-l">Assess your knowledge</span>
             </div>
-            <sl-avatar style="line-height: 56px;">
-                <sl-icon slot="icon" name="compass" class="text-xl"></sl-icon>
-            </sl-avatar>
+            <div class="flex flex-row gap-4 items-center text-l">
+                <span>Q U I Z A S M</span>
+                <sl-avatar style="line-height: 56px;">
+                    <sl-icon slot="icon" name="compass" class="text-xl"></sl-icon>
+                </sl-avatar>
+            </div>
+        </div>
+    </sl-card>
+    <sl-card *ngIf="quizQuestions.length === 0">
+        <span>You have not added any questions for this quiz yet.</span>
+        <a [routerLink]="['creator', quizId]" style="color: rgb(var(--sl-color-primary-600))">Add some by clicking here!</a>
+    </sl-card>
+    <sl-card *ngIf="quizQuestions.length > 0">
+        <div slot="header" class="font-semibold">
+            Options
+        </div>
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-row gap-4">
+                <sl-input
+                    class="w-1/2"
+                    type="number"
+                    [label]="'Total questions (out of ' + quizQuestions.length + ')'"
+                    (sl-input)="handleTotalQuestionsInput($event)"
+                    [value]="settings.totalQuestions"
+                    [max]="quizQuestions.length"
+                    min="1"
+                    #totalQEl>
+                </sl-input>
+                <div class="flex flex-col">
+                    Presets
+                    <div class="flex flex-row items-end">
+                        <sl-button *ngIf="quizQuestions.length >= 10" type="neutral" (click)="handlePresetClick(10)">10</sl-button>
+                        <sl-button *ngIf="quizQuestions.length >= 20" type="neutral" (click)="handlePresetClick(20)">20</sl-button>
+                        <sl-button *ngIf="quizQuestions.length >= 50" type="neutral" (click)="handlePresetClick(50)">50</sl-button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                Question range
+                <div class="flex flex-row items-center gap-4 w-full">
+                    From <sl-input
+                        type="number"
+                        class="w-full"
+                        (sl-input)="handleRangeFromInput($event)"
+                        min="1"
+                        [max]="settings.rangeTo < settings.totalQuestions ? settings.rangeTo : settings.totalQuestions"
+                        [value]="settings.rangeFrom">
+                    </sl-input>
+                    to <sl-input
+                        type="number"
+                        class="w-full"
+                        (sl-input)="handleRangeToInput($event)"
+                        [min]="settings.rangeFrom"
+                        [max]="settings.totalQuestions"
+                        [value]="settings.rangeTo"
+                        #rangeToEl>
+                    </sl-input>
+                </div>
+            </div>
+            <sl-switch (sl-change)="handleRandomizeChange($event)" [value]="settings.randomize">Randomize questions</sl-switch>
+        </div>
+    </sl-card>
+    <sl-card *ngIf="quizQuestions.length > 0">
+        <div class="flex flex-col gap-4">
+            <div *ngIf="!settings.randomize && overshoot" class="flex flex-col">
+                <span class="text-l font-semibold" style="color: rgb(var(--sl-color-amber-400));">Warning!</span>
+                <div class="flex flex-col text-sm">
+                    <span>You have selected a range that contains more than {{ settings.totalQuestions }} questions.</span>
+                    <span>The system will only pick the first {{ settings.totalQuestions }}, starting at question {{ settings.rangeFrom }}.</span>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-l font-semibold">Summary</span>
+                <div class="text-sm">
+                    A total of {{ settings.totalQuestions }} questions are going to be picked
+                    {{ settings.randomize ? 'in a random order' : 'in sequence' }} in the range of
+                    {{ settings.rangeFrom }} to {{ settings.rangeTo }}.
+                </div>
+            </div>
+        </div>
+    </sl-card>
+    <sl-card *ngIf="quizQuestions.length > 0">
+        <div class="flex flex-row justify-between">
+            <sl-button class="w-full" (click)="handleBegin()" type="primary">
+                <sl-spinner *ngIf="beginning" slot="prefix"></sl-spinner>
+                {{ beginning ? 'Starting quiz...' : 'Begin quiz' }}
+            </sl-button>
         </div>
     </sl-card>
 </div>

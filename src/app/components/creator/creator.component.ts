@@ -1,6 +1,6 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, Observable, Subscription } from 'rxjs';
+import { EMPTY, Observable, Subscription, combineLatest } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { BaseQuiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
@@ -23,16 +23,22 @@ export class CreatorComponent implements OnInit, OnDestroy {
 
   isExisting = false;
   submitting = false;
+  redirectTo = 'questions';
 
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router
-  ) {
-    this.$paramsSubscription = this.route.params.pipe(
-      concatMap((params) => {
-        if (params.id) {
-          return this.apiService.getQuiz(params.id);
+  ) { }
+
+  ngOnInit(): void {
+    this.$paramsSubscription = combineLatest([this.route.params, this.route.queryParams]).pipe(
+      concatMap(([params, queryParams]) => {
+        if (params.qid) {
+          if (queryParams.prev === 'quizzes') {
+            this.redirectTo = queryParams.prev;
+          }
+          return this.apiService.getQuiz(params.qid);
         }
         return EMPTY;
       }),
@@ -47,8 +53,6 @@ export class CreatorComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
   }
-
-  ngOnInit(): void { }
 
   ngOnDestroy(): void {
     this.$paramsSubscription?.unsubscribe();
@@ -117,8 +121,16 @@ export class CreatorComponent implements OnInit, OnDestroy {
     fn.subscribe((result) => {
       this.submitting = false;
       this.isExisting = false;
-      if (result) {
-        this.router.navigate(['/quizzes']);
+      if (!result) {
+        return;
+      }
+      switch (this.redirectTo) {
+        case 'quizzes':
+          this.router.navigate(['quizzes']);
+          break;
+        default:
+          this.router.navigate(['creator', result.id, 'questions']);
+          break;
       }
     });
   }

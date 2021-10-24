@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { BaseQuiz } from 'src/app/models/quiz';
+import { AssessmentSettings, BaseQuiz } from 'src/app/models/quiz';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-home',
@@ -9,15 +10,28 @@ import { BaseQuiz } from 'src/app/models/quiz';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  inProgress: Omit<BaseQuiz, 'options'>[] = [];
-  latest: Omit<BaseQuiz, 'options'>[] = [];
+  private $clockSubscription?: Subscription;
+
+  inProgress: AssessmentSettings[] = [];
+  latest: BaseQuiz[] = [];
   currentDate = new Date();
-  $clockSubscription?: Subscription;
+
+  constructor(private apiService: ApiService) { }
 
   ngOnInit() {
     this.$clockSubscription = interval(1000).pipe(
       tap(() => this.currentDate = new Date())
     ).subscribe();
+    this.apiService.getAssessments().subscribe((data) => {
+      if (data) {
+        this.inProgress = data;
+      }
+    });
+    this.apiService.getQuizzes('?_limit=5').subscribe((data) => {
+      if (data) {
+        this.latest = data;
+      }
+    });
   }
 
   ngOnDestroy() {

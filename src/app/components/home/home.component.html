@@ -1,9 +1,8 @@
 <div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl">
     <sl-card>
         <div class="flex flex-row justify-between">
-            <div class="flex flex-col">
-                <span class="text-2xl">Hey, Vytautas 👋</span>
-                <span class="text-l">Your daily summary is below</span>
+            <div class="flex flex-col justify-center">
+                <span class="text-2xl font-semibold">Hey, Vytautas 👋</span>
             </div>
             <div class="flex flex-row gap-4 text-l">
                 <sl-badge class="m-auto">{{ currentDate | date:'mediumTime' }}</sl-badge>
@@ -19,8 +18,9 @@
                 Assessments in progress
             </div>
             <div class="grid gap-4">
-                <div>1. JSON fundamentals</div>
-                <div>2. How well do you know me?</div>
+                <div *ngFor="let asm of inProgress; let i = index">
+                    <a [routerLink]="['/quizzes', asm.quizId, 'assessment', asm.id]" style="color: rgb(var(--sl-color-primary-600))">🟡 ({{ asm.id }}) {{ asm.quizTitle }}</a>
+                </div>
             </div>
         </sl-card>
         <sl-card>
@@ -28,8 +28,9 @@
                 Latest quizzes
             </div>
             <div class="grid gap-4">
-                <div>1. Driving test</div>
-                <div>2. Are you better than a 5th grader?</div>
+                <div *ngFor="let quiz of latest; let i = index">
+                    <a [routerLink]="['/quizzes', quiz.id]" style="color: rgb(var(--sl-color-primary-600))">🧭 {{ quiz.title }}</a>
+                </div>
             </div>
         </sl-card>
     </div>

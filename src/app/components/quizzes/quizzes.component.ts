@@ -42,6 +42,6 @@ export class QuizzesComponent implements OnInit {
   }
 
   handleBeginAssessment(quiz: BaseQuiz): void {
-    this.router.navigate(['assessment', quiz.id]);
+    this.router.navigate(['quizzes', quiz.id]);
   }
 }
