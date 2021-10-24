@@ -1,21 +1,25 @@
 <div class="quizmkr">
-    <div class="quizmkr-spacer"></div>
-    <div class="flex flex-col flex-1 sm:max-w-screen-sm md:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl">
-        <div class="text-4xl text-center font-light pt-16 flex flex-row items-center place-content-center gap-x-2">
-            {{ appTitle }}
-        </div>
-        <div class="flex flex-row place-content-center pt-12 pb-16">
-            <sl-button-group>
-                <sl-button *ngFor="let link of menuLinks" size="large"
-                    type="{{ isRouteActive(link) ? 'primary' : 'default' }}" (click)="onNavigate(link)">
-                    <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
-                </sl-button>
-                <sl-button size="large" type="warning" (click)="toggleTheme()">
-                    <sl-icon name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
-                </sl-button>
-            </sl-button-group>
-        </div>
-        <router-outlet></router-outlet>
+  <div class="quizmkr-spacer"></div>
+  <div class="flex flex-col flex-1 sm:max-w-screen-sm md:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl">
+    <div class="text-4xl text-center font-light pt-16 flex flex-row items-center place-content-center gap-x-2">
+      {{ appTitle }}
     </div>
-    <div class="quizmkr-spacer"></div>
+    <div class="flex flex-row place-content-center pt-12 pb-16">
+      <sl-button-group>
+        <sl-button
+          *ngFor="let link of menuLinks"
+          size="large"
+          type="{{ isRouteActive(link) ? 'primary' : 'default' }}"
+          (click)="onNavigate(link)"
+        >
+          <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
+        </sl-button>
+        <sl-button size="large" type="warning" (click)="toggleTheme()">
+          <sl-icon name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
+        </sl-button>
+      </sl-button-group>
+    </div>
+    <router-outlet></router-outlet>
+  </div>
+  <div class="quizmkr-spacer"></div>
 </div>

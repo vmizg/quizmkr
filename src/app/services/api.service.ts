@@ -2,14 +2,22 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BaseAssessmentSettings, AssessmentSettings, BaseQuiz, QuizQ, QuizQuestions } from '../models/quiz';
+import {
+  BaseAssesmentResult,
+  AssessmentResult,
+  BaseAssessmentSettings,
+  AssessmentSettings,
+  BaseQuiz,
+  QuizQ,
+  QuizQuestions,
+} from '../models/quiz';
 import { generateId } from '../utilities';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   createQuiz(quiz: Omit<BaseQuiz, 'id'>) {
     const id = generateId();
@@ -19,7 +27,7 @@ export class ApiService {
       catchError(() => of(null))
     );
   }
-  
+
   createQuestions(quizId: string, questions: QuizQ[]) {
     const id = generateId();
     const data: QuizQuestions = { id, quizId, questions };
@@ -42,9 +50,7 @@ export class ApiService {
   }
 
   getQuiz(id: string) {
-    return this.http.get(`/api/quizzes/${id}`).pipe(
-      map((result) => result as BaseQuiz)
-    );
+    return this.http.get(`/api/quizzes/${id}`).pipe(map((result) => result as BaseQuiz));
   }
 
   getQuestions(quizId: string) {
@@ -65,29 +71,21 @@ export class ApiService {
   }
 
   updateQuiz(id: string, data: any) {
-    return this.http.patch(`/api/quizzes/${id}`, data).pipe(
-      map((result) => result as BaseQuiz)
-    );
+    return this.http.patch(`/api/quizzes/${id}`, data).pipe(map((result) => result as BaseQuiz));
   }
 
   updateQuestions(id: string, questions: QuizQ[]) {
     // TODO: remove id constraint once backend is available
-    return this.http.patch(`/api/questions/${id}`, { questions }).pipe(
-      map((result) => result as QuizQuestions),
-    );
+    return this.http.patch(`/api/questions/${id}`, { questions }).pipe(map((result) => result as QuizQuestions));
   }
 
   replaceQuestions(id: string, quizId: string, questions: QuizQ[]) {
     // TODO: replace with proper "delete" call when backend is available
-    return this.http.put(`/api/questions/${id}`, { id, quizId, questions }).pipe(
-      map(() => true),
-    );
+    return this.http.put(`/api/questions/${id}`, { id, quizId, questions }).pipe(map(() => true));
   }
 
   deleteQuiz(id: string) {
-    return this.http.delete(`/api/quizzes/${id}`).pipe(
-      map(() => true)
-    );
+    return this.http.delete(`/api/quizzes/${id}`).pipe(map(() => true));
   }
 
   createAssessment(quizId: string, quizTitle: string, settings: BaseAssessmentSettings) {
@@ -100,15 +98,28 @@ export class ApiService {
     );
   }
 
-  getAssessments() {
-    return this.http.get(`/api/assessments`).pipe(
-      map((result) => result as AssessmentSettings[])
-    );
+  getAssessments(params = '') {
+    return this.http.get(`/api/assessments${params}`).pipe(map((result) => result as AssessmentSettings[]));
   }
 
   getAssessment(id: string) {
-    return this.http.get(`/api/assessments/${id}`).pipe(
-      map((result) => result as AssessmentSettings)
+    return this.http.get(`/api/assessments/${id}`).pipe(map((result) => result as AssessmentSettings));
+  }
+
+  updateAssessment(id: string, settings: any) {
+    return this.http.patch(`/api/assessments/${id}`, settings).pipe(map((result) => result as AssessmentSettings));
+  }
+
+  submitResult(assessmentId: string, quizId: string, quizTitle: string, result: BaseAssesmentResult) {
+    const id = generateId();
+    const data: AssessmentResult = { ...result, assessmentId, quizId, quizTitle, id };
+    return this.http.post(`/api/results`, data).pipe(
+      map(() => data),
+      catchError(() => of(null))
     );
+  }
+
+  getResults(params = '') {
+    return this.http.get(`/api/results${params}`).pipe(map((result) => result as AssessmentResult[]));
   }
 }

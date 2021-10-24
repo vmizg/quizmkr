@@ -8,7 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 @Component({
   selector: 'app-creator',
   templateUrl: './creator.component.html',
-  styleUrls: ['./creator.component.scss']
+  styleUrls: ['./creator.component.scss'],
 })
 export class CreatorComponent implements OnInit, OnDestroy {
   @ViewChild('tagInput') tagInputRef!: ElementRef<HTMLElement>;
@@ -25,33 +25,31 @@ export class CreatorComponent implements OnInit, OnDestroy {
   submitting = false;
   redirectTo = 'questions';
 
-  constructor(
-    private apiService: ApiService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) { }
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    this.paramsSubscription$ = combineLatest([this.route.params, this.route.queryParams]).pipe(
-      concatMap(([params, queryParams]) => {
-        if (params.qid) {
-          if (queryParams.prev === 'quizzes') {
-            this.redirectTo = queryParams.prev;
+    this.paramsSubscription$ = combineLatest([this.route.params, this.route.queryParams])
+      .pipe(
+        concatMap(([params, queryParams]) => {
+          if (params.qid) {
+            if (queryParams.prev === 'quizzes') {
+              this.redirectTo = queryParams.prev;
+            }
+            return this.apiService.getQuiz(params.qid);
           }
-          return this.apiService.getQuiz(params.qid);
-        }
-        return EMPTY;
-      }),
-      map((quiz) => {
-        if (quiz) {
-          this.id = quiz.id;
-          this.title = quiz.title;
-          this.desc = quiz.description || '';
-          this.tags = quiz.tags || [];
-          this.isExisting = true;
-        }
-      })
-    ).subscribe();
+          return EMPTY;
+        }),
+        map((quiz) => {
+          if (quiz) {
+            this.id = quiz.id;
+            this.title = quiz.title;
+            this.desc = quiz.description || '';
+            this.tags = quiz.tags || [];
+            this.isExisting = true;
+          }
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
@@ -71,7 +69,11 @@ export class CreatorComponent implements OnInit, OnDestroy {
   }
 
   handleAddTags() {
-    const tags = this.tag.trim().split(',').filter((tag) => !!tag).map((tag) => tag.trim());
+    const tags = this.tag
+      .trim()
+      .split(',')
+      .filter((tag) => !!tag)
+      .map((tag) => tag.trim());
     for (const tag of tags) {
       this.tags.push(tag);
     }

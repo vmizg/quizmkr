@@ -7,17 +7,16 @@ import { Injectable } from '@angular/core';
  */
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ShoelaceFormService {
-
-  constructor() { }
+  constructor() {}
 
   resetForm(formControls: HTMLInputElement[]): void {
     for (const control of formControls) {
       switch (control.tagName.toLowerCase()) {
         case 'input':
-          control.type === 'checkbox' || control.type === 'radio' ? control.checked = false : control.value = '';
+          control.type === 'checkbox' || control.type === 'radio' ? (control.checked = false) : (control.value = '');
           control.setCustomValidity('');
           break;
         case 'sl-checkbox':

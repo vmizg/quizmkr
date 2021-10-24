@@ -24,17 +24,9 @@ import { RunningAssessmentComponent } from './components/assessment/running/runn
     QuestionsComponent,
     QuizzesComponent,
   ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    ScrollingModule,
-  ],
-  providers: [
-    ApiService,
-    PendingChangesGuard
-  ],
+  imports: [BrowserModule, HttpClientModule, AppRoutingModule, ScrollingModule],
+  providers: [ApiService, PendingChangesGuard],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule { }
+export class AppModule {}

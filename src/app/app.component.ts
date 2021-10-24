@@ -12,8 +12,11 @@ const THEME_KEY = 'quizmkr-theme';
 
 const isDarkTheme = (): boolean => {
   const userTheme = localStorage.getItem(THEME_KEY);
-  return userTheme === 'dark' || !userTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-}
+  return (
+    userTheme === 'dark' ||
+    (!userTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  );
+};
 
 @Component({
   selector: 'app-root',
@@ -38,11 +41,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.darkModeListener);
+    window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.darkModeListener);
   }
 
   ngOnDestroy(): void {
-    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.darkModeListener)
+    window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.darkModeListener);
   }
 
   darkModeListener(e: MediaQueryListEvent): void {
@@ -66,7 +71,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   isRouteActive(link: MenuLink): boolean {
-    return this.router.isActive(this.router.createUrlTree([link.route], { relativeTo: this.route }).toString(), { paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored' });
+    return this.router.isActive(this.router.createUrlTree([link.route], { relativeTo: this.route }).toString(), {
+      paths: 'subset',
+      queryParams: 'subset',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    });
   }
 
   onNavigate(link: MenuLink): void {

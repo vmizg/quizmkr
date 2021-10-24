@@ -1,19 +1,19 @@
 :host {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .tags {
-    .tag-input {
-        display: flex;
-        flex-direction: row;
-        gap: 2px;
-    }
+  .tag-input {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+  }
 }
 
 sl-spinner {
-    font-size: 1rem;
-    --indicator-color: white;
+  font-size: 1rem;
+  --indicator-color: white;
 }

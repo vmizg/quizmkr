@@ -3,9 +3,7 @@
     {
       "title": "Naujas quizzazzle",
       "description": "Hello",
-      "tags": [
-        "1234"
-      ],
+      "tags": ["1234"],
       "id": "d9981502"
     },
     {
@@ -289,7 +287,29 @@
       "rangeTo": 2,
       "quizId": "a4d45d3b",
       "quizTitle": "My quiz is this",
-      "id": "1fbaa11b"
+      "id": "1fbaa11b",
+      "finished": true
+    }
+  ],
+  "results": [
+    {
+      "score": 50,
+      "details": [
+        {
+          "questionId": "6d8ef093",
+          "answeredCorrectly": false
+        },
+        {
+          "questionId": "4df93902",
+          "answeredCorrectly": true
+        }
+      ],
+      "timeTaken": 5008,
+      "dateCompleted": "2021-10-24T08:18:14.971Z",
+      "assessmentId": "1fbaa11b",
+      "quizId": "a4d45d3b",
+      "quizTitle": "My quiz is this",
+      "id": "79668c96"
     }
   ]
 }

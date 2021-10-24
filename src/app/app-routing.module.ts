@@ -16,11 +16,11 @@ const routes: Routes = [
   { path: 'quizzes/:qid/assessment/:aid', component: RunningAssessmentComponent },
   { path: 'quizzes/:qid', component: AssessmentComponent },
   { path: 'quizzes', component: QuizzesComponent },
-  { path: '**', redirectTo: 'home', pathMatch: 'full' }
+  { path: '**', redirectTo: 'home', pathMatch: 'full' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

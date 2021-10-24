@@ -8,9 +8,8 @@ describe('CreatorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CreatorComponent ]
-    })
-    .compileComponents();
+      declarations: [CreatorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

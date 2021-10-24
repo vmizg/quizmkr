@@ -7,13 +7,13 @@ import { ApiService } from 'src/app/services/api.service';
 @Component({
   selector: 'app-quizzes',
   templateUrl: './quizzes.component.html',
-  styleUrls: ['./quizzes.component.scss']
+  styleUrls: ['./quizzes.component.scss'],
 })
 export class QuizzesComponent implements OnInit {
   quizzes: BaseQuiz[] = [];
   loading = true;
 
-  constructor(private apiService: ApiService, private router: Router) { }
+  constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit(): void {
     this.loading = true;
@@ -30,14 +30,17 @@ export class QuizzesComponent implements OnInit {
   handleDeleteQuiz(quiz: BaseQuiz): void {
     if (confirm(`WARNING: this will delete the quiz ${quiz.title} permanently! Are you sure you want to do this?`)) {
       this.loading = true;
-      this.apiService.deleteQuiz(quiz.id).pipe(
-        concatMap(() => this.apiService.getQuizzes()),
-        tap((quizzes) => {
-          this.quizzes = quizzes;
-          this.loading = false;
-        }),
-        take(1)
-      ).subscribe();
+      this.apiService
+        .deleteQuiz(quiz.id)
+        .pipe(
+          concatMap(() => this.apiService.getQuizzes()),
+          tap((quizzes) => {
+            this.quizzes = quizzes;
+            this.loading = false;
+          }),
+          take(1)
+        )
+        .subscribe();
     }
   }
 

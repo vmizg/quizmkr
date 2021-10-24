@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, forkJoin } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
-import { AssessmentSettings, QuizQ } from 'src/app/models/quiz';
+import { AssessmentSettings, BaseAssesmentResult, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 interface PQuestion extends QuizQ {
@@ -24,7 +24,7 @@ interface PCheckboxQuestion extends PQuestion {
 @Component({
   selector: 'app-running-assessment',
   templateUrl: './running.component.html',
-  styleUrls: ['./running.component.scss']
+  styleUrls: ['./running.component.scss'],
 })
 export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private paramsSubscription$?: Subscription;
@@ -39,42 +39,89 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     rangeFrom: 1,
     rangeTo: 1,
     randomize: false,
+    finished: false,
   };
   questions: PQuestion[] = [];
-  activeQuestion?: (PRadioQuestion | PCheckboxQuestion);
+  activeQuestion?: PRadioQuestion | PCheckboxQuestion;
   activeQuestionIndex = 0;
+  startTime: number = 0;
 
-  constructor(
-    private apiService: ApiService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) { }
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    this.paramsSubscription$ = this.route.params.pipe(
-      concatMap((params) => {
-        this.settings.id = params.aid;
-        this.settings.quizId = params.qid;
-        return forkJoin([
-          this.apiService.getAssessment(this.settings.id),
-          this.apiService.getQuestions(this.settings.quizId)
-        ]);
-      }),
-      tap(([assessment, questions]) => {
-        this.settings = assessment;
-        this.questions = questions?.questions || [];
-        if (this.questions.length === 0) {
-          this.router.navigate(['/quizzes', this.settings.quizId]);
-          return;
-        }
-        this.setActiveQuestion(0);
-      })
-    ).subscribe();
+    this.paramsSubscription$ = this.route.params
+      .pipe(
+        concatMap((params) => {
+          this.settings.id = params.aid;
+          this.settings.quizId = params.qid;
+          return forkJoin([
+            this.apiService.getAssessment(this.settings.id),
+            this.apiService.getQuestions(this.settings.quizId),
+          ]);
+        }),
+        tap(([assessment, questions]) => {
+          this.settings = assessment;
+          this.questions = questions?.questions || [];
+          if (this.questions.length === 0 || this.settings.finished) {
+            this.router.navigate(['/quizzes', this.settings.quizId]);
+            return;
+          }
+          this.setActiveQuestion(0);
+          this.startTime = new Date().getTime();
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
     this.paramsSubscription$?.unsubscribe();
     this.stateSubscription$?.unsubscribe();
+  }
+
+  private checkIfFinished() {
+    let finished = true;
+    let unfinishedIndex = -1;
+    for (let i = 0; i < this.questions.length; i++) {
+      let answered = false;
+      if (this.questions[i].multiSelect) {
+        const q = this.questions[i] as PCheckboxQuestion;
+        if (q.selectedAnswerIndex) {
+          for (const answer of q.selectedAnswerIndex) {
+            answered = answered || answer;
+          }
+        }
+      } else {
+        const q = this.questions[i] as PRadioQuestion;
+        answered = q.selectedAnswerIndex > -1 && q.selectedAnswerIndex < q.options.length;
+      }
+      if (!answered) {
+        finished = false;
+        unfinishedIndex = i;
+        break;
+      }
+    }
+    return { finished, unfinishedIndex };
+  }
+
+  private calculateScore() {
+    const details = this.questions.map((item) => {
+      let answeredCorrectly = true;
+      if (item.multiSelect) {
+        let q = item as PCheckboxQuestion;
+        for (let i = 0; i < q.options.length; i++) {
+          answeredCorrectly =
+            (answeredCorrectly && q.options[i].correct && q.selectedAnswerIndex[i]) ||
+            (!q.options[i].correct && !q.selectedAnswerIndex[i]);
+        }
+      } else {
+        let q = item as PRadioQuestion;
+        answeredCorrectly = !!q.options[q.selectedAnswerIndex].correct;
+      }
+      return { questionId: item.id, answeredCorrectly };
+    });
+    const correctAnswers = details.filter(({ answeredCorrectly }) => answeredCorrectly);
+    const score = Math.floor((correctAnswers.length / details.length) * 100);
+    return { details, score };
   }
 
   setActiveQuestion(index: number) {
@@ -89,7 +136,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       question.multiSelect = correctOptions > 1;
     }
     this.activeQuestionIndex = index;
-    this.activeQuestion = question as (PCheckboxQuestion | PRadioQuestion);
+    this.activeQuestion = question as PCheckboxQuestion | PRadioQuestion;
   }
 
   handleAnswerInput(e: Event, index = 0) {
@@ -110,7 +157,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   handleClickNext() {
-    const index = this.activeQuestionIndex < this.questions.length - 1 ? this.activeQuestionIndex + 1 : this.questions.length - 1;
+    const index =
+      this.activeQuestionIndex < this.questions.length - 1 ? this.activeQuestionIndex + 1 : this.questions.length - 1;
     this.questions[this.activeQuestionIndex] = this.activeQuestion!;
     this.setActiveQuestion(index);
   }
@@ -122,33 +170,38 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   handleClickSubmit() {
-    let finished = true;
-    let unfinishedIndex = -1;
-    for (let i = 0; i < this.questions.length; i++) {
-      let answered = false;
-      if (this.questions[i].multiSelect) {
-        const q = this.questions[i] as PCheckboxQuestion;
-        for (const answer of q.selectedAnswerIndex) {
-          answered = answered || answer;
-        }
-      } else {
-        const q = this.questions[i] as PRadioQuestion;
-        answered = q.selectedAnswerIndex > -1 && q.selectedAnswerIndex < q.options.length;
-      }
-      if (!answered) {
-        finished = false;
-        unfinishedIndex = i;
-        break;
-      }
-    }
+    const { finished, unfinishedIndex } = this.checkIfFinished();
     if (!finished) {
       if (unfinishedIndex > -1) {
-        this.activeQuestion = this.questions[unfinishedIndex] as (PCheckboxQuestion | PRadioQuestion);
+        this.setActiveQuestion(unfinishedIndex);
       }
       alert('You have not finished answering all questions.');
       return;
     }
+    if (!confirm('WARNING: this will submit your quiz. Are you sure you want to do that?')) {
+      return;
+    }
     this.handleClickNext();
-    console.log('DONE', this.questions);
+    const currentDate = new Date();
+    const currentTime = currentDate.getTime();
+    const { score, details } = this.calculateScore();
+    const data: BaseAssesmentResult = {
+      score: score,
+      details: details,
+      timeTaken: currentTime - this.startTime,
+      dateCompleted: currentDate,
+    };
+    console.log('DONE', this.questions, data);
+    forkJoin([
+      this.apiService.submitResult(this.settings.id, this.settings.quizId, this.settings.quizTitle, data),
+      this.apiService.updateAssessment(this.settings.id, { finished: true }),
+    ]).subscribe(([result1, result2]) => {
+      if (result1 && result2) {
+        alert(
+          'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
+        );
+        this.router.navigate(['/home'], { queryParams: { assessment: this.settings.id } });
+      }
+    });
   }
 }

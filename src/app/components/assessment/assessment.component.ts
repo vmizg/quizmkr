@@ -8,7 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
-  styleUrls: ['./assessment.component.scss']
+  styleUrls: ['./assessment.component.scss'],
 })
 export class AssessmentComponent implements OnInit {
   private paramsSubscription$?: Subscription;
@@ -30,31 +30,29 @@ export class AssessmentComponent implements OnInit {
   };
   overshoot = false;
 
-  constructor(
-    private apiService: ApiService,
-    private route: ActivatedRoute,
-    private router: Router,
-  ) { }
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.loading = true;
-    this.paramsSubscription$ = this.route.params.pipe(
-      concatMap((params) => {
-        this.quizId = params.qid;
-        return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
-      }),
-      tap(([quiz, questions]) => {
-        this.quizTitle = quiz.title;
-        this.quizQuestions = questions?.questions || [];
-        this.settings.totalQuestions = this.quizQuestions.length;
-        this.settings.rangeTo = this.settings.totalQuestions;
-        this.loading = false;
-      }),
-      catchError(() => {
-        this.loading = false;
-        return EMPTY;
-      })
-    ).subscribe();
+    this.paramsSubscription$ = this.route.params
+      .pipe(
+        concatMap((params) => {
+          this.quizId = params.qid;
+          return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
+        }),
+        tap(([quiz, questions]) => {
+          this.quizTitle = quiz.title;
+          this.quizQuestions = questions?.questions || [];
+          this.settings.totalQuestions = this.quizQuestions.length;
+          this.settings.rangeTo = this.settings.totalQuestions;
+          this.loading = false;
+        }),
+        catchError(() => {
+          this.loading = false;
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
@@ -62,7 +60,8 @@ export class AssessmentComponent implements OnInit {
   }
 
   private checkRangeOvershoot() {
-    this.overshoot = ((this.settings.rangeTo - this.settings.rangeFrom + 1) - this.settings.totalQuestions > 0) ? true : false;
+    this.overshoot =
+      this.settings.rangeTo - this.settings.rangeFrom + 1 - this.settings.totalQuestions > 0 ? true : false;
   }
 
   handleTotalQuestionsInput(e: Event) {
@@ -100,17 +99,19 @@ export class AssessmentComponent implements OnInit {
 
   handleBegin() {
     this.beginning = true;
-    this.apiService.createAssessment(this.quizId, this.quizTitle, this.settings).subscribe((result) => {
-      this.beginning = false;
-      if (result) {
-        this.router.navigate(
-          ['quizzes', this.quizId, 'assessment', result.id],
-          { state: { settings: this.settings, questions: this.quizQuestions } },
-        );
+    this.apiService.createAssessment(this.quizId, this.quizTitle, this.settings).subscribe(
+      (result) => {
+        this.beginning = false;
+        if (result) {
+          this.router.navigate(['quizzes', this.quizId, 'assessment', result.id], {
+            state: { settings: this.settings, questions: this.quizQuestions },
+          });
+        }
+      },
+      (err) => {
+        this.beginning = false;
+        console.log(err);
       }
-    }, (err) => {
-      this.beginning = false;
-      console.log(err);
-    });
+    );
   }
 }

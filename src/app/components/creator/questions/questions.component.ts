@@ -1,4 +1,15 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Observable, Subscription, EMPTY } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
@@ -11,12 +22,12 @@ import { ShoelaceFormService } from 'src/app/services/shoelace-form.service';
 @Component({
   selector: 'app-questions',
   templateUrl: './questions.component.html',
-  styleUrls: ['./questions.component.scss']
+  styleUrls: ['./questions.component.scss'],
 })
 export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, ComponentCanDeactivate {
   private paramsSubscription$?: Subscription;
   private changesSubscription$?: Subscription;
-  
+
   @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
   @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
 
@@ -40,28 +51,27 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     private cd: ChangeDetectorRef,
     private formService: ShoelaceFormService,
     private route: ActivatedRoute,
-    private router: Router,
+    private router: Router
   ) {
     this.loading = true;
-    this.paramsSubscription$ = this.route.params.pipe(
-      concatMap((params) => {
-        this.quizId = params.qid;
-        return forkJoin([
-          this.apiService.getQuiz(this.quizId),
-          this.apiService.getQuestions(this.quizId)
-        ]);
-      }),
-      tap(([quiz, questions]) => {
-        this.quizTitle = quiz.title;
-        this.questionsId = questions?.id;
-        this.questions = questions?.questions || [];
-        this.loading = false;
-      }),
-      catchError(() => {
-        this.loading = false;
-        return EMPTY;
-      })
-    ).subscribe();
+    this.paramsSubscription$ = this.route.params
+      .pipe(
+        concatMap((params) => {
+          this.quizId = params.qid;
+          return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
+        }),
+        tap(([quiz, questions]) => {
+          this.quizTitle = quiz.title;
+          this.questionsId = questions?.id;
+          this.questions = questions?.questions || [];
+          this.loading = false;
+        }),
+        catchError(() => {
+          this.loading = false;
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
   @HostListener('window:beforeunload')
@@ -74,7 +84,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   ngOnInit(): void {
     this.updateColor(generateColor());
   }
-  
+
   ngAfterViewInit(): void {
     this.changesSubscription$ = this.questionOptions.changes.subscribe(() => {
       if (this.existingQuestionToRender) {
@@ -117,8 +127,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   handleAddQuestion(e: Event) {
-    const { formData, formControls }: { formData: FormData, formControls: HTMLInputElement[] } = (e as CustomEvent).detail;
-  
+    const { formData, formControls }: { formData: FormData; formControls: HTMLInputElement[] } = (e as CustomEvent)
+      .detail;
+
     const title = (formData.get('title') as string).trim();
     if (!title) {
       alert('Please fill out the question statement field.');
@@ -178,22 +189,29 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     } else {
       $obs = this.apiService.updateQuestions(this.questionsId, clonedQuestions);
     }
-    $obs.subscribe((result) => {
-      if (result) {
-        this.questionsId = result.id;
-        this.questions = clonedQuestions;
-        this.resetForm(formControls);
-        this.newQuiz = false;
+    $obs.subscribe(
+      (result) => {
+        if (result) {
+          this.questionsId = result.id;
+          this.questions = clonedQuestions;
+          this.resetForm(formControls);
+          this.newQuiz = false;
+        }
+      },
+      (err) => {
+        console.log(err);
       }
-    }, (err) => {
-      console.log(err);
-    });
+    );
   }
 
   handleEditQuestion(question: QuizQ): void {
     const formControls = this.questionForm.nativeElement.getFormControls();
     if (this.edited) {
-      if (confirm('WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.')) {
+      if (
+        confirm(
+          'WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.'
+        )
+      ) {
         this.formService.resetForm(formControls);
         this.edited = false;
       } else {
