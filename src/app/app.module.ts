@@ -13,6 +13,7 @@ import { PendingChangesGuard } from './guards/pending-changes.guard';
 import { QuizzesComponent } from './components/quizzes/quizzes.component';
 import { AssessmentComponent } from './components/assessment/assessment.component';
 import { RunningAssessmentComponent } from './components/assessment/running/running.component';
+import { ResultsComponent } from './components/assessment/results/results.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { RunningAssessmentComponent } from './components/assessment/running/runn
     RunningAssessmentComponent,
     QuestionsComponent,
     QuizzesComponent,
+    ResultsComponent,
   ],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, ScrollingModule],
   providers: [ApiService, PendingChangesGuard],

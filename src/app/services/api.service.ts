@@ -123,6 +123,10 @@ export class ApiService {
     return this.http.get(`/api/results${params}`).pipe(map((result) => result as AssessmentResult[]));
   }
 
+  getResult(id: string) {
+    return this.http.get(`/api/results/${id}`).pipe(map((result) => result as AssessmentResult));
+  }
+
   deleteResult(id: string) {
     return this.http.delete(`/api/results/${id}`).pipe(map(() => {}));
   }

@@ -19,7 +19,7 @@
               *ngFor="let option of activeQuestion.options; let i = index"
               style="display: flex; height: 2rem; margin-bottom: 0"
               [value]="i"
-              [checked]="activeQuestion.selectedAnswerIndex === i"
+              [checked]="activeQuestion.selectedAnswer?.has(i)"
             >
               {{ alphabet[i] }}. {{ option.title }}
             </sl-radio>
@@ -32,7 +32,7 @@
               *ngFor="let option of activeQuestion.options; let i = index"
               style="display: flex; height: 2rem"
               [name]="'option-' + i"
-              [checked]="activeQuestion.selectedAnswerIndex ? activeQuestion.selectedAnswerIndex[i] : false"
+              [checked]="activeQuestion.selectedAnswer?.has(i)"
               (sl-change)="handleAnswerInput($event, i)"
             >
               {{ alphabet[i] }}. {{ option.title }}
@@ -52,7 +52,7 @@
       <sl-button
         type="primary"
         (click)="handleClickNext()"
-        [style]="{ opacity: activeQuestionIndex < questions.length - 1 ? 1 : 0 }"
+        [hidden]="activeQuestionIndex === questions.length - 1"
         >Next</sl-button
       >
       <sl-button type="success" (click)="handleClickSubmit()" [hidden]="activeQuestionIndex < questions.length - 1"

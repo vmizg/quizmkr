@@ -1,0 +1,57 @@
+<div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl">
+    <sl-card>
+      <div class="flex flex-row justify-between">
+        <div class="flex flex-col">
+          <div *ngIf="loading" class="flex flex-row items-center gap-4 text-2xl font-semibold">
+            <sl-spinner></sl-spinner>
+            <span>Loading...</span>
+          </div>
+          <span *ngIf="!loading && resultSheet.results && resultSheet.results.length > 0" class="text-2xl font-semibold">{{ resultSheet.quizTitle }}</span>
+          <span class="text-l">Result sheet</span>
+        </div>
+        <div class="flex flex-row gap-4 items-center text-l">
+          <span>Q U I Z A S T</span>
+          <sl-avatar style="line-height: 56px">
+            <sl-icon slot="icon" name="check-circle" class="text-xl"></sl-icon>
+          </sl-avatar>
+        </div>
+      </div>
+    </sl-card>
+    <sl-card *ngIf="resultSheet.score > -1">
+        <div class="flex flex-col gap-2 w-full">
+            <div class="flex flex-row justify-between items-center">
+                <span>Total score</span>
+                <span class="font-semibold">{{ resultSheet.score }}%</span>
+            </div>
+            <div class="flex flex-row justify-between items-center">
+                <span>Time taken to complete</span>
+                <span class="font-semibold">{{ resultSheet.timeTaken }}</span>
+            </div>
+        </div>
+    </sl-card>
+    <div class="flex flex-col gap-2 w-full" *ngIf="resultSheet.results && resultSheet.results.length > 0">
+        <sl-card *ngFor="let result of resultSheet.results; let i = index;">
+            <sl-card
+                class="w-full"
+                [style]="{
+                    '--border-color': result.answeredCorrectly ? 'rgb(var(--sl-color-green-500))' : 'rgb(var(--sl-color-danger-500))',
+                    '--border-width': '0.15rem'
+                }">
+                <div class="flex flex-col w-full gap-2">
+                    <div class="flex flex-row items-center gap-2 text-xl">
+                        <sl-badge type="neutral" pill>{{ i + 1 }}</sl-badge>
+                        {{ result.questionTitle }}
+                    </div>
+                    <div *ngFor="let option of result.options; let j = index" class="flex flex-row items-center gap-4 ml-8">
+                        <div class="flex w-8 text-xl">
+                            <sl-icon *ngIf="option.correct" name="check-circle" style="color: rgb(var(--sl-color-green-500))"></sl-icon>
+                            <sl-icon *ngIf="!option.correct && result.selectedAnswer.indexOf(j) > -1" name="x-circle" style="color: rgb(var(--sl-color-danger-500))"></sl-icon>
+                        </div>
+                        <span [style]="{ color: option.correct ? 'rgb(var(--sl-color-green-500))' : !option.correct && result.selectedAnswer.indexOf(j) > -1 ? 'rgb(var(--sl-color-danger-500))' : '' }">{{ alphabet[j] }}. {{ option.title }}</span>
+                    </div>
+                </div>
+            </sl-card>
+        </sl-card>
+    </div>
+  </div>
+  

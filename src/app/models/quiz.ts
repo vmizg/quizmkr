@@ -42,6 +42,8 @@ export interface BaseAssesmentResult {
   details: {
     questionId: string;
     answeredCorrectly: boolean;
+    selectedAnswer: number[];
+    correctAnswer: number[];
   }[];
   timeTaken: number;
   dateCompleted: Date;

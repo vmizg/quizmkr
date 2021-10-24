@@ -14,14 +14,14 @@ export const generateColor = (): string => {
   return `#${Array.from(arr, dec2hex).join('').toLowerCase()}`;
 };
 
-export function padZero(str: string, len?: number) {
+export const padZero = (str: string, len?: number) => {
   len = len || 2;
   const zeros = new Array(len).join('0');
   return (zeros + str).slice(-len);
 }
 
 /** Based on https://github.com/onury/invert-color */
-export function invertColor(hex: string, bw: boolean) {
+export const invertColor = (hex: string, bw: boolean) => {
   if (hex.indexOf('#') === 0) {
     hex = hex.slice(1);
   }
@@ -54,11 +54,15 @@ export function invertColor(hex: string, bw: boolean) {
  * @param max max number
  * @returns 
  */
-export function getRandomInteger(min: number, max: number) {
+export const getRandomInteger = (min: number, max: number) => {
   const randomBuffer = new Uint32Array(1);
   window.crypto.getRandomValues(randomBuffer);
   const randomNumber = randomBuffer[0] / (0xffffffff + 1);
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(randomNumber * (max - min + 1)) + min;
+}
+
+export const areSetsEqual = (a?: Set<any>, b?: Set<any>) => {
+  return !!a && !!b && a.size === b.size && [...a].every(value => b.has(value));
 }

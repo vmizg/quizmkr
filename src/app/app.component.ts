@@ -28,7 +28,7 @@ export class AppComponent implements OnInit, OnDestroy {
   menuLinks: MenuLink[] = [
     { id: 1, route: '/home', title: 'Home', icon: 'house' },
     { id: 2, route: '/creator', title: 'Creator', icon: 'asterisk' },
-    { id: 2, route: '/quizzes', title: 'Quizzes', icon: 'compass' },
+    { id: 2, route: '/quizzes', title: 'Assessment', icon: 'compass' },
   ];
   darkMode: boolean;
 

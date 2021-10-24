@@ -110,7 +110,6 @@ export class AssessmentComponent implements OnInit {
 
   handleBegin() {
     this.beginning = true;
-    console.log(this.settings)
     this.apiService.createAssessment(this.quizId, this.quizTitle, this.settings).subscribe(
       (result) => {
         this.beginning = false;

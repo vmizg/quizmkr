@@ -4,22 +4,20 @@ import { Subscription, forkJoin, of, EMPTY, interval, timer, Observable, Subject
 import { concatMap, map, takeUntil, tap } from 'rxjs/operators';
 import { AssessmentSettings, BaseAssesmentResult, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-import { getRandomInteger } from 'src/app/utilities';
+import { areSetsEqual, getRandomInteger } from 'src/app/utilities';
 
 interface PQuestion extends QuizQ {
   completed?: boolean;
   multiSelect?: boolean;
-  selectedAnswerIndex?: number | boolean[];
+  selectedAnswer?: Set<number>;
 }
 
 interface PRadioQuestion extends PQuestion {
   multiSelect: false;
-  selectedAnswerIndex: number;
 }
 
 interface PCheckboxQuestion extends PQuestion {
   multiSelect: true;
-  selectedAnswerIndex: boolean[];
 }
 
 @Component({
@@ -93,7 +91,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     const rangeTo = (this.settings.rangeTo || this.questions.length);
     this.questions = this.questions.slice(rangeFrom, rangeTo);
     if (!this.settings.randomize) {
-      this.questions = this.questions.slice(0, totalQuestions - 1);
+      this.questions = this.questions.slice(0, totalQuestions);
     } else {
       // This can happen in the case where a smaller range was defined than the total questions asked
       const total = this.questions.length < totalQuestions ? this.questions.length : totalQuestions;
@@ -115,18 +113,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     let finished = true;
     let unfinishedIndex = -1;
     for (let i = 0; i < this.questions.length; i++) {
-      let answered = false;
-      if (this.questions[i].multiSelect) {
-        const q = this.questions[i] as PCheckboxQuestion;
-        if (q.selectedAnswerIndex) {
-          for (const answer of q.selectedAnswerIndex) {
-            answered = answered || answer;
-          }
-        }
-      } else {
-        const q = this.questions[i] as PRadioQuestion;
-        answered = q.selectedAnswerIndex > -1 && q.selectedAnswerIndex < q.options.length;
-      }
+      const q = this.questions[i];
+      const answered = q.selectedAnswer && q.selectedAnswer.size > 0;
       if (!answered) {
         finished = false;
         unfinishedIndex = i;
@@ -137,24 +125,28 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   private calculateScore() {
-    const details = this.questions.map((item) => {
-      let answeredCorrectly = true;
-      if (item.multiSelect) {
-        let q = item as PCheckboxQuestion;
-        for (let i = 0; i < q.options.length; i++) {
-          answeredCorrectly =
-            (answeredCorrectly && q.options[i].correct && q.selectedAnswerIndex[i] === true) ||
-            (!q.options[i].correct && q.selectedAnswerIndex[i] === false);
+    const details = this.questions.map((q) => {
+      const correctAnswer = new Set<number>();
+      for (let i = 0; i < q.options.length; i++) {
+        if (q.options[i].correct) {
+          correctAnswer.add(i);
         }
-      } else {
-        let q = item as PRadioQuestion;
-        answeredCorrectly = !!q.options[q.selectedAnswerIndex]?.correct;
       }
-      return { questionId: item.id, answeredCorrectly };
+      const answeredCorrectly = areSetsEqual(q.selectedAnswer, correctAnswer);
+      return { questionId: q.id, selectedAnswer: q.selectedAnswer, correctAnswer, answeredCorrectly };
     });
     const correctAnswers = details.filter(({ answeredCorrectly }) => answeredCorrectly);
     const score = Math.floor((correctAnswers.length / details.length) * 100);
-    return { details, score };
+    return {
+      details: details.map((value) => {
+        return {
+          ...value,
+          selectedAnswer: Array.from(value.selectedAnswer || []),
+          correctAnswer: Array.from(value.correctAnswer)}
+        }
+      ),
+      score,
+    };
   }
 
   private setTimeLeft(timeLimit: number) {
@@ -198,12 +190,12 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     forkJoin([
       this.apiService.submitResult(this.settings.id, this.settings.quizId, this.settings.quizTitle, data),
       this.apiService.updateAssessment(this.settings.id, { finished: true }),
-    ]).subscribe(([result1, result2]) => {
-      if (result1 && result2) {
+    ]).subscribe(([results, assessment]) => {
+      if (results && assessment) {
         alert(
           'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
         );
-        this.router.navigate(['/home'], { queryParams: { assessment: this.settings.id } });
+        this.router.navigate(['/results', results.id], { state: { results } });
       }
     });
   }
@@ -225,17 +217,19 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
   handleAnswerInput(e: Event, index = 0) {
     if (this.activeQuestion) {
+      if (!this.activeQuestion.selectedAnswer) {
+        this.activeQuestion.selectedAnswer = new Set();
+      }
       if (this.activeQuestion.multiSelect === true) {
-        if (!this.activeQuestion.selectedAnswerIndex) {
-          this.activeQuestion.selectedAnswerIndex = [false, false, false];
-        }
         const selected = (e.target as HTMLInputElement).checked;
-        if (this.activeQuestion) {
-          this.activeQuestion.selectedAnswerIndex[index] = selected;
+        if (selected) {
+          this.activeQuestion.selectedAnswer.add(index);
+        } else {
+          this.activeQuestion.selectedAnswer.delete(index);
         }
       } else {
         const value = (e.target as HTMLInputElement).value;
-        this.activeQuestion.selectedAnswerIndex = Number(value);
+        this.activeQuestion.selectedAnswer = new Set([Number(value)]);
       }
     }
   }

@@ -46,7 +46,7 @@
         <div *ngFor="let result of results; let i = index" class="flex flex-row justify-between gap-2">
           <div class="flex flex-row items-center gap-2">
             <sl-icon name="check-circle" style="color: rgb(var(--sl-color-green-500))"></sl-icon>
-            <a [routerLink]="['/quizzes', result.quizId]" style="color: rgb(var(--sl-color-primary-600))">
+            <a [routerLink]="['/results', result.id]" style="color: rgb(var(--sl-color-primary-600))">
               {{ result.quizTitle }}</a
             >
             ({{ result.dateCompleted | date: 'medium' }})
