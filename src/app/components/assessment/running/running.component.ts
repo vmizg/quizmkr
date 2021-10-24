@@ -217,7 +217,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       timeTaken: currentTime - this.startTime,
       dateCompleted: currentDate,
     };
-    console.log('DONE', this.questions, data);
+    // Debug
+    // console.log('DONE', this.questions, data);
     forkJoin([
       this.apiService.submitResult(this.settings.id, this.settings.quizId, this.settings.quizTitle, data),
       this.apiService.updateAssessment(this.settings.id, { finished: true }),
