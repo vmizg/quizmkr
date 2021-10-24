@@ -20,7 +20,7 @@
   <sl-card *ngIf="!loading && (!quizQuestions || quizQuestions.length === 0)">
     <div class="flex flex-col">
       <span>You have not added any questions for this quiz yet.</span>
-    <a [routerLink]="['/creator', quizId]" style="color: rgb(var(--sl-color-primary-600))">Add some by clicking here!</a>
+    <a [routerLink]="['/creator', quizId, 'questions']" style="color: rgb(var(--sl-color-primary-600))">Add some by clicking here!</a>
     </div>
   </sl-card>
   <sl-card *ngIf="quizQuestions.length > 0">
