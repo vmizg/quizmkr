@@ -87,20 +87,20 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.questions = this.questions.slice(rangeFrom, rangeTo);
     if (!this.settings.randomize) {
       this.questions = this.questions.slice(0, totalQuestions - 1);
-    } else if (this.questions.length < totalQuestions) {
-      // This can happen in the case where a smaller range was defined than the total questions asked
-      return;
     } else {
+      // This can happen in the case where a smaller range was defined than the total questions asked
+      const total = this.questions.length < totalQuestions ? this.questions.length : totalQuestions;
       const questions = [];
       const indexes: { [key: string]: boolean } = {};
-      while (questions.length < totalQuestions) {
-        let index = getRandomInteger(0, totalQuestions - 1);
+      while (questions.length < total) {
+        let index = getRandomInteger(0, total - 1);
         if (indexes[index]) {
           continue;
         }
         questions.push(this.questions[index]);
         indexes[index] = true;
       }
+      this.questions = questions;
     }
   }
 

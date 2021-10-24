@@ -122,4 +122,8 @@ export class ApiService {
   getResults(params = '') {
     return this.http.get(`/api/results${params}`).pipe(map((result) => result as AssessmentResult[]));
   }
+
+  deleteResult(id: string) {
+    return this.http.delete(`/api/results/${id}`).pipe(map(() => {}));
+  }
 }
