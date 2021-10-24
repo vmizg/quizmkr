@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 interface Result {
   questionTitle: string,
   questionId: string,
+  questionIndex: number,
   options: QOption[],
   answeredCorrectly: boolean,
   correctAnswer: number[],
@@ -59,10 +60,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.resultSheet.quizTitle = results.quizTitle;
           this.resultSheet.score = results.score;
           for (let i = 0; i < results.details.length; i++) {
+            const details = results.details[i];
             const result: Result = {
-              ...results.details[i],
-              ...questions.questions[i],
-              questionTitle: questions.questions[i].title,
+              ...details,
+              ...questions.questions[details.questionIndex],
+              questionTitle: questions.questions[details.questionIndex].title,
             };
             this.resultSheet.results.push(result);
           }

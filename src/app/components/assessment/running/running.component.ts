@@ -20,6 +20,11 @@ interface PCheckboxQuestion extends PQuestion {
   multiSelect: true;
 }
 
+interface AssessmentRouteState {
+  settings: AssessmentSettings;
+  questions: PQuestion[];
+}
+
 @Component({
   selector: 'app-running-assessment',
   templateUrl: './running.component.html',
@@ -32,6 +37,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private timeLimit$ = new Subject();
 
   alphabet = 'ABCDEFGHIJKLMNO';
+  dataState?: AssessmentRouteState;
   settings: AssessmentSettings = {
     id: '',
     quizId: '',
@@ -43,14 +49,16 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     finished: false,
     timeLimit: 0,
   };
-  questions: PQuestion[] = [];
+  questions: { index: number, question: PQuestion }[] = [];
   activeQuestion?: PRadioQuestion | PCheckboxQuestion;
   activeQuestionIndex = 0;
   startTime: number = 0;
   timeLeft?: Date;
   dateFmt = 'mm:ss';
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {
+    this.dataState = this.router.getCurrentNavigation()?.extras.state as AssessmentRouteState;
+  }
 
   ngOnInit(): void {
     this.paramsSubscription$ = this.route.params
@@ -58,19 +66,20 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         concatMap((params) => {
           this.settings.id = params.aid;
           this.settings.quizId = params.qid;
+          const { settings, questions } = this.dataState || {};
           return forkJoin([
-            this.apiService.getAssessment(this.settings.id),
-            this.apiService.getQuestions(this.settings.quizId),
+            settings ? of(settings) : this.apiService.getAssessment(this.settings.id),
+            questions ? of({ questions }) : this.apiService.getQuestions(this.settings.quizId),
           ]);
         }),
-        tap(([assessment, questions]) => {
+        tap(([assessment, questions]: any) => {
           this.settings = assessment;
-          this.questions = questions?.questions || [];
-          if (this.questions.length === 0 || this.settings.finished) {
+          const _questions = questions?.questions || [];
+          if (_questions.length === 0 || this.settings.finished) {
             this.router.navigate(['/quizzes', this.settings.quizId]);
             return;
           }
-          this.prepareQuestions();
+          this.prepareQuestions(_questions);
           this.setActiveQuestion(0);
           this.startTime = new Date().getTime();
           this.setupTimer();
@@ -85,27 +94,33 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.interval$?.unsubscribe();
   }
 
-  private prepareQuestions() {
-    const totalQuestions = this.settings.totalQuestions || this.questions.length;
+  private prepareQuestions(questions: PQuestion[]) {
+    const totalQuestions = this.settings.totalQuestions || questions.length;
     const rangeFrom = (this.settings.rangeFrom || 1) - 1; // 0-indexed
-    const rangeTo = (this.settings.rangeTo || this.questions.length);
-    this.questions = this.questions.slice(rangeFrom, rangeTo);
+    const rangeTo = (this.settings.rangeTo || questions.length);
+  
+    // We need to save question indexes before we manipulate the list
+    // for easier result tracking later
+    let indexedQs = questions.map((q, i) => ({ index: i, question: q }));
+    indexedQs = indexedQs.slice(rangeFrom, rangeTo);
+  
     if (!this.settings.randomize) {
-      this.questions = this.questions.slice(0, totalQuestions);
+      this.questions = indexedQs.slice(0, totalQuestions);
     } else {
-      // This can happen in the case where a smaller range was defined than the total questions asked
-      const total = this.questions.length < totalQuestions ? this.questions.length : totalQuestions;
-      const questions = [];
+      // This can happen in the case where a smaller range was defined
+      // than the total questions asked
+      const total = indexedQs.length < totalQuestions ? indexedQs.length : totalQuestions;
+      const rndQuestions = [];
       const indexes: { [key: string]: boolean } = {};
-      while (questions.length < total) {
+      while (rndQuestions.length < total) {
         let index = getRandomInteger(0, total - 1);
         if (indexes[index]) {
           continue;
         }
-        questions.push(this.questions[index]);
+        rndQuestions.push(indexedQs[index]);
         indexes[index] = true;
       }
-      this.questions = questions;
+      this.questions = rndQuestions;
     }
   }
 
@@ -113,7 +128,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     let finished = true;
     let unfinishedIndex = -1;
     for (let i = 0; i < this.questions.length; i++) {
-      const q = this.questions[i];
+      const q = this.questions[i].question;
       const answered = q.selectedAnswer && q.selectedAnswer.size > 0;
       if (!answered) {
         finished = false;
@@ -127,13 +142,13 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private calculateScore() {
     const details = this.questions.map((q) => {
       const correctAnswer = new Set<number>();
-      for (let i = 0; i < q.options.length; i++) {
-        if (q.options[i].correct) {
+      for (let i = 0; i < q.question.options.length; i++) {
+        if (q.question.options[i].correct) {
           correctAnswer.add(i);
         }
       }
-      const answeredCorrectly = areSetsEqual(q.selectedAnswer, correctAnswer);
-      return { questionId: q.id, selectedAnswer: q.selectedAnswer, correctAnswer, answeredCorrectly };
+      const answeredCorrectly = areSetsEqual(q.question.selectedAnswer, correctAnswer);
+      return { questionId: q.question.id, questionIndex: q.index, selectedAnswer: q.question.selectedAnswer, correctAnswer, answeredCorrectly };
     });
     const correctAnswers = details.filter(({ answeredCorrectly }) => answeredCorrectly);
     const score = Math.floor((correctAnswers.length / details.length) * 100);
@@ -185,8 +200,6 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       timeTaken: currentTime - this.startTime,
       dateCompleted: currentDate,
     };
-    // Debug
-    // console.log('DONE', this.questions, data);
     forkJoin([
       this.apiService.submitResult(this.settings.id, this.settings.quizId, this.settings.quizTitle, data),
       this.apiService.updateAssessment(this.settings.id, { finished: true }),
@@ -201,7 +214,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   setActiveQuestion(index: number) {
-    const question = this.questions[index || 0];
+    const question = this.questions[index || 0].question;
     if (question.multiSelect === undefined) {
       let correctOptions = 0;
       for (const option of question.options) {
@@ -237,13 +250,13 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   handleClickNext() {
     const index =
       this.activeQuestionIndex < this.questions.length - 1 ? this.activeQuestionIndex + 1 : this.questions.length - 1;
-    this.questions[this.activeQuestionIndex] = this.activeQuestion!;
+    this.questions[this.activeQuestionIndex].question = this.activeQuestion!;
     this.setActiveQuestion(index);
   }
 
   handleClickPrev() {
     const index = this.activeQuestionIndex > 0 ? this.activeQuestionIndex - 1 : 0;
-    this.questions[this.activeQuestionIndex] = this.activeQuestion!;
+    this.questions[this.activeQuestionIndex].question = this.activeQuestion!;
     this.setActiveQuestion(index);
   }
 

@@ -41,6 +41,7 @@ export interface BaseAssesmentResult {
   score: number;
   details: {
     questionId: string;
+    questionIndex: number;
     answeredCorrectly: boolean;
     selectedAnswer: number[];
     correctAnswer: number[];
