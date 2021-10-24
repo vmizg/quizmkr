@@ -27,6 +27,7 @@ export interface BaseAssessmentSettings {
     rangeFrom: number;
     rangeTo: number;
     randomize: boolean;
+    timeLimit?: number;
 }
 
 export interface AssessmentSettings extends BaseAssessmentSettings {

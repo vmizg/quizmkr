@@ -14,11 +14,11 @@ import { ShoelaceFormService } from 'src/app/services/shoelace-form.service';
   styleUrls: ['./questions.component.scss']
 })
 export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, ComponentCanDeactivate {
+  private paramsSubscription$?: Subscription;
+  private changesSubscription$?: Subscription;
+  
   @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
   @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
-
-  $paramsSubscription?: Subscription;
-  $changesSubscription?: Subscription;
 
   questionsId?: string;
   questions: QuizQ[] = [];
@@ -43,7 +43,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     private router: Router,
   ) {
     this.loading = true;
-    this.$paramsSubscription = this.route.params.pipe(
+    this.paramsSubscription$ = this.route.params.pipe(
       concatMap((params) => {
         this.quizId = params.qid;
         return forkJoin([
@@ -76,7 +76,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
   
   ngAfterViewInit(): void {
-    this.$changesSubscription = this.questionOptions.changes.subscribe(() => {
+    this.changesSubscription$ = this.questionOptions.changes.subscribe(() => {
       if (this.existingQuestionToRender) {
         this.renderEditQuestion(this.existingQuestionToRender);
         this.existingQuestionToRender = undefined;
@@ -86,8 +86,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   ngOnDestroy(): void {
-    this.$paramsSubscription?.unsubscribe();
-    this.$changesSubscription?.unsubscribe();
+    this.paramsSubscription$?.unsubscribe();
+    this.changesSubscription$?.unsubscribe();
   }
 
   counter(i: number) {

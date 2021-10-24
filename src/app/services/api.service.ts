@@ -105,4 +105,10 @@ export class ApiService {
       map((result) => result as AssessmentSettings[])
     );
   }
+
+  getAssessment(id: string) {
+    return this.http.get(`/api/assessments/${id}`).pipe(
+      map((result) => result as AssessmentSettings)
+    );
+  }
 }

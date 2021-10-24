@@ -11,7 +11,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./assessment.component.scss']
 })
 export class AssessmentComponent implements OnInit {
-  private $paramsSubscription?: Subscription;
+  private paramsSubscription$?: Subscription;
 
   @ViewChild('totalQEl') totalQRef?: ElementRef<HTMLInputElement>;
   @ViewChild('rangeToEl') rangeToRef?: ElementRef<HTMLInputElement>;
@@ -38,7 +38,7 @@ export class AssessmentComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
-    this.$paramsSubscription = this.route.params.pipe(
+    this.paramsSubscription$ = this.route.params.pipe(
       concatMap((params) => {
         this.quizId = params.qid;
         return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
@@ -58,7 +58,7 @@ export class AssessmentComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.$paramsSubscription?.unsubscribe();
+    this.paramsSubscription$?.unsubscribe();
   }
 
   private checkRangeOvershoot() {

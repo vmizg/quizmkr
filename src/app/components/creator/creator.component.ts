@@ -13,7 +13,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class CreatorComponent implements OnInit, OnDestroy {
   @ViewChild('tagInput') tagInputRef!: ElementRef<HTMLElement>;
 
-  $paramsSubscription?: Subscription;
+  paramsSubscription$?: Subscription;
 
   id = '';
   title = '';
@@ -32,7 +32,7 @@ export class CreatorComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.$paramsSubscription = combineLatest([this.route.params, this.route.queryParams]).pipe(
+    this.paramsSubscription$ = combineLatest([this.route.params, this.route.queryParams]).pipe(
       concatMap(([params, queryParams]) => {
         if (params.qid) {
           if (queryParams.prev === 'quizzes') {
@@ -55,7 +55,7 @@ export class CreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.$paramsSubscription?.unsubscribe();
+    this.paramsSubscription$?.unsubscribe();
   }
 
   handleTitleInput(e: Event) {

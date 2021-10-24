@@ -1,1 +1,49 @@
-<p>running works!</p>
+<div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl" *ngIf="activeQuestion">
+    <sl-card>
+        <div class="text-2xl">
+            {{ settings.quizTitle }}
+        </div>
+    </sl-card>
+    <sl-card>
+        <sl-form style="display: contents;">
+            <div class="flex flex-col gap-2">
+                <div class="flex flex-row justify-center items-center gap-2 text-xl">
+                    <sl-badge pill>{{ activeQuestionIndex + 1 }}</sl-badge>
+                    <span>{{ activeQuestion.title }}</span>
+                </div>
+                <ng-container *ngIf="!activeQuestion.multiSelect">
+                    <span>Select one option:</span>
+                    <sl-radio-group label="Select an option" no-fieldset (sl-change)="handleAnswerInput($event)">
+                        <sl-radio
+                            *ngFor="let option of activeQuestion.options; let i = index"
+                            style="display: flex; height: 2rem; margin-bottom: 0;"
+                            [value]="i"
+                            [checked]="activeQuestion.selectedAnswerIndex === i">
+                            {{ alphabet[i] }}. {{ option.title }}
+                        </sl-radio>
+                    </sl-radio-group>
+                </ng-container>
+                <ng-container *ngIf="activeQuestion.multiSelect">
+                    <span>Select all that apply:</span>
+                    <div class="flex flex-col">
+                        <sl-checkbox
+                            *ngFor="let option of activeQuestion.options; let i = index"
+                            style="display: flex; height: 2rem;"
+                            [name]="'option-' + i"
+                            [checked]="activeQuestion.selectedAnswerIndex ? activeQuestion.selectedAnswerIndex[i] : false"
+                            (sl-change)="handleAnswerInput($event, i)">
+                            {{ alphabet[i] }}. {{ option.title }}
+                        </sl-checkbox>
+                    </div>
+                </ng-container>
+            </div>
+        </sl-form>
+    </sl-card>
+    <sl-card>
+        <div class="flex flex-row justify-between">
+            <sl-button (click)="handleClickPrev()" [style]="{ opacity: activeQuestionIndex > 0 ? 1 : 0 }">Previous</sl-button>
+            <sl-button type="primary" (click)="handleClickNext()" [style]="{ opacity: activeQuestionIndex < questions.length - 1 ? 1 : 0 }">Next</sl-button>
+            <sl-button type="success" (click)="handleClickSubmit()" [hidden]="activeQuestionIndex < questions.length - 1">Submit</sl-button>
+        </div>
+    </sl-card>
+</div>

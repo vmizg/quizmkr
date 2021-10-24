@@ -10,7 +10,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  private $clockSubscription?: Subscription;
+  private clockSubscription$?: Subscription;
 
   loadingInProgress = true;
   inProgress: AssessmentSettings[] = [];
@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(private apiService: ApiService) { }
 
   ngOnInit() {
-    this.$clockSubscription = interval(1000).pipe(
+    this.clockSubscription$ = interval(1000).pipe(
       tap(() => this.currentDate = new Date())
     ).subscribe();
 
@@ -53,6 +53,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.$clockSubscription?.unsubscribe();
+    this.clockSubscription$?.unsubscribe();
   }
 }

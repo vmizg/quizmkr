@@ -225,12 +225,12 @@
           ]
         },
         {
-          "id": "7e3a1c7a",
+          "id": "4df93902",
           "title": "23123",
           "options": [
             {
               "title": "444",
-              "correct": false
+              "correct": true
             },
             {
               "title": "123123123",
@@ -254,6 +254,42 @@
       "quizId": "d9981502",
       "quizTitle": "Naujas quizzazzle",
       "id": "fb7f6f12"
+    },
+    {
+      "randomize": true,
+      "totalQuestions": 2,
+      "rangeFrom": 1,
+      "rangeTo": 2,
+      "quizId": "a4d45d3b",
+      "quizTitle": "My quiz is this",
+      "id": "cec43b13"
+    },
+    {
+      "randomize": false,
+      "totalQuestions": 2,
+      "rangeFrom": 1,
+      "rangeTo": 2,
+      "quizId": "a4d45d3b",
+      "quizTitle": "My quiz is this",
+      "id": "27574a94"
+    },
+    {
+      "randomize": false,
+      "totalQuestions": 2,
+      "rangeFrom": 1,
+      "rangeTo": 2,
+      "quizId": "a4d45d3b",
+      "quizTitle": "My quiz is this",
+      "id": "bba80bae"
+    },
+    {
+      "randomize": false,
+      "totalQuestions": 2,
+      "rangeFrom": 1,
+      "rangeTo": 2,
+      "quizId": "a4d45d3b",
+      "quizTitle": "My quiz is this",
+      "id": "1fbaa11b"
     }
   ]
 }
