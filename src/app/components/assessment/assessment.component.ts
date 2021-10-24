@@ -41,14 +41,19 @@ export class AssessmentComponent implements OnInit {
           return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
         }),
         tap(([quiz, questions]) => {
-          this.quizTitle = quiz.title;
-          this.quizQuestions = questions?.questions || [];
-          this.settings.totalQuestions = this.quizQuestions.length;
-          this.settings.rangeTo = this.settings.totalQuestions;
           this.loading = false;
+          if (quiz) {
+            this.quizTitle = quiz.title;
+            this.quizQuestions = questions?.questions || [];
+            this.settings.totalQuestions = this.quizQuestions.length;
+            this.settings.rangeTo = this.settings.totalQuestions;
+          } else {
+            this.router.navigate(['/quizzes']);
+          }
         }),
         catchError(() => {
           this.loading = false;
+          this.router.navigate(['/quizzes']);
           return EMPTY;
         })
       )
@@ -103,7 +108,7 @@ export class AssessmentComponent implements OnInit {
       (result) => {
         this.beginning = false;
         if (result) {
-          this.router.navigate(['quizzes', this.quizId, 'assessment', result.id], {
+          this.router.navigate(['/quizzes', this.quizId, 'assessment', result.id], {
             state: { settings: this.settings, questions: this.quizQuestions },
           });
         }

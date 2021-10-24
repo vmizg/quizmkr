@@ -24,7 +24,7 @@ export class QuizzesComponent implements OnInit {
   }
 
   handleEditQuiz(quiz: BaseQuiz): void {
-    this.router.navigate(['creator', quiz.id, 'questions']);
+    this.router.navigate(['/creator', quiz.id, 'questions']);
   }
 
   handleDeleteQuiz(quiz: BaseQuiz): void {
@@ -45,6 +45,6 @@ export class QuizzesComponent implements OnInit {
   }
 
   handleBeginAssessment(quiz: BaseQuiz): void {
-    this.router.navigate(['quizzes', quiz.id]);
+    this.router.navigate(['/quizzes', quiz.id]);
   }
 }

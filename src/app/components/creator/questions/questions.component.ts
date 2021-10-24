@@ -61,13 +61,18 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
           return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
         }),
         tap(([quiz, questions]) => {
-          this.quizTitle = quiz.title;
-          this.questionsId = questions?.id;
-          this.questions = questions?.questions || [];
           this.loading = false;
+          if (quiz) {
+            this.quizTitle = quiz.title;
+            this.questionsId = questions?.id;
+            this.questions = questions?.questions || [];
+          } else {
+            this.router.navigate(['/creator']);
+          }
         }),
         catchError(() => {
           this.loading = false;
+          this.router.navigate(['/creator']);
           return EMPTY;
         })
       )
@@ -109,7 +114,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   handleEditQuiz() {
-    this.router.navigate(['creator', this.quizId]);
+    this.router.navigate(['/creator', this.quizId]);
   }
 
   handleEdit() {

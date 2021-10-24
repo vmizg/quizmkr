@@ -18,8 +18,10 @@
     </div>
   </sl-card>
   <sl-card *ngIf="!loading && (!quizQuestions || quizQuestions.length === 0)">
-    <span>You have not added any questions for this quiz yet.</span>
-    <a [routerLink]="['creator', quizId]" style="color: rgb(var(--sl-color-primary-600))">Add some by clicking here!</a>
+    <div class="flex flex-col">
+      <span>You have not added any questions for this quiz yet.</span>
+    <a [routerLink]="['/creator', quizId]" style="color: rgb(var(--sl-color-primary-600))">Add some by clicking here!</a>
+    </div>
   </sl-card>
   <sl-card *ngIf="quizQuestions.length > 0">
     <div slot="header" class="font-semibold">Options</div>
@@ -54,7 +56,7 @@
             class="w-full"
             (sl-input)="handleRangeFromInput($event)"
             min="1"
-            [max]="settings.rangeTo < settings.totalQuestions ? settings.rangeTo : settings.totalQuestions"
+            [max]="settings.rangeTo"
             [value]="settings.rangeFrom"
           >
           </sl-input>
@@ -79,19 +81,20 @@
   <sl-card *ngIf="quizQuestions.length > 0">
     <div class="flex flex-col gap-4">
       <div *ngIf="!settings.randomize && overshoot" class="flex flex-col">
-        <span class="text-l font-semibold" style="color: rgb(var(--sl-color-amber-400))">Warning!</span>
+        <span class="text-l font-semibold" style="color: rgb(var(--sl-color-amber-500))">Warning!</span>
         <div class="flex flex-col text-sm">
           <span>You have selected a range that contains more than {{ settings.totalQuestions }} questions.</span>
           <span
             >The system will only pick the first {{ settings.totalQuestions }}, starting at question
             {{ settings.rangeFrom }}.</span
           >
+          <span>Select "Randomize questions" to pick from the whole range.</span>
         </div>
       </div>
       <div class="flex flex-col">
         <span class="text-l font-semibold">Summary</span>
         <div class="text-sm">
-          A total of {{ settings.totalQuestions }} questions are going to be picked
+          A total of {{ settings.totalQuestions > (settings.rangeTo - settings.rangeFrom + 1) ? settings.rangeTo - settings.rangeFrom + 1 : settings.totalQuestions }} questions are going to be picked
           {{ settings.randomize ? 'in a random order' : 'in sequence' }} in the range of {{ settings.rangeFrom }} to
           {{ settings.rangeTo }}.
         </div>

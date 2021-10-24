@@ -4,6 +4,7 @@ import { Subscription, forkJoin } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
 import { AssessmentSettings, BaseAssesmentResult, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
+import { getRandomInteger } from 'src/app/utilities';
 
 interface PQuestion extends QuizQ {
   completed?: boolean;
@@ -66,6 +67,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
             this.router.navigate(['/quizzes', this.settings.quizId]);
             return;
           }
+          this.prepareQuestions();
           this.setActiveQuestion(0);
           this.startTime = new Date().getTime();
         })
@@ -76,6 +78,30 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.paramsSubscription$?.unsubscribe();
     this.stateSubscription$?.unsubscribe();
+  }
+
+  private prepareQuestions() {
+    const totalQuestions = this.settings.totalQuestions || this.questions.length;
+    const rangeFrom = (this.settings.rangeFrom || 1) - 1; // 0-indexed
+    const rangeTo = (this.settings.rangeTo || this.questions.length);
+    this.questions = this.questions.slice(rangeFrom, rangeTo);
+    if (!this.settings.randomize) {
+      this.questions = this.questions.slice(0, totalQuestions - 1);
+    } else if (this.questions.length < totalQuestions) {
+      // This can happen in the case where a smaller range was defined than the total questions asked
+      return;
+    } else {
+      const questions = [];
+      const indexes: { [key: string]: boolean } = {};
+      while (questions.length < totalQuestions) {
+        let index = getRandomInteger(0, totalQuestions - 1);
+        if (indexes[index]) {
+          continue;
+        }
+        questions.push(this.questions[index]);
+        indexes[index] = true;
+      }
+    }
   }
 
   private checkIfFinished() {

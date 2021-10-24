@@ -46,3 +46,19 @@ export function invertColor(hex: string, bw: boolean) {
   // pad each with zeros and return
   return '#' + padZero(r) + padZero(g) + padZero(b);
 }
+
+/**
+ * Generate a random number between min (inclusive) and max (inclusive)
+ * As seen at https://stackoverflow.com/a/42321673/6454252
+ * @param min min number
+ * @param max max number
+ * @returns 
+ */
+export function getRandomInteger(min: number, max: number) {
+  const randomBuffer = new Uint32Array(1);
+  window.crypto.getRandomValues(randomBuffer);
+  const randomNumber = randomBuffer[0] / (0xffffffff + 1);
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(randomNumber * (max - min + 1)) + min;
+}

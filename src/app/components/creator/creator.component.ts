@@ -128,10 +128,10 @@ export class CreatorComponent implements OnInit, OnDestroy {
       }
       switch (this.redirectTo) {
         case 'quizzes':
-          this.router.navigate(['quizzes']);
+          this.router.navigate(['/quizzes']);
           break;
         default:
-          this.router.navigate(['creator', result.id, 'questions']);
+          this.router.navigate(['/creator', result.id, 'questions']);
           break;
       }
     });

@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe();
 
     this.apiService
-      .getAssessments('?_order=desc&_limit=10')
+      .getAssessments('?_order=desc&_limit=8&finished_ne=true')
       .pipe(
         tap((data) => {
           this.loadingInProgress = false;
@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe();
 
     this.apiService
-      .getQuizzes('?_order=desc&_limit=5')
+      .getQuizzes('?_order=desc&_limit=8')
       .pipe(
         tap((data) => {
           this.loadingLatest = false;
@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe();
 
     this.apiService
-      .getResults('?_order=desc&_limit=10')
+      .getResults('?_order=desc&_limit=8')
       .pipe(
         tap((data) => {
           this.loadingResults = false;
