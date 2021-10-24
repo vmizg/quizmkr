@@ -27,6 +27,7 @@ export class AssessmentComponent implements OnInit {
     totalQuestions: 1,
     rangeFrom: 1,
     rangeTo: 1,
+    timeLimit: 0,
   };
   overshoot = false;
 
@@ -69,6 +70,11 @@ export class AssessmentComponent implements OnInit {
       this.settings.rangeTo - this.settings.rangeFrom + 1 - this.settings.totalQuestions > 0 ? true : false;
   }
 
+  handleTimeLimitInput(e: Event) {
+    const timeLimit = Number((e.target as HTMLInputElement).value);
+    this.settings.timeLimit = timeLimit;
+  }
+
   handleTotalQuestionsInput(e: Event) {
     const totalQuestions = Number((e.target as HTMLInputElement).value);
     if (totalQuestions <= this.quizQuestions.length) {
@@ -104,6 +110,7 @@ export class AssessmentComponent implements OnInit {
 
   handleBegin() {
     this.beginning = true;
+    console.log(this.settings)
     this.apiService.createAssessment(this.quizId, this.quizTitle, this.settings).subscribe(
       (result) => {
         this.beginning = false;

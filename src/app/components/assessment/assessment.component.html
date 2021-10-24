@@ -26,6 +26,10 @@
   <sl-card *ngIf="quizQuestions.length > 0">
     <div slot="header" class="font-semibold">Options</div>
     <div class="flex flex-col gap-4">
+      <div class="flex flex-row gap-4 items-end">
+        <sl-input label="Time limit (0 - no limit)" (sl-input)="handleTimeLimitInput($event)" [value]="settings.timeLimit" type="number" min="0" max="300"></sl-input>
+        minutes
+      </div>
       <div class="flex flex-row gap-4">
         <sl-input
           class="w-1/2"

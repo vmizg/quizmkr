@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, forkJoin } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
+import { Subscription, forkJoin, of, EMPTY, interval, timer, Observable, Subject } from 'rxjs';
+import { concatMap, map, takeUntil, tap } from 'rxjs/operators';
 import { AssessmentSettings, BaseAssesmentResult, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { getRandomInteger } from 'src/app/utilities';
@@ -30,6 +30,8 @@ interface PCheckboxQuestion extends PQuestion {
 export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private paramsSubscription$?: Subscription;
   private stateSubscription$?: Subscription;
+  private interval$?: Subscription;
+  private timeLimit$ = new Subject();
 
   alphabet = 'ABCDEFGHIJKLMNO';
   settings: AssessmentSettings = {
@@ -41,11 +43,14 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     rangeTo: 1,
     randomize: false,
     finished: false,
+    timeLimit: 0,
   };
   questions: PQuestion[] = [];
   activeQuestion?: PRadioQuestion | PCheckboxQuestion;
   activeQuestionIndex = 0;
   startTime: number = 0;
+  timeLeft?: Date;
+  dateFmt = 'mm:ss';
 
   constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
 
@@ -70,6 +75,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           this.prepareQuestions();
           this.setActiveQuestion(0);
           this.startTime = new Date().getTime();
+          this.setupTimer();
         })
       )
       .subscribe();
@@ -78,6 +84,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.paramsSubscription$?.unsubscribe();
     this.stateSubscription$?.unsubscribe();
+    this.interval$?.unsubscribe();
   }
 
   private prepareQuestions() {
@@ -136,18 +143,69 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         let q = item as PCheckboxQuestion;
         for (let i = 0; i < q.options.length; i++) {
           answeredCorrectly =
-            (answeredCorrectly && q.options[i].correct && q.selectedAnswerIndex[i]) ||
-            (!q.options[i].correct && !q.selectedAnswerIndex[i]);
+            (answeredCorrectly && q.options[i].correct && q.selectedAnswerIndex[i] === true) ||
+            (!q.options[i].correct && q.selectedAnswerIndex[i] === false);
         }
       } else {
         let q = item as PRadioQuestion;
-        answeredCorrectly = !!q.options[q.selectedAnswerIndex].correct;
+        answeredCorrectly = !!q.options[q.selectedAnswerIndex]?.correct;
       }
       return { questionId: item.id, answeredCorrectly };
     });
     const correctAnswers = details.filter(({ answeredCorrectly }) => answeredCorrectly);
     const score = Math.floor((correctAnswers.length / details.length) * 100);
     return { details, score };
+  }
+
+  private setTimeLeft(timeLimit: number) {
+    const currentDate = new Date().getTime();
+    this.timeLeft = new Date((timeLimit * 60 * 1000 + 1000) + this.startTime - currentDate);
+  }
+
+  private setupTimer() {
+    const timeLimit = this.settings.timeLimit;
+    if (timeLimit) {
+      this.dateFmt = timeLimit > 60 ? 'h:mm:ss': 'mm:ss';
+      this.setTimeLeft(timeLimit);
+      this.interval$ = interval(1000).pipe(
+        takeUntil(this.timeLimit$),
+        tap(() => {
+          this.setTimeLeft(timeLimit);
+          if (this.timeLeft && this.timeLeft.getTime() <= 0) {
+            this.timeLimit$.next();
+            this.timeLimit$.complete();
+          }
+        })
+      ).subscribe(() => {}, () => {}, () => {
+        alert('TIME IS UP! Your quiz will now be submitted');
+        this.submitAssessment();
+      });
+    }
+  }
+  
+  private submitAssessment() {
+    const currentDate = new Date();
+    const currentTime = currentDate.getTime();
+    const { score, details } = this.calculateScore();
+    const data: BaseAssesmentResult = {
+      score: score,
+      details: details,
+      timeTaken: currentTime - this.startTime,
+      dateCompleted: currentDate,
+    };
+    // Debug
+    // console.log('DONE', this.questions, data);
+    forkJoin([
+      this.apiService.submitResult(this.settings.id, this.settings.quizId, this.settings.quizTitle, data),
+      this.apiService.updateAssessment(this.settings.id, { finished: true }),
+    ]).subscribe(([result1, result2]) => {
+      if (result1 && result2) {
+        alert(
+          'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
+        );
+        this.router.navigate(['/home'], { queryParams: { assessment: this.settings.id } });
+      }
+    });
   }
 
   setActiveQuestion(index: number) {
@@ -208,27 +266,13 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       return;
     }
     this.handleClickNext();
-    const currentDate = new Date();
-    const currentTime = currentDate.getTime();
-    const { score, details } = this.calculateScore();
-    const data: BaseAssesmentResult = {
-      score: score,
-      details: details,
-      timeTaken: currentTime - this.startTime,
-      dateCompleted: currentDate,
-    };
-    // Debug
-    // console.log('DONE', this.questions, data);
-    forkJoin([
-      this.apiService.submitResult(this.settings.id, this.settings.quizId, this.settings.quizTitle, data),
-      this.apiService.updateAssessment(this.settings.id, { finished: true }),
-    ]).subscribe(([result1, result2]) => {
-      if (result1 && result2) {
-        alert(
-          'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
-        );
-        this.router.navigate(['/home'], { queryParams: { assessment: this.settings.id } });
-      }
-    });
+    this.submitAssessment();
+  }
+
+  handleAbandon() {
+    if (!confirm('WARNING: if you abandon now, quiz progress will not be saved and you will have to take it again. Are you sure you want to do that?')) {
+      return;
+    }
+    this.router.navigate(['/quizzes']);
   }
 }
