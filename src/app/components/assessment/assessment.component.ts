@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Subscription } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
+import { EMPTY, forkJoin, Subscription } from 'rxjs';
+import { catchError, concatMap, tap } from 'rxjs/operators';
 import { BaseAssessmentSettings, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -19,6 +19,7 @@ export class AssessmentComponent implements OnInit {
   quizId = '';
   quizTitle = '';
   quizQuestions: QuizQ[] = [];
+  loading = true;
   beginning = false;
 
   settings: BaseAssessmentSettings = {
@@ -36,6 +37,7 @@ export class AssessmentComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loading = true;
     this.$paramsSubscription = this.route.params.pipe(
       concatMap((params) => {
         this.quizId = params.qid;
@@ -46,6 +48,11 @@ export class AssessmentComponent implements OnInit {
         this.quizQuestions = questions?.questions || [];
         this.settings.totalQuestions = this.quizQuestions.length;
         this.settings.rangeTo = this.settings.totalQuestions;
+        this.loading = false;
+      }),
+      catchError(() => {
+        this.loading = false;
+        return EMPTY;
       })
     ).subscribe();
   }

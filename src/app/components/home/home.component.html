@@ -17,9 +17,14 @@
             <div slot="header" class="font-semibold">
                 Assessments in progress
             </div>
-            <div class="grid gap-4">
-                <div *ngFor="let asm of inProgress; let i = index">
-                    <a [routerLink]="['/quizzes', asm.quizId, 'assessment', asm.id]" style="color: rgb(var(--sl-color-primary-600))">🟡 ({{ asm.id }}) {{ asm.quizTitle }}</a>
+            <div class="flex flex-col gap-4">
+                <div *ngIf="loadingInProgress" class="flex flex-row items-center gap-2">
+                    <sl-spinner></sl-spinner>
+                    <span>Loading...</span>
+                </div>
+                <div *ngFor="let asm of inProgress; let i = index" class="flex flex-row items-center gap-2">
+                    <sl-icon name="record-circle" style="color: rgb(var(--sl-color-amber-500))"></sl-icon>
+                    <a [routerLink]="['/quizzes', asm.quizId, 'assessment', asm.id]" style="color: rgb(var(--sl-color-primary-600))">({{ asm.id }}) {{ asm.quizTitle }}</a>
                 </div>
             </div>
         </sl-card>
@@ -27,9 +32,14 @@
             <div slot="header" class="font-semibold">
                 Latest quizzes
             </div>
-            <div class="grid gap-4">
-                <div *ngFor="let quiz of latest; let i = index">
-                    <a [routerLink]="['/quizzes', quiz.id]" style="color: rgb(var(--sl-color-primary-600))">🧭 {{ quiz.title }}</a>
+            <div class="flex flex-col gap-4">
+                <div *ngIf="loadingLatest" class="flex flex-row items-center gap-2">
+                    <sl-spinner></sl-spinner>
+                    <span>Loading...</span>
+                </div>
+                <div *ngFor="let quiz of latest; let i = index" class="flex flex-row items-center gap-2">
+                    <sl-icon name="compass" style="color: rgb(var(--sl-color-teal-500))"></sl-icon>
+                    <a [routerLink]="['/quizzes', quiz.id]" style="color: rgb(var(--sl-color-primary-600))">{{ quiz.title }}</a>
                 </div>
             </div>
         </sl-card>

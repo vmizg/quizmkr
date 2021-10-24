@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable, Subscription } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
+import { forkJoin, Observable, Subscription, EMPTY } from 'rxjs';
+import { catchError, concatMap, tap } from 'rxjs/operators';
 import { QOption, QuizQ, QuizQuestions } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
@@ -28,6 +28,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   quizColor: string = '';
   totalOptions = 3;
   cssVars = {};
+  loading = true;
   edited = false;
   adding = false;
 
@@ -41,6 +42,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     private route: ActivatedRoute,
     private router: Router,
   ) {
+    this.loading = true;
     this.$paramsSubscription = this.route.params.pipe(
       concatMap((params) => {
         this.quizId = params.qid;
@@ -53,6 +55,11 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         this.quizTitle = quiz.title;
         this.questionsId = questions?.id;
         this.questions = questions?.questions || [];
+        this.loading = false;
+      }),
+      catchError(() => {
+        this.loading = false;
+        return EMPTY;
       })
     ).subscribe();
   }
@@ -155,24 +162,26 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
 
     let index = -1;
+    const clonedQuestions = [...this.questions];
     if (this.existingQuestion) {
-      index = this.questions.indexOf(this.existingQuestion);
+      index = clonedQuestions.indexOf(this.existingQuestion);
     }
     if (index > -1) {
-      this.questions.splice(index, 1, question);
+      clonedQuestions.splice(index, 1, question);
     } else {
-      this.questions.push(question);
+      clonedQuestions.push(question);
     }
     let $obs: Observable<QuizQuestions | null>;
     if (!this.questionsId) {
       // No questions ID means that no questions have been created yet
-      $obs = this.apiService.createQuestions(this.quizId, this.questions);
+      $obs = this.apiService.createQuestions(this.quizId, clonedQuestions);
     } else {
-      $obs = this.apiService.updateQuestions(this.questionsId, this.questions);
+      $obs = this.apiService.updateQuestions(this.questionsId, clonedQuestions);
     }
     $obs.subscribe((result) => {
       if (result) {
         this.questionsId = result.id;
+        this.questions = clonedQuestions;
         this.resetForm(formControls);
         this.newQuiz = false;
       }

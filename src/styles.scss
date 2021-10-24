@@ -42,3 +42,17 @@ app-root {
   overflow: overlay;
   height: 100%;
 }
+
+::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--sl-color-gray-300)); /* color of the tracking area */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--sl-color-gray-500)); /* color of the scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 3px solid rgb(var(--sl-color-gray-300)); /* creates padding around scroll thumb */
+}

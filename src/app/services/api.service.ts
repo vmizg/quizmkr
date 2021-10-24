@@ -29,7 +29,7 @@ export class ApiService {
     );
   }
 
-  getQuizzes(params?: string) {
+  getQuizzes(params = '') {
     return this.http.get(`/api/quizzes${params}`).pipe(
       map((result) => result as BaseQuiz[]),
       catchError((err: HttpErrorResponse) => {

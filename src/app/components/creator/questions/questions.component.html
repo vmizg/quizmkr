@@ -3,16 +3,16 @@
         <sl-card>
             <div class="flex flex-row justify-between">
                 <div class="flex flex-row items-center gap-4 text-2xl font-semibold">
-                    <ng-container *ngIf="!quizTitle">
+                    <ng-container *ngIf="loading">
                         <sl-spinner></sl-spinner>
                         <span>Loading...</span>
                     </ng-container>
-                    <ng-container *ngIf="quizTitle">
+                    <ng-container *ngIf="!loading && quizTitle">
                         <span>{{ quizTitle }}</span>
                         <!-- <sl-color-picker *ngIf="quizTitle" value="{{ quizColor }}" no-format-toggle (sl-change)="handleColorChange($event)">
                             {{ quizColor }}
                         </sl-color-picker> -->
-                        <sl-icon-button *ngIf="quizTitle" name="pencil" label="Edit quiz" (click)="handleEditQuiz()" class="edit-quiz-button"></sl-icon-button>
+                        <sl-icon-button name="pencil" label="Edit quiz" (click)="handleEditQuiz()" class="edit-quiz-button"></sl-icon-button>
                     </ng-container>
                 </div>
                 <div class="flex flex-row gap-4 items-center text-l">
@@ -70,7 +70,7 @@
     <div class="flex flex-col gap-2 w-full xl:w-2/5">
         <sl-card>
             <div class="flex flex-row justify-between items-center gap-4">
-                <div class="flex flex-row items-center gap-4 text-2xl">
+                <div class="flex flex-row items-center gap-4 text-2xl font-semibold">
                     <span>Questions in quiz</span>
                 </div>
                 <div class="flex flex-row items-center gap-4 text-l">
@@ -80,19 +80,23 @@
                 </div>
             </div>
         </sl-card>
-        <sl-card *ngFor="let q of questions; let i = index">
-            <div class="flex flex-row items-center justify-between gap-4">
-                <div>
-                    <span>{{ i + 1 }}. {{ q.title }}</span>
-                    <span *ngIf="existingQuestion && q.id === existingQuestion.id" class="italic font-bold"> (editing)</span>
-                </div>
-                <div class="flex flex-row gap-2">
-                    <sl-button type="warning" circle outline (click)="handleEditQuestion(q)"><sl-icon name="pencil-square"></sl-icon></sl-button>
-                    <sl-button type="danger" circle outline (click)="handleDeleteQuestion(q)" tabindex="-1"><sl-icon name="trash"></sl-icon></sl-button>
-                </div>
+        <cdk-virtual-scroll-viewport itemSize="5.5rem" class="question-list-container" *ngIf="questions && questions.length > 0">
+            <div class="flex flex-col gap-2">
+                <sl-card *cdkVirtualFor="let q of questions; let i = index">
+                    <div class="flex flex-row items-center justify-between gap-4">
+                        <div>
+                            <span>{{ i + 1 }}. {{ q.title }}</span>
+                            <span *ngIf="existingQuestion && q.id === existingQuestion.id" class="italic font-bold"> (editing)</span>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <sl-button type="warning" circle outline (click)="handleEditQuestion(q)"><sl-icon name="pencil-square"></sl-icon></sl-button>
+                            <sl-button type="danger" circle outline (click)="handleDeleteQuestion(q)" tabindex="-1"><sl-icon name="trash"></sl-icon></sl-button>
+                        </div>
+                    </div>
+                </sl-card>
             </div>
-        </sl-card>
-        <sl-card *ngIf="!questions || questions.length === 0">
+        </cdk-virtual-scroll-viewport>
+        <sl-card *ngIf="!loading && (!questions || questions.length === 0)">
             <div class="flex flex-col text-gray-500">
                 <span>You have not added any questions for this quiz yet.</span>
             </div>
