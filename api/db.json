@@ -1,3 +1,39 @@
 {
-  "quizzes": []
+  "quizzes": [
+    {
+      "title": "My other quiz",
+      "description": "ASDASD",
+      "tags": [
+        "1829839",
+        "12389123"
+      ],
+      "id": "q-c1140a89",
+      "questions": [
+        {
+          "id": "e5ac9e23",
+          "title": "Who is the best wife?",
+          "options": [
+            {
+              "title": "Maria",
+              "correct": true
+            },
+            {
+              "title": "Ollie",
+              "correct": true
+            },
+            {
+              "title": "DFoofusu",
+              "correct": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "123123",
+      "description": "4123123123",
+      "tags": [],
+      "id": "e7434725"
+    }
+  ]
 }
