@@ -16,7 +16,7 @@
   <sl-card>
     <div slot="header" class="font-semibold">Details</div>
     <div class="flex flex-col gap-4">
-      <sl-input label="Title" (sl-input)="handleTitleInput($event)" [value]="title" required></sl-input>
+      <sl-input autofocus label="Title" (sl-input)="handleTitleInput($event)" [value]="title" required></sl-input>
       <sl-textarea label="Description" (sl-input)="handleDescInput($event)" [value]="desc"> </sl-textarea>
     </div>
   </sl-card>

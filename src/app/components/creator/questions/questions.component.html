@@ -35,7 +35,7 @@
       <sl-card>
         <div slot="header" class="font-semibold">{{ existingQuestion ? 'Edit' : 'Add' }} a question</div>
         <div class="grid gap-4">
-          <sl-textarea name="title" label="Question statement" (sl-input)="handleEdit()" required> </sl-textarea>
+          <sl-textarea autofocus name="title" label="Question statement" (sl-input)="handleEdit()" required> </sl-textarea>
           <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
             <sl-input
               style="width: 70%"
