@@ -34,6 +34,22 @@ sl-color-picker::part(trigger) {
   }
 }
 
+.question-image {
+  img {
+    border-radius: var(--sl-border-radius-medium);
+  }
+
+  sl-button {
+    opacity: 0;
+  }
+
+  &:hover {
+    sl-button {
+      opacity: 1;
+    }
+  }
+}
+
 .question-list-container {
   height: 500px;
 }

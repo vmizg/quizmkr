@@ -18,6 +18,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
 import { generateColor, generateId, invertColor } from 'src/app/utilities';
 import { ShoelaceFormService } from 'src/app/services/shoelace-form.service';
+import { ImageService } from 'src/app/services/image.service';
 
 @Component({
   selector: 'app-questions',
@@ -33,6 +34,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
   questionsId?: string;
   questions: QuizQ[] = [];
+  image: string = '';
   newQuiz = false;
   quizId: string = '';
   quizTitle: string = '';
@@ -47,8 +49,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   existingQuestionToRender?: QuizQ;
 
   constructor(
-    private apiService: ApiService,
     private cd: ChangeDetectorRef,
+    private apiService: ApiService,
+    private imageService: ImageService,
     private formService: ShoelaceFormService,
     private route: ActivatedRoute,
     private router: Router
@@ -279,6 +282,24 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       });
     }
   }
+  
+  handleUploadImage(e: Event) {
+    const inputEl = e.target as HTMLInputElement;
+    if (!inputEl) {
+      return;
+    }
+    const [file] = Array.from(inputEl.files || []);
+    if (!file) {
+      return;
+    }
+    this.imageService.resizeImage(file, { maxSize: 400 }).subscribe(({ dataUrl }) => {
+      this.image = dataUrl;
+      inputEl.value = '';
+    }, (err) => {
+      console.log(err);
+      inputEl.value = '';
+    });
+}
 
   updateColor(color: string) {
     this.quizColor = color;
