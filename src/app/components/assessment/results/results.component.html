@@ -45,8 +45,8 @@
         }"
       >
         <div class="flex flex-col w-full gap-2">
-          <div class="flex flex-row items-center gap-2 text-xl">
-            <sl-badge type="neutral" pill>{{ i + 1 }}</sl-badge>
+          <div class="flex flex-row items-start gap-2 text-xl">
+            <sl-badge class="mt-1" type="neutral" pill>{{ i + 1 }}</sl-badge>
             {{ result.questionTitle }}
           </div>
           <div *ngIf="result.imageURI">

@@ -8,15 +8,14 @@
   <sl-card>
     <sl-form style="display: contents">
       <div class="flex flex-col gap-2">
-        <div class="flex flex-row items-center mb-4 gap-2 text-xl">
-          <sl-badge pill>{{ activeQuestionIndex + 1 }}</sl-badge>
+        <div class="flex flex-row items-start mb-4 gap-2 text-xl">
+          <sl-badge class="mt-1" pill>{{ activeQuestionIndex + 1 }}</sl-badge>
           <span>{{ activeQuestion.title }}</span>
         </div>
         <div *ngIf="activeQuestion.imageURI">
           <img [src]="activeQuestion.imageURI" class="max-h-64" />
         </div>
         <ng-container *ngIf="!activeQuestion.multiSelect">
-          <span>Select one option:</span>
           <sl-radio-group label="Select an option" no-fieldset (sl-change)="handleAnswerInput($event)">
             <sl-radio
               *ngFor="let option of activeQuestion.options; let i = index"
@@ -27,9 +26,9 @@
               {{ alphabet[i] }}. {{ option.title }}
             </sl-radio>
           </sl-radio-group>
+          <span class="italic text-sm mt-2">(Select one option)</span>
         </ng-container>
         <ng-container *ngIf="activeQuestion.multiSelect">
-          <span>Select all that apply:</span>
           <div class="flex flex-col">
             <sl-checkbox
               *ngFor="let option of activeQuestion.options; let i = index"
@@ -41,6 +40,7 @@
               {{ alphabet[i] }}. {{ option.title }}
             </sl-checkbox>
           </div>
+          <span class="italic text-sm mt-2">(Select all that apply)</span>
         </ng-container>
       </div>
     </sl-form>
