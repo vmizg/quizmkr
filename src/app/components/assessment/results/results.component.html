@@ -42,6 +42,9 @@
                         <sl-badge type="neutral" pill>{{ i + 1 }}</sl-badge>
                         {{ result.questionTitle }}
                     </div>
+                    <div *ngIf="result.imageURI">
+                      <img [src]="result.imageURI" class="ml-8 max-h-32" />
+                    </div>
                     <div *ngFor="let option of result.options; let j = index" class="flex flex-row items-center gap-4 ml-8">
                         <div class="flex w-8 text-xl">
                             <sl-icon *ngIf="option.correct" name="check-circle" style="color: rgb(var(--sl-color-green-500))"></sl-icon>

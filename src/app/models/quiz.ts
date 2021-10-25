@@ -7,6 +7,7 @@ export interface QuizQ {
   id: string;
   title: string;
   options: QOption[];
+  imageURI?: string;
 }
 
 export interface QuizQuestions {

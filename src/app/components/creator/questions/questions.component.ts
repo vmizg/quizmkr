@@ -148,6 +148,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       id: generateId(),
       title: title,
       options: [],
+      ...(this.image ? { imageURI: this.image } : {}),
     };
     const titleMap: any = {};
     let totalCorrect = 0;
@@ -258,6 +259,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         correctIndex++;
       }
     }
+
+    if (question.imageURI) {
+      this.image = question.imageURI;
+    }
   }
 
   handleDeleteQuestion(question: QuizQ): void {
@@ -316,5 +321,6 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.totalOptions = 3;
     this.existingQuestion = undefined;
     this.edited = false;
+    this.image = '';
   }
 }

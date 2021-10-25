@@ -2,13 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, forkJoin, of, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { AssessmentResult, QOption } from 'src/app/models/quiz';
+import { AssessmentResult, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
-interface Result {
+interface Result extends QuizQ {
   questionTitle: string,
   questionId: string,
-  options: QOption[],
   answeredCorrectly: boolean,
   correctAnswer: number[],
   selectedAnswer: number[],

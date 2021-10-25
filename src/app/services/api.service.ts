@@ -19,24 +19,6 @@ import { generateId } from '../utilities';
 export class ApiService {
   constructor(private http: HttpClient) {}
 
-  createQuiz(quiz: Omit<BaseQuiz, 'id'>) {
-    const id = generateId();
-    const data: BaseQuiz = { ...quiz, id };
-    return this.http.post('/api/quizzes', data).pipe(
-      map(() => data),
-      catchError(() => of(null))
-    );
-  }
-
-  createQuestions(quizId: string, questions: QuizQ[]) {
-    const id = generateId();
-    const data: QuizQuestions = { id, quizId, questions };
-    return this.http.post(`/api/quizzes/${quizId}/questions`, data).pipe(
-      map(() => data),
-      catchError(() => of(null))
-    );
-  }
-
   getQuizzes(params = '') {
     return this.http.get(`/api/quizzes${params}`).pipe(
       map((result) => result as BaseQuiz[]),
@@ -49,8 +31,25 @@ export class ApiService {
     );
   }
 
+  createQuiz(quiz: Omit<BaseQuiz, 'id'>) {
+    const id = generateId();
+    const data: BaseQuiz = { ...quiz, id };
+    return this.http.post('/api/quizzes', data).pipe(
+      map(() => data),
+      catchError(() => of(null))
+    );
+  }
+
   getQuiz(id: string) {
     return this.http.get(`/api/quizzes/${id}`).pipe(map((result) => result as BaseQuiz));
+  }
+
+  updateQuiz(id: string, data: any) {
+    return this.http.patch(`/api/quizzes/${id}`, data).pipe(map((result) => result as BaseQuiz));
+  }
+
+  deleteQuiz(id: string) {
+    return this.http.delete(`/api/quizzes/${id}`).pipe(map(() => true));
   }
 
   getQuestions(quizId: string) {
@@ -70,8 +69,13 @@ export class ApiService {
     );
   }
 
-  updateQuiz(id: string, data: any) {
-    return this.http.patch(`/api/quizzes/${id}`, data).pipe(map((result) => result as BaseQuiz));
+  createQuestions(quizId: string, questions: QuizQ[]) {
+    const id = generateId();
+    const data: QuizQuestions = { id, quizId, questions };
+    return this.http.post(`/api/quizzes/${quizId}/questions`, data).pipe(
+      map(() => data),
+      catchError(() => of(null))
+    );
   }
 
   updateQuestions(id: string, questions: QuizQ[]) {
@@ -82,10 +86,6 @@ export class ApiService {
   replaceQuestions(id: string, quizId: string, questions: QuizQ[]) {
     // TODO: replace with proper "delete" call when backend is available
     return this.http.put(`/api/questions/${id}`, { id, quizId, questions }).pipe(map(() => true));
-  }
-
-  deleteQuiz(id: string) {
-    return this.http.delete(`/api/quizzes/${id}`).pipe(map(() => true));
   }
 
   createAssessment(quizId: string, quizTitle: string, settings: BaseAssessmentSettings) {

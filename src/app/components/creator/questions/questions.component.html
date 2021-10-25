@@ -40,7 +40,7 @@
             <sl-textarea class="w-full" autofocus name="title" label="Question statement" (sl-input)="handleEdit()" required> </sl-textarea>
             <sl-button *ngIf="!image" class="mt-6" (click)="uploader.click()" type="primary"><sl-icon name="image"></sl-icon></sl-button>
             <div *ngIf="image" class="question-image relative pl-4 m-auto">
-              <img class="h-full max-h-64 m-auto" [src]="image" />
+              <img [src]="image" class="h-full max-h-64 m-auto" />
               <div class="absolute top-2 right-2 flex flex-row gap-2">
                 <sl-button (click)="uploader.click()" size="medium" circle><sl-icon name="pencil"></sl-icon></sl-button>
                 <sl-button (click)="image = ''" size="medium" circle><sl-icon name="x-lg"></sl-icon></sl-button>

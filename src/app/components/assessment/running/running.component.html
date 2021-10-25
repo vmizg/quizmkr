@@ -12,6 +12,9 @@
           <sl-badge pill>{{ activeQuestionIndex + 1 }}</sl-badge>
           <span>{{ activeQuestion.title }}</span>
         </div>
+        <div *ngIf="activeQuestion.imageURI">
+          <img [src]="activeQuestion.imageURI" class="max-h-64" />
+        </div>
         <ng-container *ngIf="!activeQuestion.multiSelect">
           <span>Select one option:</span>
           <sl-radio-group label="Select an option" no-fieldset (sl-change)="handleAnswerInput($event)">
