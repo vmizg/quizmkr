@@ -18,7 +18,7 @@ export const padZero = (str: string, len?: number) => {
   len = len || 2;
   const zeros = new Array(len).join('0');
   return (zeros + str).slice(-len);
-}
+};
 
 /** Based on https://github.com/onury/invert-color */
 export const invertColor = (hex: string, bw: boolean) => {
@@ -45,14 +45,14 @@ export const invertColor = (hex: string, bw: boolean) => {
   b = (255 - b).toString(16);
   // pad each with zeros and return
   return '#' + padZero(r) + padZero(g) + padZero(b);
-}
+};
 
 /**
  * Generate a random number between min (inclusive) and max (inclusive)
  * As seen at https://stackoverflow.com/a/42321673/6454252
  * @param min min number
  * @param max max number
- * @returns 
+ * @returns
  */
 export const getRandomInteger = (min: number, max: number) => {
   const randomBuffer = new Uint32Array(1);
@@ -61,8 +61,8 @@ export const getRandomInteger = (min: number, max: number) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(randomNumber * (max - min + 1)) + min;
-}
+};
 
 export const areSetsEqual = (a?: Set<any>, b?: Set<any>) => {
-  return !!a && !!b && a.size === b.size && [...a].every(value => b.has(value));
-}
+  return !!a && !!b && a.size === b.size && [...a].every((value) => b.has(value));
+};

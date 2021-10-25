@@ -6,25 +6,25 @@ import { AssessmentResult, QuizQ } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 interface Result extends QuizQ {
-  questionTitle: string,
-  questionId: string,
-  questionIndex: number,
-  answeredCorrectly: boolean,
-  correctAnswer: number[],
-  selectedAnswer: number[],
+  questionTitle: string;
+  questionId: string;
+  questionIndex: number;
+  answeredCorrectly: boolean;
+  correctAnswer: number[];
+  selectedAnswer: number[];
 }
 
 interface ResultSheet {
-  quizTitle: string,
+  quizTitle: string;
   score: number;
   timeTaken: string;
-  results: Result[],
+  results: Result[];
 }
 
 @Component({
   selector: 'app-results',
   templateUrl: './results.component.html',
-  styleUrls: ['./results.component.scss']
+  styleUrls: ['./results.component.scss'],
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   private paramsSubscription$?: Subscription;
@@ -46,46 +46,48 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
-    this.paramsSubscription$ = this.route.params.pipe(
-      concatMap((params) => {
-        const id = params.rid;
-        return this.resultState ? of(this.resultState) : this.apiService.getResult(id);
-      }),
-      concatMap((results) => {
-        return forkJoin([of(results), this.apiService.getQuestions(results.quizId)])
-      }),
-      tap(([results, questions]) => {
-        if (results && questions) {
-          this.resultSheet.quizTitle = results.quizTitle;
-          this.resultSheet.score = results.score;
-          for (let i = 0; i < results.details.length; i++) {
-            const details = results.details[i];
-            const result: Result = {
-              ...details,
-              ...questions.questions[details.questionIndex],
-              questionTitle: questions.questions[details.questionIndex].title,
-            };
-            this.resultSheet.results.push(result);
+    this.paramsSubscription$ = this.route.params
+      .pipe(
+        concatMap((params) => {
+          const id = params.rid;
+          return this.resultState ? of(this.resultState) : this.apiService.getResult(id);
+        }),
+        concatMap((results) => {
+          return forkJoin([of(results), this.apiService.getQuestions(results.quizId)]);
+        }),
+        tap(([results, questions]) => {
+          if (results && questions) {
+            this.resultSheet.quizTitle = results.quizTitle;
+            this.resultSheet.score = results.score;
+            for (let i = 0; i < results.details.length; i++) {
+              const details = results.details[i];
+              const result: Result = {
+                ...details,
+                ...questions.questions[details.questionIndex],
+                questionTitle: questions.questions[details.questionIndex].title,
+              };
+              this.resultSheet.results.push(result);
+            }
+            let secondsTaken = Math.round(results.timeTaken / 1000);
+            let minutesTaken = 0;
+            if (secondsTaken >= 60) {
+              minutesTaken = Math.round(secondsTaken / 60);
+              secondsTaken -= 60;
+            }
+            let timeTakenStr = `${secondsTaken}s`;
+            if (minutesTaken) {
+              timeTakenStr = `${minutesTaken} minute${minutesTaken > 1 ? 's' : ''} ${timeTakenStr}`;
+            }
+            this.resultSheet.timeTaken = timeTakenStr;
           }
-          let secondsTaken = Math.round(results.timeTaken / 1000);
-          let minutesTaken = 0;
-          if (secondsTaken >= 60) {
-            minutesTaken = Math.round(secondsTaken / 60);
-            secondsTaken -= 60;
-          }
-          let timeTakenStr = `${secondsTaken}s`;
-          if (minutesTaken) {
-            timeTakenStr = `${minutesTaken} minute${minutesTaken > 1 ? 's' : ''} ${timeTakenStr}`;
-          }
-          this.resultSheet.timeTaken = timeTakenStr;
-        }
-        this.loading = false;
-      }),
-      catchError(() => {
-        this.loading = false;
-        return EMPTY;
-      })
-    ).subscribe();
+          this.loading = false;
+        }),
+        catchError(() => {
+          this.loading = false;
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {

@@ -31,9 +31,7 @@
       </div>
     </sl-card>
     <sl-card>
-      <div slot="header" class="font-semibold">
-        Latest assessment results
-      </div>
+      <div slot="header" class="font-semibold">Latest assessment results</div>
       <div class="flex flex-col gap-4">
         <div *ngIf="loadingResults" class="flex flex-row items-center gap-2">
           <sl-spinner></sl-spinner>
@@ -54,7 +52,11 @@
           <div>
             <span>SCORE: </span>
             <span class="font-semibold">{{ result.score }}%</span>
-            <a (click)="handleDeleteResult(result)" style="cursor: pointer; margin-left: 1rem; color: rgb(var(--sl-color-danger-600))">Clear</a>
+            <a
+              (click)="handleDeleteResult(result)"
+              style="cursor: pointer; margin-left: 1rem; color: rgb(var(--sl-color-danger-600))"
+              >Clear</a
+            >
           </div>
         </div>
       </div>

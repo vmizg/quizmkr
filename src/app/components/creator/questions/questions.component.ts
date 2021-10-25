@@ -287,7 +287,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       });
     }
   }
-  
+
   handleUploadImage(e: Event) {
     const inputEl = e.target as HTMLInputElement;
     if (!inputEl) {
@@ -297,14 +297,17 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     if (!file) {
       return;
     }
-    this.imageService.resizeImage(file, { maxSize: 400 }).subscribe(({ dataUrl }) => {
-      this.image = dataUrl;
-      inputEl.value = '';
-    }, (err) => {
-      console.log(err);
-      inputEl.value = '';
-    });
-}
+    this.imageService.resizeImage(file, { maxSize: 400 }).subscribe(
+      ({ dataUrl }) => {
+        this.image = dataUrl;
+        inputEl.value = '';
+      },
+      (err) => {
+        console.log(err);
+        inputEl.value = '';
+      }
+    );
+  }
 
   updateColor(color: string) {
     this.quizColor = color;

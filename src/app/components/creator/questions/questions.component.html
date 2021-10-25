@@ -35,10 +35,19 @@
       <sl-card>
         <div slot="header" class="font-semibold">{{ existingQuestion ? 'Edit' : 'Add' }} a question</div>
         <div class="flex flex-col gap-4">
-          
           <div class="flex flex-row gap-2">
-            <sl-textarea class="w-full" autofocus name="title" label="Question statement" (sl-input)="handleEdit()" required> </sl-textarea>
-            <sl-button *ngIf="!image" class="mt-6" (click)="uploader.click()" type="primary"><sl-icon name="image"></sl-icon></sl-button>
+            <sl-textarea
+              class="w-full"
+              autofocus
+              name="title"
+              label="Question statement"
+              (sl-input)="handleEdit()"
+              required
+            >
+            </sl-textarea>
+            <sl-button *ngIf="!image" class="mt-6" (click)="uploader.click()" outline
+              ><sl-icon name="image"></sl-icon
+            ></sl-button>
             <div *ngIf="image" class="question-image relative pl-4 m-auto">
               <img [src]="image" class="h-full max-h-64 m-auto" />
               <div class="absolute top-2 right-2 flex flex-row gap-2">
@@ -46,13 +55,7 @@
                 <sl-button (click)="image = ''" size="medium" circle><sl-icon name="x-lg"></sl-icon></sl-button>
               </div>
             </div>
-            <input
-              hidden
-              type="file"
-              accept="image/*"
-              (change)="handleUploadImage($event)"
-              #uploader
-            />
+            <input hidden type="file" accept="image/*" (change)="handleUploadImage($event)" #uploader />
           </div>
           <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
             <sl-input

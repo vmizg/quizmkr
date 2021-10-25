@@ -49,7 +49,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     finished: false,
     timeLimit: 0,
   };
-  questions: { index: number, question: PQuestion }[] = [];
+  questions: { index: number; question: PQuestion }[] = [];
   activeQuestion?: PRadioQuestion | PCheckboxQuestion;
   activeQuestionIndex = 0;
   startTime: number = 0;
@@ -97,13 +97,13 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private prepareQuestions(questions: PQuestion[]) {
     const totalQuestions = this.settings.totalQuestions || questions.length;
     const rangeFrom = (this.settings.rangeFrom || 1) - 1; // 0-indexed
-    const rangeTo = (this.settings.rangeTo || questions.length);
-  
+    const rangeTo = this.settings.rangeTo || questions.length;
+
     // We need to save question indexes before we manipulate the list
     // for easier result tracking later
     let indexedQs = questions.map((q, i) => ({ index: i, question: q }));
     indexedQs = indexedQs.slice(rangeFrom, rangeTo);
-  
+
     if (!this.settings.randomize) {
       this.questions = indexedQs.slice(0, totalQuestions);
     } else {
@@ -148,7 +148,13 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         }
       }
       const answeredCorrectly = areSetsEqual(q.question.selectedAnswer, correctAnswer);
-      return { questionId: q.question.id, questionIndex: q.index, selectedAnswer: q.question.selectedAnswer, correctAnswer, answeredCorrectly };
+      return {
+        questionId: q.question.id,
+        questionIndex: q.index,
+        selectedAnswer: q.question.selectedAnswer,
+        correctAnswer,
+        answeredCorrectly,
+      };
     });
     const correctAnswers = details.filter(({ answeredCorrectly }) => answeredCorrectly);
     const score = Math.floor((correctAnswers.length / details.length) * 100);
@@ -157,39 +163,45 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         return {
           ...value,
           selectedAnswer: Array.from(value.selectedAnswer || []),
-          correctAnswer: Array.from(value.correctAnswer)}
-        }
-      ),
+          correctAnswer: Array.from(value.correctAnswer),
+        };
+      }),
       score,
     };
   }
 
   private setTimeLeft(timeLimit: number) {
     const currentDate = new Date().getTime();
-    this.timeLeft = new Date((timeLimit * 60 * 1000 + 1000) + this.startTime - currentDate);
+    this.timeLeft = new Date(timeLimit * 60 * 1000 + 1000 + this.startTime - currentDate);
   }
 
   private setupTimer() {
     const timeLimit = this.settings.timeLimit;
     if (timeLimit) {
-      this.dateFmt = timeLimit > 60 ? 'h:mm:ss': 'mm:ss';
+      this.dateFmt = timeLimit > 60 ? 'h:mm:ss' : 'mm:ss';
       this.setTimeLeft(timeLimit);
-      this.interval$ = interval(1000).pipe(
-        takeUntil(this.timeLimit$),
-        tap(() => {
-          this.setTimeLeft(timeLimit);
-          if (this.timeLeft && this.timeLeft.getTime() <= 0) {
-            this.timeLimit$.next();
-            this.timeLimit$.complete();
+      this.interval$ = interval(1000)
+        .pipe(
+          takeUntil(this.timeLimit$),
+          tap(() => {
+            this.setTimeLeft(timeLimit);
+            if (this.timeLeft && this.timeLeft.getTime() <= 0) {
+              this.timeLimit$.next();
+              this.timeLimit$.complete();
+            }
+          })
+        )
+        .subscribe(
+          () => {},
+          () => {},
+          () => {
+            alert('TIME IS UP! Your quiz will now be submitted');
+            this.submitAssessment();
           }
-        })
-      ).subscribe(() => {}, () => {}, () => {
-        alert('TIME IS UP! Your quiz will now be submitted');
-        this.submitAssessment();
-      });
+        );
     }
   }
-  
+
   private submitAssessment() {
     const currentDate = new Date();
     const currentTime = currentDate.getTime();
@@ -277,7 +289,11 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   handleAbandon() {
-    if (!confirm('WARNING: if you abandon now, quiz progress will not be saved and you will have to take it again. Are you sure you want to do that?')) {
+    if (
+      !confirm(
+        'WARNING: if you abandon now, quiz progress will not be saved and you will have to take it again. Are you sure you want to do that?'
+      )
+    ) {
       return;
     }
     this.router.navigate(['/quizzes']);

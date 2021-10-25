@@ -20,14 +20,23 @@
   <sl-card *ngIf="!loading && (!quizQuestions || quizQuestions.length === 0)">
     <div class="flex flex-col">
       <span>You have not added any questions for this quiz yet.</span>
-    <a [routerLink]="['/creator', quizId, 'questions']" style="color: rgb(var(--sl-color-primary-600))">Add some by clicking here!</a>
+      <a [routerLink]="['/creator', quizId, 'questions']" style="color: rgb(var(--sl-color-primary-600))"
+        >Add some by clicking here!</a
+      >
     </div>
   </sl-card>
   <sl-card *ngIf="quizQuestions.length > 0">
     <div slot="header" class="font-semibold">Options</div>
     <div class="flex flex-col gap-4">
       <div class="flex flex-row gap-4 items-end">
-        <sl-input label="Time limit (0 - no limit)" (sl-input)="handleTimeLimitInput($event)" [value]="settings.timeLimit" type="number" min="0" max="300"></sl-input>
+        <sl-input
+          label="Time limit (0 - no limit)"
+          (sl-input)="handleTimeLimitInput($event)"
+          [value]="settings.timeLimit"
+          type="number"
+          min="0"
+          max="300"
+        ></sl-input>
         minutes
       </div>
       <div class="flex flex-row gap-4">
@@ -98,9 +107,14 @@
       <div class="flex flex-col">
         <span class="text-l font-semibold">Summary</span>
         <div class="text-sm">
-          A total of {{ settings.totalQuestions > (settings.rangeTo - settings.rangeFrom + 1) ? settings.rangeTo - settings.rangeFrom + 1 : settings.totalQuestions }} questions are going to be picked
-          {{ settings.randomize ? 'in a random order' : 'in sequence' }} in the range of {{ settings.rangeFrom }} to
-          {{ settings.rangeTo }}.
+          A total of
+          {{
+            settings.totalQuestions > settings.rangeTo - settings.rangeFrom + 1
+              ? settings.rangeTo - settings.rangeFrom + 1
+              : settings.totalQuestions
+          }}
+          questions are going to be picked {{ settings.randomize ? 'in a random order' : 'in sequence' }} in the range
+          of {{ settings.rangeFrom }} to {{ settings.rangeTo }}.
         </div>
       </div>
     </div>

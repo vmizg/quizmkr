@@ -81,17 +81,24 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   handleDeleteResult(result: AssessmentResult) {
-    if (confirm(`WARNING: this will permanently clear your past assessment result for "${result.quizTitle}". Do you want continue?`)) {
-      this.apiService.deleteResult(result.id).pipe(
-        // TODO: refactor this to reuse the same function as called in ngOnInit
-        concatMap(() => this.apiService.getResults('?_order=desc&_limit=8')),
-        tap((data) => {
-          this.loadingResults = false;
-          if (data) {
-            this.results = data;
-          }
-        }),
-      ).subscribe();
+    if (
+      confirm(
+        `WARNING: this will permanently clear your past assessment result for "${result.quizTitle}". Do you want continue?`
+      )
+    ) {
+      this.apiService
+        .deleteResult(result.id)
+        .pipe(
+          // TODO: refactor this to reuse the same function as called in ngOnInit
+          concatMap(() => this.apiService.getResults('?_order=desc&_limit=8')),
+          tap((data) => {
+            this.loadingResults = false;
+            if (data) {
+              this.results = data;
+            }
+          })
+        )
+        .subscribe();
     }
   }
 }
