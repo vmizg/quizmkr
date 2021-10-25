@@ -165,6 +165,12 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         alert('Please fill out the empty option field(-s).');
         return;
       }
+      // If question title is already prefixed with the letter, such as A., (A), 1., (1), remove it
+      if (option.title.startsWith(`${i}. `) || option.title.startsWith(`${this.alphabet[i]}. `)) {
+        option.title = option.title.substring(3).trim();
+      } else if (option.title.startsWith(`(${i}) `) || option.title.startsWith(`(${this.alphabet[i]}) `)) {
+        option.title = option.title.substring(4).trim();
+      }
       if (titleMap[option.title]) {
         alert('One or more options are duplicated.');
         return;
