@@ -115,7 +115,7 @@ export class AssessmentComponent implements OnInit {
         this.beginning = false;
         if (result) {
           this.router.navigate(['/quizzes', this.quizId, 'assessment', result.id], {
-            state: { settings: this.settings, questions: this.quizQuestions },
+            state: { settings: result, questions: this.quizQuestions },
           });
         }
       },
