@@ -143,7 +143,7 @@
       <div class="flex flex-col gap-2">
         <sl-card *cdkVirtualFor="let q of questions; let i = index">
           <div class="flex flex-row items-center justify-between gap-4">
-            <div>
+            <div class="question-title">
               <span>{{ i + 1 }}. {{ q.title }}</span>
               <span *ngIf="existingQuestion && q.id === existingQuestion.id" class="italic font-bold"> (editing)</span>
             </div>

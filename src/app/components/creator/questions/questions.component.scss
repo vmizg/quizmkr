@@ -53,3 +53,10 @@ sl-color-picker::part(trigger) {
 .question-list-container {
   height: 500px;
 }
+
+.question-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
