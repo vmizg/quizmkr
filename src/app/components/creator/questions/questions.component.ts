@@ -32,6 +32,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
   @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
 
+  alphabet = 'ABCDEFGHIJKLMNO';
   questionsId?: string;
   questions: QuizQ[] = [];
   image: string = '';

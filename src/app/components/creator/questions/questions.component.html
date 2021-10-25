@@ -58,15 +58,8 @@
             <input hidden type="file" accept="image/*" (change)="handleUploadImage($event)" #uploader />
           </div>
           <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
-            <sl-input
-              style="width: 70%"
-              label="{{ i === 0 ? 'Options' : '' }}"
-              (sl-input)="handleEdit()"
-              [name]="'option-' + i"
-              required
-            ></sl-input>
             <sl-button
-              style="width: 20%"
+              style="width: 6rem"
               type="{{ correctToggle.checked ? 'success' : 'danger' }}"
               outline
               (click)="correctToggle.checked = !correctToggle.checked; handleEdit()"
@@ -81,11 +74,18 @@
                 style="font-size: 1rem"
               >
               </sl-icon>
-              {{ correctToggle.checked ? 'Correct' : 'Incorrect' }}
+              <span class="ml-2">{{ alphabet[i] }}.</span>
               <input [name]="'correct-' + i" type="checkbox" #correctToggle hidden />
             </sl-button>
+            <sl-input
+              style="width: 100%"
+              label="{{ i === 0 ? 'Options' : '' }}"
+              (sl-input)="handleEdit()"
+              [name]="'option-' + i"
+              required
+            ></sl-input>
             <sl-button
-              style="width: 10%"
+              style="width: 4rem"
               (click)="handleRemoveOption()"
               [disabled]="totalOptions < 3"
               type="neutral"
@@ -96,8 +96,7 @@
             </sl-button>
           </div>
           <div class="option-row add-option" *ngIf="totalOptions < 7">
-            <sl-button style="width: 70%" (click)="handleAddOption()">Add a new option</sl-button>
-            <div style="width: 30%"></div>
+            <sl-button class="w-full" (click)="handleAddOption()">Add a new option</sl-button>
           </div>
           <div>
             <sl-input label="Note on correct answer (optional)" name="answer-note" (sl-input)="handleEdit()"></sl-input>
