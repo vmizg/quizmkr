@@ -143,11 +143,13 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       alert('Please fill out the question statement field.');
       return;
     }
+    const answerNote = (formData.get('answer-note') as string).trim();
 
     const question: QuizQ = {
       id: generateId(),
       title: title,
       options: [],
+      ...(answerNote ? { answerNote } : {}),
       ...(this.image ? { imageURI: this.image } : {}),
     };
     const titleMap: any = {};
@@ -257,6 +259,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       } else if (control.name.startsWith('correct')) {
         control.checked = !!question.options[correctIndex].correct;
         correctIndex++;
+      } else if (control.name === 'answer-note') {
+        control.value = question.answerNote;
       }
     }
 
