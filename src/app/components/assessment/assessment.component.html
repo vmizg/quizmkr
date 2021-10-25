@@ -53,7 +53,7 @@
         </sl-input>
         <div class="flex flex-col" *ngIf="quizQuestions.length >= 10">
           Presets
-          <div class="flex flex-row items-end">
+          <div class="flex flex-row items-end gap-2">
             <sl-button *ngIf="quizQuestions.length >= 10" type="neutral" (click)="handlePresetClick(10)">10</sl-button>
             <sl-button *ngIf="quizQuestions.length >= 20" type="neutral" (click)="handlePresetClick(20)">20</sl-button>
             <sl-button *ngIf="quizQuestions.length >= 50" type="neutral" (click)="handlePresetClick(50)">50</sl-button>
