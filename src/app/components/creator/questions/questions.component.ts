@@ -13,7 +13,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Observable, Subscription, EMPTY } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { QOption, QuizQ, QuizQuestions } from 'src/app/models/quiz';
+import { AnswerOption, QuizQuestion, QuizQuestions } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
 import { generateColor, generateId, invertColor } from 'src/app/utilities';
@@ -34,7 +34,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
   alphabet = 'ABCDEFGHIJKLMNO';
   questionsId?: string;
-  questions: QuizQ[] = [];
+  questions: QuizQuestion[] = [];
   image: string = '';
   newQuiz = false;
   quizId: string = '';
@@ -46,8 +46,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   edited = false;
   adding = false;
 
-  existingQuestion?: QuizQ;
-  existingQuestionToRender?: QuizQ;
+  existingQuestion?: QuizQuestion;
+  existingQuestionToRender?: QuizQuestion;
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -149,7 +149,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
     const answerNote = (formData.get('answer-note') as string).trim();
 
-    const question: QuizQ = {
+    const question: QuizQuestion = {
       id: generateId(),
       title: title,
       options: [],
@@ -160,7 +160,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     let totalCorrect = 0;
 
     for (let i = 0; i < this.totalOptions; i++) {
-      const option: QOption = {
+      const option: AnswerOption = {
         title: (formData.get(`option-${i}`) as string).trim(),
         correct: (formData.get(`correct-${i}`) as string) === 'on',
       };
@@ -225,7 +225,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     );
   }
 
-  handleEditQuestion(question: QuizQ): void {
+  handleEditQuestion(question: QuizQuestion): void {
     if (this.isEditing(question)) {
       this.handleCancelEdit();
       return;
@@ -253,7 +253,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.existingQuestion = question;
   }
 
-  renderEditQuestion(question: QuizQ): void {
+  renderEditQuestion(question: QuizQuestion): void {
     const formControls = this.questionForm.nativeElement.getFormControls();
 
     let optionIndex = 0;
@@ -285,7 +285,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.resetForm();
   }
 
-  handleDeleteQuestion(question: QuizQ): void {
+  handleDeleteQuestion(question: QuizQuestion): void {
     if (!this.questionsId) {
       // Sanity check - this should never execute
       return;
@@ -330,7 +330,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
   }
 
-  isEditing(q: QuizQ): boolean {
+  isEditing(q: QuizQuestion): boolean {
     return this.existingQuestion ? q.id === this.existingQuestion.id : false;
   }
 

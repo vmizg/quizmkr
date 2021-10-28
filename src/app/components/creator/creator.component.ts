@@ -2,7 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Observable, Subscription, combineLatest } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
-import { BaseQuiz } from 'src/app/models/quiz';
+import { Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -109,12 +109,12 @@ export class CreatorComponent implements OnInit, OnDestroy {
       return;
     }
     this.submitting = true;
-    const quiz: Omit<BaseQuiz, 'id'> = {
+    const quiz: Omit<Quiz, 'id'> = {
       title: this.title,
       description: this.desc,
       tags: this.tags,
     };
-    let fn: Observable<BaseQuiz | null>;
+    let fn: Observable<Quiz | null>;
     if (this.isExisting) {
       fn = this.apiService.updateQuiz(this.id, quiz);
     } else {

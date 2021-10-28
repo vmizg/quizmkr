@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EMPTY, interval, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { AssessmentResult, AssessmentSettings, BaseQuiz } from 'src/app/models/quiz';
+import { AssessmentResult, AssessmentSettings, Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadingResults = true;
   results: AssessmentResult[] = [];
   loadingLatest = true;
-  latest: BaseQuiz[] = [];
+  latest: Quiz[] = [];
   currentDate = new Date();
 
   constructor(private apiService: ApiService) {}

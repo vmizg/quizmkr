@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, forkJoin, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { BaseAssessmentSettings, QuizQ } from 'src/app/models/quiz';
+import { BaseAssessmentSettings, QuizQuestion } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -18,7 +18,7 @@ export class AssessmentComponent implements OnInit {
 
   quizId = '';
   quizTitle = '';
-  quizQuestions: QuizQ[] = [];
+  quizQuestions: QuizQuestion[] = [];
   loading = true;
   beginning = false;
 

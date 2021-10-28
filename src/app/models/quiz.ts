@@ -1,12 +1,12 @@
-export interface QOption {
+export interface AnswerOption {
   title: string;
   correct?: boolean;
 }
 
-export interface QuizQ {
+export interface QuizQuestion {
   id: string;
   title: string;
-  options: QOption[];
+  options: AnswerOption[];
   answerNote?: string;
   imageURI?: string;
 }
@@ -14,10 +14,10 @@ export interface QuizQ {
 export interface QuizQuestions {
   id: string;
   quizId: string;
-  questions: QuizQ[];
+  questions: QuizQuestion[];
 }
 
-export interface BaseQuiz {
+export interface Quiz {
   id: string;
   title: string;
   description?: string;

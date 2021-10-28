@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { concatMap, tap, take } from 'rxjs/operators';
-import { BaseQuiz } from 'src/app/models/quiz';
+import { Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./quizzes.component.scss'],
 })
 export class QuizzesComponent implements OnInit {
-  quizzes: BaseQuiz[] = [];
+  quizzes: Quiz[] = [];
   loading = true;
 
   constructor(private apiService: ApiService, private router: Router) {}
@@ -23,11 +23,11 @@ export class QuizzesComponent implements OnInit {
     });
   }
 
-  handleEditQuiz(quiz: BaseQuiz): void {
+  handleEditQuiz(quiz: Quiz): void {
     this.router.navigate(['/creator', quiz.id, 'questions']);
   }
 
-  handleDeleteQuiz(quiz: BaseQuiz): void {
+  handleDeleteQuiz(quiz: Quiz): void {
     if (confirm(`WARNING: this will delete the quiz ${quiz.title} permanently! Are you sure you want to do this?`)) {
       this.loading = true;
       this.apiService
@@ -44,7 +44,7 @@ export class QuizzesComponent implements OnInit {
     }
   }
 
-  handleBeginAssessment(quiz: BaseQuiz): void {
+  handleBeginAssessment(quiz: Quiz): void {
     this.router.navigate(['/quizzes', quiz.id]);
   }
 }

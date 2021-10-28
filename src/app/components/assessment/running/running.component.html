@@ -10,7 +10,7 @@
       <div class="flex flex-col gap-2">
         <div class="flex flex-row items-start mb-4 gap-2 text-xl">
           <sl-badge class="mt-1" pill>{{ activeQuestionIndex + 1 }}</sl-badge>
-          <span>{{ activeQuestion.title }}</span>
+          <span class="font-semibold">{{ activeQuestion.title }}</span>
         </div>
         <div *ngIf="activeQuestion.imageURI">
           <img [src]="activeQuestion.imageURI" class="max-h-64" />
@@ -19,7 +19,7 @@
           <sl-radio-group label="Select an option" no-fieldset (sl-change)="handleAnswerInput($event)">
             <sl-radio
               *ngFor="let option of activeQuestion.options; let i = index"
-              style="display: flex; height: 2rem; margin-bottom: 0"
+              style="display: flex; height: 2.5rem; margin-bottom: 0"
               [value]="i"
               [checked]="activeQuestion.selectedAnswer?.has(i)"
             >
@@ -32,7 +32,7 @@
           <div class="flex flex-col">
             <sl-checkbox
               *ngFor="let option of activeQuestion.options; let i = index"
-              style="display: flex; height: 2rem"
+              style="display: flex; height: 2.5rem"
               [name]="'option-' + i"
               [checked]="activeQuestion.selectedAnswer?.has(i)"
               (sl-change)="handleAnswerInput($event, i)"
@@ -40,7 +40,7 @@
               {{ alphabet[i] }}. {{ option.title }}
             </sl-checkbox>
           </div>
-          <span class="italic text-sm mt-2">(Select all that apply)</span>
+          <span class="italic text-sm mt-4">(Select all that apply)</span>
         </ng-container>
       </div>
     </sl-form>

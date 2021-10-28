@@ -2,10 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, forkJoin, of, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { AssessmentResult, QuizQ } from 'src/app/models/quiz';
+import { AssessmentResult, QuizQuestion } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
-interface Result extends QuizQ {
+interface Result extends QuizQuestion {
   questionTitle: string;
   questionId: string;
   questionIndex: number;

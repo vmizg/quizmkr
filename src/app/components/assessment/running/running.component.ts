@@ -2,11 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, forkJoin, of, EMPTY, interval, timer, Observable, Subject } from 'rxjs';
 import { concatMap, map, takeUntil, tap } from 'rxjs/operators';
-import { AssessmentSettings, BaseAssesmentResult, QuizQ } from 'src/app/models/quiz';
+import { AssessmentSettings, BaseAssesmentResult, QuizQuestion } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { areSetsEqual, getRandomInteger } from 'src/app/utilities';
 
-interface PQuestion extends QuizQ {
+interface PQuestion extends QuizQuestion {
   completed?: boolean;
   multiSelect?: boolean;
   selectedAnswer?: Set<number>;
