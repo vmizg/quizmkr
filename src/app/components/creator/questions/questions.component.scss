@@ -30,6 +30,22 @@ sl-color-picker::part(trigger) {
   }
 }
 
+sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
+  background-color: rgb(var(--sl-color-gray-50));
+}
+
+.question-container {
+  &::part(base) {
+    transition: border-color 200ms ease;
+    border-width: 4px;
+  }
+
+  &.edit-mode::part(base) {
+    background-color: rgb(var(--sl-color-primary-50));
+    border-color: rgb(var(--sl-color-primary-600));
+  }
+}
+
 .question-image {
   border: solid var(--sl-input-border-width) rgb(var(--sl-input-border-color));
   border-radius: var(--sl-border-radius-medium);
@@ -51,6 +67,15 @@ sl-color-picker::part(trigger) {
 
 .question-list-container {
   height: 500px;
+}
+
+.question-card::part(base) {
+  border-width: 4px;
+}
+
+.question-card-active::part(base) {
+  background-color: rgb(var(--sl-color-primary-50));
+  border-color: rgb(var(--sl-color-primary-600));
 }
 
 .question-title {

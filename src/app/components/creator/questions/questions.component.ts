@@ -226,19 +226,21 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   handleEditQuestion(question: QuizQ): void {
-    const formControls = this.questionForm.nativeElement.getFormControls();
-    if (this.edited) {
-      if (
-        confirm(
-          'WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.'
-        )
-      ) {
-        this.formService.resetForm(formControls);
-        this.edited = false;
-      } else {
-        return;
-      }
+    if (this.isEditing(question)) {
+      this.handleCancelEdit();
+      return;
     }
+
+    const formControls = this.questionForm.nativeElement.getFormControls();
+    if (this.edited && !confirm(
+      'WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.'
+    )) {
+      return;
+    }
+
+    this.formService.resetForm(formControls);
+    this.edited = false;
+    this.image = '';
 
     const totalOptions = question.options.length;
     if (totalOptions !== this.totalOptions) {
@@ -277,6 +279,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     if (question.imageURI) {
       this.image = question.imageURI;
     }
+  }
+
+  handleCancelEdit(): void {
+    this.resetForm();
   }
 
   handleDeleteQuestion(question: QuizQ): void {
@@ -322,6 +328,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     if (file && !this.image) {
       this.uploadImage(file).subscribe();
     }
+  }
+
+  isEditing(q: QuizQ): boolean {
+    return this.existingQuestion ? q.id === this.existingQuestion.id : false;
   }
 
   private uploadImage(file: File) {
