@@ -130,7 +130,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.edited = true;
   }
 
-  handleRemoveOption() {
+  handleRemoveOption(optionInput: HTMLElement) {
+    if ((optionInput as HTMLInputElement).value && !confirm("The option you're trying to remove is non-empty. Do you want to continue?")) {
+      return;
+    }
     this.totalOptions--;
     this.edited = true;
   }
@@ -305,22 +308,35 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       return;
     }
     const [file] = Array.from(inputEl.files || []);
-    if (!file) {
+    if (file) {
+      this.uploadImage(file).subscribe(() => inputEl.value = '');
+    }
+  }
+
+  handlePaste(e: ClipboardEvent) {
+    const data = e.clipboardData;
+    if (data?.getData('text') || !data?.files) {
       return;
     }
-    this.imageService.resizeImage(file, { maxSize: 400 }).subscribe(
-      ({ dataUrl }) => {
+    const [file] = Array.from(data.files || []);
+    if (file && !this.image) {
+      this.uploadImage(file).subscribe();
+    }
+  }
+
+  private uploadImage(file: File) {
+    return this.imageService.resizeImage(file, { maxSize: 400 }).pipe(
+      tap(({ dataUrl }) => {
         this.image = dataUrl;
-        inputEl.value = '';
-      },
-      (err) => {
+      }),
+      catchError((err) => {
         console.log(err);
-        inputEl.value = '';
-      }
+        return EMPTY;
+      })
     );
   }
 
-  updateColor(color: string) {
+  private updateColor(color: string) {
     this.quizColor = color;
     this.cssVars = {
       '--badge-bg-color': this.quizColor,
@@ -329,7 +345,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     };
   }
 
-  resetForm(formControls?: HTMLInputElement[]) {
+  private resetForm(formControls?: HTMLInputElement[]) {
     const controls = formControls || this.questionForm.nativeElement.getFormControls();
     this.formService.resetForm(controls);
     this.totalOptions = 3;

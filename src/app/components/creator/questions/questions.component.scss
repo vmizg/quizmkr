@@ -31,6 +31,9 @@ sl-color-picker::part(trigger) {
 }
 
 .question-image {
+  border: solid var(--sl-input-border-width) rgb(var(--sl-input-border-color));
+  border-radius: var(--sl-border-radius-medium);
+
   img {
     border-radius: var(--sl-border-radius-medium);
   }

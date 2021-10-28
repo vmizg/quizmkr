@@ -42,17 +42,18 @@
               name="title"
               label="Question statement"
               (sl-input)="handleEdit()"
+              (paste)="handlePaste($event)"
               required
             >
             </sl-textarea>
             <sl-button *ngIf="!image" class="mt-6" (click)="uploader.click()" outline
               ><sl-icon name="image"></sl-icon
             ></sl-button>
-            <div *ngIf="image" class="question-image relative pl-4 m-auto">
+            <div *ngIf="image" class="question-image relative m-auto ml-4">
               <img [src]="image" class="h-full max-h-64 m-auto" />
               <div class="absolute top-2 right-2 flex flex-row gap-2">
-                <sl-button (click)="uploader.click()" size="medium" circle><sl-icon name="pencil"></sl-icon></sl-button>
-                <sl-button (click)="image = ''" size="medium" circle><sl-icon name="x-lg"></sl-icon></sl-button>
+                <sl-button (click)="uploader.click()" size="small" circle><sl-icon name="pencil"></sl-icon></sl-button>
+                <sl-button (click)="image = ''" size="small" circle><sl-icon name="x-lg"></sl-icon></sl-button>
               </div>
             </div>
             <input hidden type="file" accept="image/*" (change)="handleUploadImage($event)" #uploader />
@@ -60,8 +61,8 @@
           <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
             <sl-button
               style="width: 6rem"
-              type="{{ correctToggle.checked ? 'success' : 'danger' }}"
-              outline
+              type="{{ correctToggle.checked ? 'success' : 'neutral' }}"
+              [outline]="!correctToggle.checked"
               (click)="correctToggle.checked = !correctToggle.checked; handleEdit()"
             >
               <sl-icon *ngIf="!correctToggle.checked" name="x-circle" label="incorrect" outline style="font-size: 1rem">
@@ -82,11 +83,12 @@
               label="{{ i === 0 ? 'Options' : '' }}"
               (sl-input)="handleEdit()"
               [name]="'option-' + i"
+              #optionInput
               required
             ></sl-input>
             <sl-button
               style="width: 4rem"
-              (click)="handleRemoveOption()"
+              (click)="handleRemoveOption(optionInput)"
               [disabled]="totalOptions < 3"
               type="neutral"
               outline
