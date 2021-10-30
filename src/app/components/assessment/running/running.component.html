@@ -5,7 +5,12 @@
       <a (click)="handleAbandon()" style="cursor: pointer; color: rgb(var(--sl-color-danger-600))">Abandon</a>
     </div>
   </sl-card>
-  <sl-card>
+  <sl-card class="question-card" [style]="{ '--question-count': questions.length, '--question-index': activeQuestionIndex + 1 }">
+    <div slot="header" class="step-indicator-wrapper">
+      <div class="step-indicator font-semibold text-sm">
+        <span>{{ activeQuestionIndex + 1 }} / {{ questions.length }}</span>
+      </div>
+    </div>
     <sl-form style="display: contents">
       <div class="flex flex-col gap-2">
         <div class="flex flex-row items-start mb-4 gap-2 text-xl">
@@ -16,10 +21,9 @@
           <img [src]="activeQuestion.imageURI" class="max-h-64" />
         </div>
         <ng-container *ngIf="!activeQuestion.multiSelect">
-          <sl-radio-group label="Select an option" no-fieldset (sl-change)="handleAnswerInput($event)">
+          <sl-radio-group label="Select an option" no-fieldset (sl-change)="handleAnswerInput($event)" class="ml-8">
             <sl-radio
               *ngFor="let option of activeQuestion.options; let i = index"
-              style="display: flex; height: 2.5rem; margin-bottom: 0"
               [value]="i"
               [checked]="activeQuestion.selectedAnswer?.has(i)"
             >
@@ -29,10 +33,9 @@
           <span class="italic text-sm mt-2">(Select one option)</span>
         </ng-container>
         <ng-container *ngIf="activeQuestion.multiSelect">
-          <div class="flex flex-col">
+          <div class="flex flex-col ml-8">
             <sl-checkbox
               *ngFor="let option of activeQuestion.options; let i = index"
-              style="display: flex; height: 2.5rem"
               [name]="'option-' + i"
               [checked]="activeQuestion.selectedAnswer?.has(i)"
               (sl-change)="handleAnswerInput($event, i)"

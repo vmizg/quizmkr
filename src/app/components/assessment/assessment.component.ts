@@ -46,7 +46,7 @@ export class AssessmentComponent implements OnInit {
           if (quiz) {
             this.quizTitle = quiz.title;
             this.quizQuestions = questions?.questions || [];
-            this.settings.totalQuestions = this.quizQuestions.length;
+            this.settings.totalQuestions = this.quizQuestions.length > 50 ? 50 : this.quizQuestions.length;
             this.settings.rangeTo = this.settings.totalQuestions;
           } else {
             this.router.navigate(['/quizzes']);
