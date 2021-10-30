@@ -36,10 +36,11 @@
           type="number"
           min="0"
           max="300"
+          inputmode="decimal"
         ></sl-input>
         minutes
       </div>
-      <div class="flex flex-row gap-4">
+      <div class="flex flex-col sm:flex-row gap-4">
         <sl-input
           class="w-1/2"
           type="number"
@@ -48,6 +49,7 @@
           [value]="settings.totalQuestions"
           [max]="quizQuestions.length"
           min="1"
+          inputmode="decimal"
           #totalQEl
         >
         </sl-input>
@@ -71,6 +73,7 @@
             min="1"
             [max]="settings.rangeTo"
             [value]="settings.rangeFrom"
+            inputmode="decimal"
           >
           </sl-input>
           to
@@ -81,6 +84,7 @@
             [min]="settings.rangeFrom"
             [max]="settings.totalQuestions"
             [value]="settings.rangeTo"
+            inputmode="decimal"
             #rangeToEl
           >
           </sl-input>
@@ -92,21 +96,10 @@
     </div>
   </sl-card>
   <sl-card *ngIf="quizQuestions.length > 0">
+    <div slot="header" class="font-semibold">Summary</div>
     <div class="flex flex-col gap-4">
-      <div *ngIf="!settings.randomize && overshoot" class="flex flex-col">
-        <span class="text-l font-semibold" style="color: rgb(var(--sl-color-amber-500))">Warning!</span>
-        <div class="flex flex-col text-sm">
-          <span>You have selected a range that contains more than {{ settings.totalQuestions }} questions.</span>
-          <span
-            >The system will only pick the first {{ settings.totalQuestions }}, starting at question
-            {{ settings.rangeFrom }}.</span
-          >
-          <span>Select "Randomize questions" to pick from the whole range.</span>
-        </div>
-      </div>
       <div class="flex flex-col">
-        <span class="text-l font-semibold">Summary</span>
-        <div class="text-sm">
+        <div class="text-md">
           A total of
           {{
             settings.totalQuestions > settings.rangeTo - settings.rangeFrom + 1
@@ -115,6 +108,12 @@
           }}
           questions are going to be picked {{ settings.randomize ? 'in a random order' : 'in sequence' }} in the range
           of {{ settings.rangeFrom }} to {{ settings.rangeTo }}.
+        </div>
+      </div>
+      <div *ngIf="!settings.randomize && overshoot" class="flex flex-col">
+        <span class="text-l font-semibold" style="color: rgb(var(--sl-color-amber-500))">Warning!</span>
+        <div class="flex flex-col text-md">
+          <span>The system will only pick questions <span class="font-semibold">{{ settings.rangeFrom }} to {{ settings.rangeFrom + settings.totalQuestions - 1 }}</span>. Select "Randomize questions" to pick from the whole range.</span>
         </div>
       </div>
     </div>

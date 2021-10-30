@@ -47,7 +47,7 @@ export class AssessmentComponent implements OnInit {
             this.quizTitle = quiz.title;
             this.quizQuestions = questions?.questions || [];
             this.settings.totalQuestions = this.quizQuestions.length > 50 ? 50 : this.quizQuestions.length;
-            this.settings.rangeTo = this.settings.totalQuestions;
+            this.settings.rangeTo = this.quizQuestions.length;
           } else {
             this.router.navigate(['/quizzes']);
           }
@@ -71,15 +71,27 @@ export class AssessmentComponent implements OnInit {
   }
 
   handleTimeLimitInput(e: Event) {
+    const target = e.target as HTMLInputElement;
     const timeLimit = Number((e.target as HTMLInputElement).value);
-    this.settings.timeLimit = timeLimit;
+    if (timeLimit >= 0) {
+      this.settings.timeLimit = Math.round(timeLimit);
+    } else {
+      target.value = `${this.settings.timeLimit}`;
+    }
   }
 
   handleTotalQuestionsInput(e: Event) {
-    const totalQuestions = Number((e.target as HTMLInputElement).value);
-    if (totalQuestions <= this.quizQuestions.length) {
+    const target = e.target as HTMLInputElement;
+    const totalQuestions = Number(target.value);
+    if (totalQuestions > 0 && totalQuestions <= this.quizQuestions.length) {
       this.settings.totalQuestions = totalQuestions;
       this.checkRangeOvershoot();
+    } else if (target.value !== '') {
+      if (target.value === '0') {
+        target.value = '';
+      } else {
+        target.value = `${this.settings.totalQuestions}`;
+      }
     }
   }
 
@@ -92,15 +104,33 @@ export class AssessmentComponent implements OnInit {
   }
 
   handleRangeFromInput(e: Event) {
-    const rangeFrom = Number((e.target as HTMLInputElement).value);
-    this.settings.rangeFrom = rangeFrom;
-    this.checkRangeOvershoot();
+    const target = e.target as HTMLInputElement;
+    const rangeFrom = Number(target.value);
+    if (rangeFrom > 0 && rangeFrom < this.settings.rangeTo && rangeFrom < this.quizQuestions.length) {
+      this.settings.rangeFrom = rangeFrom;
+      this.checkRangeOvershoot();
+    } else if (target.value !== '') {
+      if (target.value === '0') {
+        target.value = '';
+      } else {
+        target.value = `${this.settings.rangeFrom}`;
+      }
+    }
   }
 
   handleRangeToInput(e: Event) {
-    const rangeTo = Number((e.target as HTMLInputElement).value);
-    this.settings.rangeTo = rangeTo;
-    this.checkRangeOvershoot();
+    const target = e.target as HTMLInputElement;
+    const rangeTo = Number(target.value);
+    if (rangeTo > 0 && rangeTo < this.quizQuestions.length) {
+      this.settings.rangeTo = rangeTo;
+      this.checkRangeOvershoot();
+    } else if (target.value !== '') {
+      if (target.value === '0') {
+        target.value = '';
+      } else {
+        target.value = `${this.settings.rangeTo}`;
+      }
+    }
   }
 
   handleRandomizeChange(e: Event) {

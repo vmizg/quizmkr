@@ -30,7 +30,7 @@
               {{ alphabet[i] }}. {{ option.title }}
             </sl-radio>
           </sl-radio-group>
-          <span class="italic text-sm mt-2">(Select one option)</span>
+          <span class="text-md mt-2">(Select one option)</span>
         </ng-container>
         <ng-container *ngIf="activeQuestion.multiSelect">
           <div class="flex flex-col ml-8">
@@ -43,7 +43,7 @@
               {{ alphabet[i] }}. {{ option.title }}
             </sl-checkbox>
           </div>
-          <span class="italic text-sm mt-4">(Select all that apply)</span>
+          <span class="text-md mt-4">(Select all that apply)</span>
         </ng-container>
       </div>
     </sl-form>
