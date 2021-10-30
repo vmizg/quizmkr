@@ -29,23 +29,42 @@ sl-checkbox {
   background-image: none;
 }
 
+.question-card-header {
+  display: flex;
+  white-space: nowrap;
+}
+
 .step-indicator-wrapper {
-  width: auto;
-  margin-left: -1px;
-  border: solid 1px rgb(var(--sl-color-gray-400));
+  flex: 1;
+  border: solid 1px rgb(var(--sl-color-gray-200));
   border-radius: var(--sl-border-radius-medium);
 }
 
 .step-indicator {
-  display: flex;
-  align-items: center;
-  place-content: center;
-  padding: 0.25rem;
+  height: 100%;
   color: rgb(var(--sl-color-gray-50));
-  background-color: rgb(var(--sl-color-green-600));
-  width: calc(100% * (var(--question-index) / var(--question-count)));
+  background-image: linear-gradient(
+    to right,
+    rgb(var(--sl-color-green-200)) 0%,
+    rgb(var(--sl-color-green-700)) 33%,
+    rgb(var(--sl-color-green-500)) 66%,
+    rgb(var(--sl-color-green-200)) 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient 5s ease infinite alternate-reverse;
 
-  > span {
-    white-space: nowrap;
+  width: calc(100% * (var(--question-index) / var(--question-count)));
+  border-radius: var(--sl-border-radius-medium);
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
