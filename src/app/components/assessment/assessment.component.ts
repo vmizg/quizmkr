@@ -23,7 +23,7 @@ export class AssessmentComponent implements OnInit {
   beginning = false;
 
   settings: BaseAssessmentSettings = {
-    randomize: false,
+    randomize: true,
     totalQuestions: 1,
     rangeFrom: 1,
     rangeTo: 1,
