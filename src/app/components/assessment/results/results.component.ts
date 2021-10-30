@@ -68,11 +68,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
               };
               this.resultSheet.results.push(result);
             }
-            let secondsTaken = Math.round(results.timeTaken / 1000);
+            let secondsTaken = Math.floor(results.timeTaken / 1000);
             let minutesTaken = 0;
             if (secondsTaken >= 60) {
-              minutesTaken = Math.round(secondsTaken / 60);
-              secondsTaken -= 60;
+              minutesTaken = Math.floor(secondsTaken / 60);
+              secondsTaken -= minutesTaken * 60;
             }
             let timeTakenStr = `${secondsTaken}s`;
             if (minutesTaken) {
