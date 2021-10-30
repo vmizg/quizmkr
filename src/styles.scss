@@ -21,7 +21,7 @@ body {
   font-family: var(--sl-font-sans);
   font-size: 16px;
   transition: background-color 200ms ease;
-  background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+  background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
   background-attachment: fixed;
   color: rgba(17, 24, 39);
   box-sizing: border-box;
@@ -30,10 +30,16 @@ body {
 }
 
 .sl-theme-dark body {
-  background: linear-gradient(to bottom, #323232 0%, #3f3f3f 40%, #1c1c1c 150%),
-    linear-gradient(to top, rgba(255, 255, 255, 0.4) 0%, rgba(0, 0, 0, 0.25) 200%);
-  background-blend-mode: multiply;
+  background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
   color: rgba(249, 250, 251);
+}
+
+sl-card::part(header) {
+  background-image: linear-gradient(
+    135deg,
+    rgb(var(--sl-color-blue-gray-50)) 0%,
+    rgb(var(--sl-color-blue-gray-300)) 100%
+  );
 }
 
 app-root {

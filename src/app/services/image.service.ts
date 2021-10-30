@@ -7,11 +7,15 @@ import { Observable } from 'rxjs';
  */
 
 export interface ImageOptions {
-  /** Maximum image size in pixels */
-  maxSize?: number;
+  /** Maximum image width in pixels. */
+  maxWidth?: number;
+  /** Maximum image height in pixels. */
+  maxHeight?: number;
+  /** JPEG or PNG. Using JPEG will lose transparency. */
+  type?: 'png' | 'jpeg';
 }
 
-const DEFAULT_SIZE = 500;
+const DEFAULT_SIZE = 400;
 
 const dataURItoBlob = (dataURI: string) => {
   const bytes =
@@ -28,29 +32,45 @@ const dataURItoBlob = (dataURI: string) => {
 const resize = (
   image: HTMLImageElement,
   canvas: HTMLCanvasElement,
-  options: ImageOptions = { maxSize: DEFAULT_SIZE }
+  options: ImageOptions = { maxWidth: DEFAULT_SIZE, maxHeight: DEFAULT_SIZE, type: 'png' }
 ) => {
-  const { maxSize = DEFAULT_SIZE } = options;
+  const { maxHeight = DEFAULT_SIZE, maxWidth = DEFAULT_SIZE, type = 'png' } = options;
   let width = image.width;
   let height = image.height;
 
   if (width > height) {
-    if (width > maxSize) {
-      height *= maxSize / width;
-      width = maxSize;
+    if (width > maxWidth) {
+      height *= maxWidth / width;
+      width = maxWidth;
     }
   } else {
-    if (height > maxSize) {
-      width *= maxSize / height;
-      height = maxSize;
+    if (height > maxHeight) {
+      width *= maxHeight / height;
+      height = maxHeight;
     }
   }
 
   canvas.width = width;
   canvas.height = height;
-  canvas.getContext('2d')?.drawImage(image, 0, 0, width, height);
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(image, 0, 0, width, height);
 
-  const dataUrl = canvas.toDataURL('image/jpeg');
+  if (type === 'jpeg') {
+    // Set the transparent background of canvas to white  
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);   
+    for (let i = 0; i < imageData.data.length; i += 4) {   
+        // When the pixel is transparent, it is set to white  
+        if (imageData.data[i + 3] == 0) {   
+            imageData.data[i] = 255;   
+            imageData.data[i + 1] = 255;   
+            imageData.data[i + 2] = 255;   
+            imageData.data[i + 3] = 255;    
+        }   
+    }
+    ctx.putImageData(imageData, 0, 0);  
+  }
+
+  const dataUrl = canvas.toDataURL(`image/${type}`);
   return { dataUrl, blob: dataURItoBlob(dataUrl) };
 };
 
@@ -60,7 +80,7 @@ const resize = (
 export class ImageService {
   constructor() {}
 
-  resizeImage = (file: File, options: ImageOptions): Observable<{ dataUrl: string; blob: Blob }> => {
+  resizeImage = (file: File, options?: ImageOptions): Observable<{ dataUrl: string; blob: Blob }> => {
     const reader = new FileReader();
     const image = new Image();
     const canvas = document.createElement('canvas');

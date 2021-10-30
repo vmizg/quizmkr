@@ -46,6 +46,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   edited = false;
   adding = false;
 
+  questionIndex = 1;
   existingQuestion?: QuizQuestion;
   existingQuestionToRender?: QuizQuestion;
 
@@ -70,6 +71,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
             this.quizTitle = quiz.title;
             this.questionsId = questions?.id;
             this.questions = questions?.questions || [];
+            this.questionIndex = this.questions.length + 1;
           } else {
             this.router.navigate(['/creator']);
           }
@@ -251,6 +253,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       this.renderEditQuestion(question);
     }
     this.existingQuestion = question;
+    this.questionIndex = this.questions.findIndex((q) => q.id === question.id) + 1;
   }
 
   renderEditQuestion(question: QuizQuestion): void {
@@ -335,9 +338,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   private uploadImage(file: File) {
-    return this.imageService.resizeImage(file, { maxSize: 400 }).pipe(
+    return this.imageService.resizeImage(file).pipe(
       tap(({ dataUrl }) => {
         this.image = dataUrl;
+        console.log(this.image);
       }),
       catchError((err) => {
         console.log(err);
@@ -359,6 +363,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     const controls = formControls || this.questionForm.nativeElement.getFormControls();
     this.formService.resetForm(controls);
     this.totalOptions = 3;
+    this.questionIndex = this.questions.length + 1;
     this.existingQuestion = undefined;
     this.edited = false;
     this.image = '';

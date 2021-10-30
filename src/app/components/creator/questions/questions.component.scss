@@ -14,35 +14,42 @@ sl-form::part(base) {
   display: contents;
 }
 
-sl-badge::part(base) {
-  background-color: var(--badge-bg-color);
-  border: 1px solid var(--badge-fg-color);
-  color: var(--badge-fg-color);
-}
-
-sl-color-picker {
-  display: contents;
-}
-
-sl-color-picker::part(trigger) {
-  &::before {
-    background-color: var(--badge-bg-color);
-  }
-}
-
 sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
   background-color: rgb(var(--sl-color-gray-50));
 }
 
-.question-container {
+.question-container,
+.question-card {
+  &::part(header) {
+    transition: background-image 200ms ease;
+  }
   &::part(base) {
     transition: border-color 200ms ease;
-    border-width: 4px;
+  }
+}
+
+.question-container,
+.question-card {
+  &::part(base) {
+    border-width: 3px;
   }
 
-  &.edit-mode::part(base) {
-    background-color: rgb(var(--sl-color-primary-50));
-    border-color: rgb(var(--sl-color-primary-600));
+  &.edit-mode {
+    &::part(header) {
+      background-color: rgb(var(--sl-color-blue-200));
+    }
+    &::part(base) {
+      border: 3px solid rgb(var(--sl-color-blue-600));
+    }
+  }
+}
+
+.question-card {
+  &.edit-mode {
+    &::part(base) {
+      background-color: rgb(var(--sl-color-blue-200));
+      border: 3px solid rgb(var(--sl-color-blue-600));
+    }
   }
 }
 
@@ -67,15 +74,6 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
 
 .question-list-container {
   height: 500px;
-}
-
-.question-card::part(base) {
-  border-width: 4px;
-}
-
-.question-card-active::part(base) {
-  background-color: rgb(var(--sl-color-primary-50));
-  border-color: rgb(var(--sl-color-primary-600));
 }
 
 .question-title {
