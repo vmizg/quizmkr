@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, forkJoin, of, EMPTY, interval, timer, Observable, Subject } from 'rxjs';
-import { concatMap, map, takeUntil, tap } from 'rxjs/operators';
+import { Subscription, forkJoin, of, interval, Subject } from 'rxjs';
+import { concatMap, takeUntil, tap } from 'rxjs/operators';
 import { AssessmentSettings, BaseAssesmentResult, QuizQuestion } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-import { areSetsEqual, getRandomInteger } from 'src/app/utilities';
+import { areSetsEqual, shuffleArray } from 'src/app/utilities';
 
 interface PQuestion extends QuizQuestion {
   completed?: boolean;
@@ -45,11 +45,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     totalQuestions: 1,
     rangeFrom: 1,
     rangeTo: 1,
-    randomize: false,
-    finished: false,
-    timeLimit: 0,
   };
-  questions: { index: number; question: PQuestion }[] = [];
+  questions: PQuestion[] = [];
   activeQuestion?: PRadioQuestion | PCheckboxQuestion;
   activeQuestionIndex = 0;
   startTime: number = 0;
@@ -73,13 +70,20 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           ]);
         }),
         tap(([assessment, questions]: any) => {
-          this.settings = assessment;
-          const _questions = questions?.questions || [];
+          this.settings = assessment as AssessmentSettings;
+          let _questions = questions?.questions as QuizQuestion[] || [];
           if (_questions.length === 0 || this.settings.finished) {
             this.router.navigate(['/quizzes', this.settings.quizId]);
             return;
           }
-          this.prepareQuestions(_questions);
+          if (this.settings.order) {
+            // Recreate the randomized order
+            _questions = this.settings.order.map((index) => ({ ..._questions[index], index }));
+          } else {
+            // Use sequential order, but include index in case the API did not return
+            _questions = _questions.map((q, index) => ({ ...q, index }));
+          }
+          this.questions = _questions;
           this.setActiveQuestion(0);
           this.startTime = new Date().getTime();
           this.setupTimer();
@@ -94,41 +98,11 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.interval$?.unsubscribe();
   }
 
-  private prepareQuestions(questions: PQuestion[]) {
-    const totalQuestions = this.settings.totalQuestions || questions.length;
-    const rangeFrom = (this.settings.rangeFrom || 1) - 1; // 0-indexed
-    const rangeTo = this.settings.rangeTo || questions.length;
-
-    // We need to save question indexes before we manipulate the list
-    // for easier result tracking later
-    let indexedQs = questions.map((q, i) => ({ index: i, question: q }));
-    indexedQs = indexedQs.slice(rangeFrom, rangeTo);
-
-    if (!this.settings.randomize) {
-      this.questions = indexedQs.slice(0, totalQuestions);
-    } else {
-      // This can happen in the case where a smaller range was defined
-      // than the total questions asked
-      const total = indexedQs.length < totalQuestions ? indexedQs.length : totalQuestions;
-      const rndQuestions = [];
-      const indexes: { [key: string]: boolean } = {};
-      while (rndQuestions.length < total) {
-        let index = getRandomInteger(0, total - 1);
-        if (indexes[index]) {
-          continue;
-        }
-        rndQuestions.push(indexedQs[index]);
-        indexes[index] = true;
-      }
-      this.questions = rndQuestions;
-    }
-  }
-
   private checkIfFinished() {
     let finished = true;
     let unfinishedIndex = -1;
     for (let i = 0; i < this.questions.length; i++) {
-      const q = this.questions[i].question;
+      const q = this.questions[i];
       const answered = q.selectedAnswer && q.selectedAnswer.size > 0;
       if (!answered) {
         finished = false;
@@ -142,16 +116,16 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private calculateScore() {
     const details = this.questions.map((q) => {
       const correctAnswer = new Set<number>();
-      for (let i = 0; i < q.question.options.length; i++) {
-        if (q.question.options[i].correct) {
+      for (let i = 0; i < q.options.length; i++) {
+        if (q.options[i].correct) {
           correctAnswer.add(i);
         }
       }
-      const answeredCorrectly = areSetsEqual(q.question.selectedAnswer, correctAnswer);
+      const answeredCorrectly = areSetsEqual(q.selectedAnswer, correctAnswer);
       return {
-        questionId: q.question.id,
+        questionId: q.id,
         questionIndex: q.index,
-        selectedAnswer: q.question.selectedAnswer,
+        selectedAnswer: q.selectedAnswer,
         correctAnswer,
         answeredCorrectly,
       };
@@ -226,7 +200,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   setActiveQuestion(index: number) {
-    const question = this.questions[index || 0].question;
+    const question = this.questions[index || 0];
     if (question.multiSelect === undefined) {
       let correctOptions = 0;
       for (const option of question.options) {
@@ -262,13 +236,13 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   handleClickNext() {
     const index =
       this.activeQuestionIndex < this.questions.length - 1 ? this.activeQuestionIndex + 1 : this.questions.length - 1;
-    this.questions[this.activeQuestionIndex].question = this.activeQuestion!;
+    this.questions[this.activeQuestionIndex] = this.activeQuestion!;
     this.setActiveQuestion(index);
   }
 
   handleClickPrev() {
     const index = this.activeQuestionIndex > 0 ? this.activeQuestionIndex - 1 : 0;
-    this.questions[this.activeQuestionIndex].question = this.activeQuestion!;
+    this.questions[this.activeQuestionIndex] = this.activeQuestion!;
     this.setActiveQuestion(index);
   }
 

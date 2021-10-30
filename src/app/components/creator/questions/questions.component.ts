@@ -153,6 +153,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
     const question: QuizQuestion = {
       id: generateId(),
+      index: this.questions.length,
       title: title,
       options: [],
       ...(answerNote ? { answerNote } : {}),

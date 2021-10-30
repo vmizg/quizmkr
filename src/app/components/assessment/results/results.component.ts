@@ -14,10 +14,7 @@ interface Result extends QuizQuestion {
   selectedAnswer: number[];
 }
 
-interface ResultSheet {
-  quizTitle: string;
-  score: number;
-  timeTaken: string;
+interface ResultSheet extends AssessmentResult {
   results: Result[];
 }
 
@@ -32,11 +29,17 @@ export class ResultsComponent implements OnInit, OnDestroy {
   alphabet = 'ABCDEFGHIJKLMNO';
   resultState?: AssessmentResult;
   resultSheet: ResultSheet = {
+    id: '',
+    quizId: '',
     quizTitle: '',
+    assessmentId: '',
+    dateCompleted: new Date(),
+    timeTaken: 0,
     results: [],
-    timeTaken: '',
+    details: [],
     score: -1,
   };
+  timeTaken = '';
 
   loading = true;
 
@@ -57,8 +60,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
         }),
         tap(([results, questions]) => {
           if (results && questions) {
-            this.resultSheet.quizTitle = results.quizTitle;
-            this.resultSheet.score = results.score;
+            this.resultSheet = {
+              ...results,
+              results: [],
+            };
             for (let i = 0; i < results.details.length; i++) {
               const details = results.details[i];
               const result: Result = {
@@ -78,7 +83,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
             if (minutesTaken) {
               timeTakenStr = `${minutesTaken} minute${minutesTaken > 1 ? 's' : ''} ${timeTakenStr}`;
             }
-            this.resultSheet.timeTaken = timeTakenStr;
+            this.timeTaken = timeTakenStr;
           }
           this.loading = false;
         }),

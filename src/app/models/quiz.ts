@@ -9,6 +9,7 @@ export interface QuizQuestion {
   options: AnswerOption[];
   answerNote?: string;
   imageURI?: string;
+  index: number;
 }
 
 export interface QuizQuestions {
@@ -28,7 +29,8 @@ export interface BaseAssessmentSettings {
   totalQuestions: number;
   rangeFrom: number;
   rangeTo: number;
-  randomize: boolean;
+  order?: number[];
+  randomize?: boolean;
   timeLimit?: number;
   finished?: boolean;
 }

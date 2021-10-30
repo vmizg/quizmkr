@@ -23,13 +23,17 @@
   </sl-card>
   <sl-card *ngIf="resultSheet.score > -1">
     <div class="flex flex-col gap-2 w-full">
-      <div class="flex flex-row justify-between items-center">
-        <span>Total score</span>
-        <span class="font-semibold">{{ resultSheet.score }}%</span>
+      <div class="flex flex-col justify-center items-center">
+        <span class="text-xl">Score:</span>
+        <span class="font-semibold text-3xl">{{ resultSheet.score }}%</span>
       </div>
       <div class="flex flex-row justify-between items-center">
         <span>Time taken to complete</span>
-        <span class="font-semibold">{{ resultSheet.timeTaken }}</span>
+        <span class="font-semibold">{{ timeTaken }}</span>
+      </div>
+      <div class="flex flex-row justify-between items-center">
+        <span>Date completed</span>
+        <span class="font-semibold">{{ resultSheet.dateCompleted | date: 'medium' }}</span>
       </div>
     </div>
   </sl-card>
@@ -50,7 +54,7 @@
             {{ result.questionTitle }}
           </div>
           <div *ngIf="result.imageURI">
-            <img [src]="result.imageURI" class="ml-8 max-h-32" />
+            <img [src]="result.imageURI" class="ml-20 max-h-32" />
           </div>
           <div *ngFor="let option of result.options; let j = index" class="flex flex-row items-center ml-8">
             <div class="flex text-xl mr-4" style="flex: 0 0 2rem;">

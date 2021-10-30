@@ -63,6 +63,25 @@ export const getRandomInteger = (min: number, max: number) => {
   return Math.floor(randomNumber * (max - min + 1)) + min;
 };
 
+/** Shuffle objects in an array randomly using Fisher–Yates Shuffle */
+export const shuffleArray = (arr: any[]) => {
+  const shuffled = [...arr];
+  let i = arr.length;
+  let j = 0;
+  let temp;
+
+  while (i--) {
+      j = getRandomInteger(0, i+1);
+
+      // Swap randomly chosen element with current element
+      temp = shuffled[i];
+      shuffled[i] = shuffled[j];
+      shuffled[j] = temp;
+  }
+
+  return shuffled;
+}
+
 export const areSetsEqual = (a?: Set<any>, b?: Set<any>) => {
   return !!a && !!b && a.size === b.size && [...a].every((value) => b.has(value));
 };
