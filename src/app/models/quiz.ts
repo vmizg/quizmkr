@@ -1,62 +1,81 @@
-export interface AnswerOption {
+export interface BaseOption {
   title: string;
   correct?: boolean;
 }
 
-export interface QuizQuestion {
+export interface Option extends BaseOption {
   id: string;
-  title: string;
-  options: AnswerOption[];
+}
+
+export interface PartialQuestion {
+  index?: number;
+  title?: string;
+  options?: BaseOption[];
   answerNote?: string;
   imageURI?: string;
+}
+
+export interface BaseQuestion extends PartialQuestion {
   index: number;
-}
-
-export interface QuizQuestions {
-  id: string;
-  quizId: string;
-  questions: QuizQuestion[];
-}
-
-export interface Quiz {
-  id: string;
   title: string;
+  options: BaseOption[];
+}
+
+export interface Question extends BaseQuestion {
+  id: string;
+  options: Option[];
+}
+
+export interface PartialQuiz {
+  title?: string;
   description?: string;
   tags?: string[];
 }
 
-export interface BaseAssessmentSettings {
+export interface BaseQuiz extends PartialQuiz {
+  title: string;
+}
+
+export interface Quiz extends BaseQuiz {
+  id: string;
+}
+
+export interface PartialAssessment {
+  totalQuestions?: number;
+  rangeFrom?: number;
+  rangeTo?: number;
+  timeLimit?: number;
+  randomize?: boolean;
+  order?: number[];
+}
+
+export interface BaseAssessment extends PartialAssessment {
   totalQuestions: number;
   rangeFrom: number;
   rangeTo: number;
-  order?: number[];
-  randomize?: boolean;
-  timeLimit?: number;
-  finished?: boolean;
 }
 
-export interface AssessmentSettings extends BaseAssessmentSettings {
+export interface Assessment extends BaseAssessment {
   id: string;
-  quizId: string;
-  quizTitle: string;
+  quiz: Quiz;
+}
+
+export interface AssessmentResultDetails {
+  questionId: string;
+  questionIndex: number;
+  answeredCorrectly: boolean;
+  selectedAnswer: number[];
+  correctAnswer: number[];
 }
 
 export interface BaseAssesmentResult {
   score: number;
-  details: {
-    questionId: string;
-    questionIndex: number;
-    answeredCorrectly: boolean;
-    selectedAnswer: number[];
-    correctAnswer: number[];
-  }[];
+  details: AssessmentResultDetails[];
   timeTaken: number;
   dateCompleted: Date;
 }
 
 export interface AssessmentResult extends BaseAssesmentResult {
   id: string;
-  quizId: string;
-  quizTitle: string;
-  assessmentId: string;
+  assessment: Assessment;
 }

@@ -23,9 +23,9 @@
         <div *ngFor="let asm of inProgress; let i = index" class="flex flex-row items-center gap-2">
           <sl-icon name="record-circle" style="color: rgb(var(--sl-color-amber-500))"></sl-icon>
           <a
-            [routerLink]="['/quizzes', asm.quizId, 'assessment', asm.id]"
+            [routerLink]="['/quizzes', asm.quiz.id, 'assessment', asm.id]"
             style="color: rgb(var(--sl-color-primary-600))"
-            >({{ asm.id }}) {{ asm.quizTitle }}</a
+            >({{ asm.id }}) {{ asm.quiz.title }}</a
           >
         </div>
       </div>
@@ -45,7 +45,7 @@
           <div class="flex flex-row items-center gap-2">
             <sl-icon name="check-circle" style="color: rgb(var(--sl-color-green-500))"></sl-icon>
             <a [routerLink]="['/results', result.id]" style="color: rgb(var(--sl-color-primary-600))">
-              {{ result.quizTitle }}</a
+              {{ result.assessment.quiz.title }}</a
             >
             ({{ result.dateCompleted | date: 'medium' }})
           </div>

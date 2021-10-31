@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, forkJoin, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { BaseAssessmentSettings, QuizQuestion } from 'src/app/models/quiz';
+import { BaseAssessment, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { shuffleArray } from 'src/app/utilities';
 
@@ -19,11 +19,11 @@ export class AssessmentComponent implements OnInit {
 
   quizId = '';
   quizTitle = '';
-  quizQuestions: QuizQuestion[] = [];
+  quizQuestions: Question[] = [];
   loading = true;
   beginning = false;
 
-  settings: BaseAssessmentSettings = {
+  settings: BaseAssessment = {
     randomize: true,
     totalQuestions: 1,
     rangeFrom: 1,
@@ -49,7 +49,7 @@ export class AssessmentComponent implements OnInit {
           this.loading = false;
           if (quiz) {
             this.quizTitle = quiz.title;
-            this.quizQuestions = questions?.questions || [];
+            this.quizQuestions = questions || [];
 
             // Default to a maximum of 50 questions in the totalQuestions field
             this.settings.totalQuestions = this.quizQuestions.length > 50 ? 50 : this.quizQuestions.length;
@@ -150,7 +150,7 @@ export class AssessmentComponent implements OnInit {
     const questions = this.prepareQuestions(this.quizQuestions);
     this.settings.order = questions.map(({ index }) => index);
 
-    this.apiService.createAssessment(this.quizId, this.quizTitle, this.settings).subscribe(
+    this.apiService.createAssessment(this.quizId, this.settings).subscribe(
       (result) => {
         this.beginning = false;
         if (result) {
@@ -166,14 +166,14 @@ export class AssessmentComponent implements OnInit {
     );
   }
 
-  private prepareQuestions(questions: QuizQuestion[]) {
+  private prepareQuestions(questions: Question[]) {
     const totalQuestions = this.settings.totalQuestions || questions.length;
     const rangeFrom = (this.settings.rangeFrom || 1) - 1; // 0-indexed
     const rangeTo = this.settings.rangeTo || questions.length;
 
     // We need to save question indexes before we manipulate the list
     // for easier result tracking later
-    let indexedQs = questions.map((q, i) => ({ ...q, index: i }) as QuizQuestion);
+    let indexedQs = questions.map((q, i) => ({ ...q, index: i }) as Question);
     indexedQs = indexedQs.slice(rangeFrom, rangeTo);
 
     if (!this.settings.randomize) {

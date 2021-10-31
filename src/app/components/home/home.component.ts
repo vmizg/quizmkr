@@ -1,7 +1,8 @@
+import { HttpParams } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EMPTY, interval, Subscription } from 'rxjs';
+import { combineLatest, EMPTY, interval, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { AssessmentResult, AssessmentSettings, Quiz } from 'src/app/models/quiz';
+import { AssessmentResult, Assessment, Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -13,7 +14,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private clockSubscription$?: Subscription;
 
   loadingInProgress = true;
-  inProgress: AssessmentSettings[] = [];
+  inProgress: Assessment[] = [];
   loadingResults = true;
   results: AssessmentResult[] = [];
   loadingLatest = true;
@@ -27,8 +28,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       .pipe(tap(() => (this.currentDate = new Date())))
       .subscribe();
 
+    const assmtParams = new HttpParams();
+    assmtParams.set('_order', 'desc');
+    assmtParams.set('_limit', 8);
+    assmtParams.set('finished_ne', true);
     this.apiService
-      .getAssessments('?_order=desc&_limit=8&finished_ne=true')
+      .getAssessments(assmtParams)
       .pipe(
         tap((data) => {
           this.loadingInProgress = false;
@@ -43,8 +48,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
+    const quizParams = new HttpParams();
+    quizParams.set('_order', 'desc');
+    quizParams.set('_limit', 8);
     this.apiService
-      .getQuizzes('?_order=desc&_limit=8')
+      .getQuizzes(quizParams)
       .pipe(
         tap((data) => {
           this.loadingLatest = false;
@@ -59,8 +67,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
+    const resultParams = new HttpParams();
+    resultParams.set('_order', 'desc');
+    resultParams.set('_limit', 8);
     this.apiService
-      .getResults('?_order=desc&_limit=8')
+      .getResults(resultParams)
       .pipe(
         tap((data) => {
           this.loadingResults = false;
@@ -81,16 +92,22 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   handleDeleteResult(result: AssessmentResult) {
+    const quizTitle = result.assessment.quiz.title;
     if (
       confirm(
-        `WARNING: this will permanently clear your past assessment result for "${result.quizTitle}". Do you want continue?`
+        `WARNING: this will permanently clear your past assessment result for "${quizTitle}". Do you want continue?`
       )
     ) {
       this.apiService
         .deleteResult(result.id)
         .pipe(
           // TODO: refactor this to reuse the same function as called in ngOnInit
-          concatMap(() => this.apiService.getResults('?_order=desc&_limit=8')),
+          concatMap(() => {
+            const resultParams = new HttpParams();
+            resultParams.set('_order', 'desc');
+            resultParams.set('_limit', 8);
+            return this.apiService.getResults(resultParams)
+          }),
           tap((data) => {
             this.loadingResults = false;
             if (data) {

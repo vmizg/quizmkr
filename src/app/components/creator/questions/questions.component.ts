@@ -11,12 +11,12 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable, Subscription, EMPTY, combineLatest, Subject } from 'rxjs';
+import { forkJoin, Observable, Subscription, EMPTY } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { AnswerOption, QuizQuestion, QuizQuestions } from 'src/app/models/quiz';
+import { BaseOption, BaseQuestion, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
-import { generateColor, generateId, invertColor } from 'src/app/utilities';
+import { generateColor, invertColor } from 'src/app/utilities';
 import { ShoelaceFormService } from 'src/app/services/shoelace-form.service';
 import { ImageService } from 'src/app/services/image.service';
 
@@ -29,14 +29,12 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   private queryParamsSubscription$?: Subscription;
   private paramsSubscription$?: Subscription;
   private changesSubscription$?: Subscription;
-  private questionIdChanged$ = new Subject();
 
   @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
   @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
 
   alphabet = 'ABCDEFGHIJKLMNO';
-  questionsId?: string;
-  questions: QuizQuestion[] = [];
+  questions: Question[] = [];
   image: string = '';
   quizId: string = '';
   quizTitle: string = '';
@@ -47,10 +45,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   edited = false;
   adding = false;
 
-  questionId = '';
+  questionId = null;
   questionIndex = 0;
-  existingQuestion?: QuizQuestion;
-  existingQuestionToRender?: QuizQuestion;
+  existingQuestion?: Question;
+  existingQuestionToRender?: Question;
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -79,8 +77,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
           this.loading = false;
           if (quiz) {
             this.quizTitle = quiz.title;
-            this.questionsId = questions?.id;
-            this.questions = questions?.questions || [];
+            this.questions = questions || [];
             this.handleQueryParamChange(this.route.snapshot.queryParams)
           } else {
             this.router.navigate(['/creator']);
@@ -117,6 +114,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   ngOnDestroy(): void {
+    this.queryParamsSubscription$?.unsubscribe();
     this.paramsSubscription$?.unsubscribe();
     this.changesSubscription$?.unsubscribe();
   }
@@ -161,8 +159,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
     const answerNote = (formData.get('answer-note') as string).trim();
 
-    const question: QuizQuestion = {
-      id: generateId(),
+    // No question ID means that we are creating a new question
+    const questionId = this.existingQuestion ? this.existingQuestion.id : null;
+    const question: BaseQuestion = {
       index: this.questions.length,
       title: title,
       options: [],
@@ -173,7 +172,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     let totalCorrect = 0;
 
     for (let i = 0; i < this.totalOptions; i++) {
-      const option: AnswerOption = {
+      const option: BaseOption = {
         title: (formData.get(`option-${i}`) as string).trim(),
         correct: (formData.get(`correct-${i}`) as string) === 'on',
       };
@@ -206,27 +205,26 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       return;
     }
 
-    let index = -1;
-    const clonedQuestions = [...this.questions];
-    if (this.existingQuestion) {
-      index = clonedQuestions.indexOf(this.existingQuestion);
-    }
-    if (index > -1) {
-      clonedQuestions.splice(index, 1, question);
+    let $obs: Observable<Question | null>;
+    if (!questionId) {
+      $obs = this.apiService.createQuestion(this.quizId, question);
     } else {
-      clonedQuestions.push(question);
+      $obs = this.apiService.updateQuestion(questionId, question);
     }
-    let $obs: Observable<QuizQuestions | null>;
-    if (!this.questionsId) {
-      // No questions ID means that no questions have been created yet
-      $obs = this.apiService.createQuestions(this.quizId, clonedQuestions);
-    } else {
-      $obs = this.apiService.updateQuestions(this.questionsId, clonedQuestions);
-    }
+
     $obs.subscribe(
       (result) => {
         if (result) {
-          this.questionsId = result.id;
+          let index = -1;
+          const clonedQuestions = [...this.questions];
+          if (questionId) {
+            index = clonedQuestions.findIndex(({ id }) => id === questionId);
+            if (index > -1) {
+              clonedQuestions.splice(index, 1, result);
+            }
+          } else {
+            clonedQuestions.push(result);
+          }
           this.questions = clonedQuestions;
           this.resetForm(formControls);
         }
@@ -237,7 +235,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     );
   }
 
-  private onEdit(question: QuizQuestion): void {
+  private onEdit(question: Question): void {
     const formControls = this.questionForm.nativeElement.getFormControls();
     this.formService.resetForm(formControls);
     this.edited = false;
@@ -255,7 +253,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.questionIndex = this.questions.findIndex((q) => q.id === question.id);
   }
 
-  handleEditQuestion(question: QuizQuestion, target?: HTMLElement): void {
+  handleEditQuestion(question: Question, target?: HTMLElement): void {
     if (this.isEditing(question)) {
       this.handleCancelEdit();
       this.router.navigate(
@@ -289,7 +287,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       });
   }
 
-  renderEditQuestion(question: QuizQuestion): void {
+  renderEditQuestion(question: Question): void {
     const formControls = this.questionForm.nativeElement.getFormControls();
 
     let optionIndex = 0;
@@ -321,22 +319,17 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.resetForm();
   }
 
-  handleDeleteQuestion(question: QuizQuestion): void {
-    if (!this.questionsId) {
-      // Sanity check - this should never execute
-      return;
-    }
+  handleDeleteQuestion(question: Question): void {
     if (confirm('WARNING: are you sure you would like to delete this question?')) {
-      const clonedQuestions = [...this.questions];
-      const index = clonedQuestions.indexOf(question);
-      if (index > -1) {
-        clonedQuestions.splice(index, 1);
-      }
-      // TODO: replace with proper "delete" call when backend is available
-      this.apiService.replaceQuestions(this.questionsId, this.quizId, clonedQuestions).subscribe((result) => {
+      this.apiService.deleteQuestion(question.id).subscribe((result) => {
         if (result) {
           if (this.existingQuestion) {
             this.resetForm();
+          }
+          const clonedQuestions = [...this.questions];
+          const index = clonedQuestions.indexOf(question);
+          if (index > -1) {
+            clonedQuestions.splice(index, 1);
           }
           this.questions = clonedQuestions;
         }
@@ -366,7 +359,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
   }
 
-  isEditing(q: QuizQuestion): boolean {
+  isEditing(q: Question): boolean {
     return this.existingQuestion ? q.id === this.existingQuestion.id : false;
   }
 

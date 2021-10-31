@@ -2,11 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, forkJoin, of, interval, Subject } from 'rxjs';
 import { concatMap, takeUntil, tap } from 'rxjs/operators';
-import { AssessmentSettings, BaseAssesmentResult, QuizQuestion } from 'src/app/models/quiz';
+import { Assessment, BaseAssesmentResult, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-import { areSetsEqual, shuffleArray } from 'src/app/utilities';
+import { areSetsEqual } from 'src/app/utilities';
 
-interface PQuestion extends QuizQuestion {
+interface PQuestion extends Question {
   completed?: boolean;
   multiSelect?: boolean;
   selectedAnswer?: Set<number>;
@@ -21,7 +21,7 @@ interface PCheckboxQuestion extends PQuestion {
 }
 
 interface AssessmentRouteState {
-  settings: AssessmentSettings;
+  settings: Assessment;
   questions: PQuestion[];
 }
 
@@ -38,14 +38,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
   alphabet = 'ABCDEFGHIJKLMNO';
   dataState?: AssessmentRouteState;
-  settings: AssessmentSettings = {
-    id: '',
-    quizId: '',
-    quizTitle: '',
-    totalQuestions: 1,
-    rangeFrom: 1,
-    rangeTo: 1,
-  };
+  settings?: Assessment;
   questions: PQuestion[] = [];
   activeQuestion?: PRadioQuestion | PCheckboxQuestion;
   activeQuestionIndex = 0;
@@ -61,19 +54,17 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.paramsSubscription$ = this.route.params
       .pipe(
         concatMap((params) => {
-          this.settings.id = params.aid;
-          this.settings.quizId = params.qid;
           const { settings, questions } = this.dataState || {};
           return forkJoin([
-            settings ? of(settings) : this.apiService.getAssessment(this.settings.id),
-            questions ? of({ questions }) : this.apiService.getQuestions(this.settings.quizId),
+            settings ? of(settings) : this.apiService.getAssessment(params.aid),
+            questions ? of({ questions }) : this.apiService.getQuestions(params.qid),
           ]);
         }),
         tap(([assessment, questions]: any) => {
-          this.settings = assessment as AssessmentSettings;
-          let _questions = questions?.questions as QuizQuestion[] || [];
-          if (_questions.length === 0 || this.settings.finished) {
-            this.router.navigate(['/quizzes', this.settings.quizId]);
+          this.settings = assessment as Assessment;
+          let _questions = questions as Question[] || [];
+          if (_questions.length === 0) {
+            this.router.navigate(['/quizzes', this.settings.quiz.id]);
             return;
           }
           if (this.settings.order) {
@@ -86,7 +77,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           this.questions = _questions;
           this.setActiveQuestion(0);
           this.startTime = new Date().getTime();
-          this.setupTimer();
+          this.setupTimer(this.settings.timeLimit);
         })
       )
       .subscribe();
@@ -149,34 +140,38 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.timeLeft = new Date(timeLimit * 60 * 1000 + 1000 + this.startTime - currentDate);
   }
 
-  private setupTimer() {
-    const timeLimit = this.settings.timeLimit;
-    if (timeLimit) {
-      this.dateFmt = timeLimit > 60 ? 'h:mm:ss' : 'mm:ss';
-      this.setTimeLeft(timeLimit);
-      this.interval$ = interval(1000)
-        .pipe(
-          takeUntil(this.timeLimit$),
-          tap(() => {
-            this.setTimeLeft(timeLimit);
-            if (this.timeLeft && this.timeLeft.getTime() <= 0) {
-              this.timeLimit$.next();
-              this.timeLimit$.complete();
-            }
-          })
-        )
-        .subscribe(
-          () => {},
-          () => {},
-          () => {
-            alert('TIME IS UP! Your quiz will now be submitted');
-            this.submitAssessment();
-          }
-        );
+  private setupTimer(timeLimit?: number) {
+    if (!timeLimit) {
+      return;
     }
+    this.dateFmt = timeLimit > 60 ? 'h:mm:ss' : 'mm:ss';
+    this.setTimeLeft(timeLimit);
+    this.interval$ = interval(1000)
+      .pipe(
+        takeUntil(this.timeLimit$),
+        tap(() => {
+          this.setTimeLeft(timeLimit);
+          if (this.timeLeft && this.timeLeft.getTime() <= 0) {
+            this.timeLimit$.next();
+            this.timeLimit$.complete();
+          }
+        })
+      )
+      .subscribe(
+        () => {},
+        () => {},
+        () => {
+          alert('TIME IS UP! Your quiz will now be submitted');
+          this.submitAssessment();
+        }
+      );
   }
 
   private submitAssessment() {
+    if (!this.settings) {
+      // Sanity check, should never execute
+      return;
+    }
     const currentDate = new Date();
     const currentTime = currentDate.getTime();
     const { score, details } = this.calculateScore();
@@ -186,15 +181,12 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       timeTaken: currentTime - this.startTime,
       dateCompleted: currentDate,
     };
-    forkJoin([
-      this.apiService.submitResult(this.settings.id, this.settings.quizId, this.settings.quizTitle, data),
-      this.apiService.updateAssessment(this.settings.id, { finished: true }),
-    ]).subscribe(([results, assessment]) => {
-      if (results && assessment) {
+    this.apiService.submitAssessmentResult(this.settings.id, data).subscribe((result) => {
+      if (result) {
         alert(
           'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
         );
-        this.router.navigate(['/results', results.id], { state: { results } });
+        this.router.navigate(['/results', result.id], { state: { result } });
       }
     });
   }

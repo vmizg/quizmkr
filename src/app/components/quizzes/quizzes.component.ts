@@ -17,10 +17,15 @@ export class QuizzesComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
-    this.apiService.getQuizzes().subscribe((quizzes) => {
-      this.quizzes = quizzes;
-      this.loading = false;
-    });
+    this.apiService.getQuizzes().subscribe(
+      (quizzes) => {
+        this.quizzes = quizzes;
+        this.loading = false;
+      },
+      () => {
+        this.loading = false;
+      }
+    );
   }
 
   handleEditQuiz(quiz: Quiz): void {
