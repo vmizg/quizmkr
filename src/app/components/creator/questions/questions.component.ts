@@ -11,7 +11,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable, Subscription, EMPTY } from 'rxjs';
+import { forkJoin, Observable, Subscription, EMPTY, combineLatest, Subject } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
 import { AnswerOption, QuizQuestion, QuizQuestions } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
@@ -26,8 +26,10 @@ import { ImageService } from 'src/app/services/image.service';
   styleUrls: ['./questions.component.scss'],
 })
 export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, ComponentCanDeactivate {
+  private queryParamsSubscription$?: Subscription;
   private paramsSubscription$?: Subscription;
   private changesSubscription$?: Subscription;
+  private questionIdChanged$ = new Subject();
 
   @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
   @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
@@ -36,7 +38,6 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   questionsId?: string;
   questions: QuizQuestion[] = [];
   image: string = '';
-  newQuiz = false;
   quizId: string = '';
   quizTitle: string = '';
   quizColor: string = '';
@@ -46,7 +47,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   edited = false;
   adding = false;
 
-  questionIndex = 1;
+  questionId = '';
+  questionIndex = 0;
   existingQuestion?: QuizQuestion;
   existingQuestionToRender?: QuizQuestion;
 
@@ -59,11 +61,19 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     private router: Router
   ) {
     this.loading = true;
+
+    this.queryParamsSubscription$ = this.route.queryParams.pipe(tap((params) => {
+      this.handleQueryParamChange(params);
+    })).subscribe();
+
     this.paramsSubscription$ = this.route.params
       .pipe(
         concatMap((params) => {
           this.quizId = params.qid;
-          return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
+          return forkJoin([
+            this.apiService.getQuiz(this.quizId),
+            this.apiService.getQuestions(this.quizId),
+          ]);
         }),
         tap(([quiz, questions]) => {
           this.loading = false;
@@ -71,7 +81,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
             this.quizTitle = quiz.title;
             this.questionsId = questions?.id;
             this.questions = questions?.questions || [];
-            this.questionIndex = this.questions.length + 1;
+            this.handleQueryParamChange(this.route.snapshot.queryParams)
           } else {
             this.router.navigate(['/creator']);
           }
@@ -219,7 +229,6 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
           this.questionsId = result.id;
           this.questions = clonedQuestions;
           this.resetForm(formControls);
-          this.newQuiz = false;
         }
       },
       (err) => {
@@ -228,19 +237,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     );
   }
 
-  handleEditQuestion(question: QuizQuestion): void {
-    if (this.isEditing(question)) {
-      this.handleCancelEdit();
-      return;
-    }
-
+  private onEdit(question: QuizQuestion): void {
     const formControls = this.questionForm.nativeElement.getFormControls();
-    if (this.edited && !confirm(
-      'WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.'
-    )) {
-      return;
-    }
-
     this.formService.resetForm(formControls);
     this.edited = false;
     this.image = '';
@@ -254,7 +252,40 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       this.renderEditQuestion(question);
     }
     this.existingQuestion = question;
-    this.questionIndex = this.questions.findIndex((q) => q.id === question.id) + 1;
+    this.questionIndex = this.questions.findIndex((q) => q.id === question.id);
+  }
+
+  handleEditQuestion(question: QuizQuestion, target?: HTMLElement): void {
+    if (this.isEditing(question)) {
+      this.handleCancelEdit();
+      this.router.navigate(
+        [], 
+        {
+          relativeTo: this.route,
+          queryParams: { q: undefined },
+          queryParamsHandling: 'merge'
+        });
+      return;
+    }
+
+    if (this.edited && !confirm(
+      'WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.'
+    )) {
+      return;
+    }
+  
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Set query params to trigger queryParams observable and edit fn
+    this.router.navigate(
+      [], 
+      {
+        relativeTo: this.route,
+        queryParams: { q: question.id },
+        queryParamsHandling: 'merge'
+      });
   }
 
   renderEditQuestion(question: QuizQuestion): void {
@@ -338,6 +369,15 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     return this.existingQuestion ? q.id === this.existingQuestion.id : false;
   }
 
+  private handleQueryParamChange(params: any) {
+    if (params.q) {
+      const question = this.questions.find((q) => params.q === q.id);
+      if (question) {
+        this.onEdit(question);
+      }
+    }
+  }
+
   private uploadImage(file: File) {
     return this.imageService.resizeImage(file).pipe(
       tap(({ dataUrl }) => {
@@ -364,7 +404,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     const controls = formControls || this.questionForm.nativeElement.getFormControls();
     this.formService.resetForm(controls);
     this.totalOptions = 3;
-    this.questionIndex = this.questions.length + 1;
+    this.questionIndex = this.questions.length;
     this.existingQuestion = undefined;
     this.edited = false;
     this.image = '';

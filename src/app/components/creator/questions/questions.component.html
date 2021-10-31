@@ -34,8 +34,8 @@
     <sl-form (sl-submit)="handleAddQuestion($event)" #questionForm>
       <sl-card class="question-container" [class.edit-mode]="existingQuestion">
         <div slot="header" class="font-semibold">
-          <sl-badge [type]="existingQuestion ? 'primary' : 'neutral'" class="mr-2" pill>{{ questionIndex }}</sl-badge>
-          {{ existingQuestion ? 'Edit' : 'Add' }} a question
+          <sl-badge [type]="existingQuestion ? 'primary' : 'neutral'" class="mr-2" pill>{{ questionIndex + 1 }}</sl-badge>
+          {{ existingQuestion ? 'Edit' : 'New' }} question
         </div>
         <div class="flex flex-col gap-4">
           <div class="flex flex-row items-start gap-2">
@@ -146,14 +146,14 @@
       *ngIf="questions && questions.length > 0"
     >
       <div class="flex flex-col gap-2">
-        <sl-card *cdkVirtualFor="let q of questions; let i = index" class="question-card" [class.edit-mode]="isEditing(q)">
+        <sl-card *cdkVirtualFor="let q of questions; let i = index" class="question-card" [class.edit-mode]="isEditing(q)" #targetQ>
           <div class="flex flex-row items-center justify-between gap-4 h-12">
             <div class="question-title">
               <sl-badge [type]="isEditing(q) ? 'primary' : 'neutral'" class="mr-2" pill>{{ i + 1 }}</sl-badge>
               <span>{{ q.title }}</span>
             </div>
             <div class="flex flex-row gap-2">
-              <sl-button circle outline (click)="handleEditQuestion(q)"
+              <sl-button type="neutral" circle outline (click)="handleEditQuestion(q, targetQ)"
                 ><sl-icon [name]="isEditing(q) ? 'x-lg' : 'pencil-square'"></sl-icon
               ></sl-button>
               <sl-button type="danger" circle outline (click)="handleDeleteQuestion(q)" tabindex="-1"
