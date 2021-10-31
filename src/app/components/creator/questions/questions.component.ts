@@ -275,7 +275,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
   
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
+      // TODO: fix scrolling into component
+      // target.scrollIntoView({ behavior: 'smooth' });
     }
 
     // Set query params to trigger queryParams observable and edit fn
