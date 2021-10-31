@@ -11,10 +11,9 @@
           class="text-2xl font-semibold"
           >{{ resultSheet.quizTitle }}</span
         >
-        <span class="text-l">Result sheet</span>
+        <span class="text-l">Assessment result sheet</span>
       </div>
       <div class="flex flex-row gap-4 items-center text-l">
-        <span>Q U I Z A S T</span>
         <sl-avatar style="line-height: 56px">
           <sl-icon slot="icon" name="check-circle" class="text-xl"></sl-icon>
         </sl-avatar>
@@ -22,10 +21,17 @@
     </div>
   </sl-card>
   <sl-card *ngIf="resultSheet.score > -1">
+    <div slot="header">
+      Summary
+    </div>
     <div class="flex flex-col gap-2 w-full">
       <div class="flex flex-col justify-center items-center">
         <span class="text-xl">Score:</span>
         <span class="font-semibold text-3xl">{{ resultSheet.score }}%</span>
+      </div>
+      <div class="flex flex-row justify-between items-center">
+        <span>Answered correctly</span>
+        <span class="font-semibold">{{ (resultSheet.score / 100) * resultSheet.results.length }} / {{ resultSheet.results.length }}</span>
       </div>
       <div class="flex flex-row justify-between items-center">
         <span>Time taken to complete</span>
@@ -49,9 +55,11 @@
         }"
       >
         <div class="flex flex-col w-full gap-2">
-          <div class="flex flex-row items-start gap-2 text-xl">
-            <sl-badge class="mt-1" type="neutral" pill>{{ i + 1 }}</sl-badge>
-            {{ result.questionTitle }}
+          <div class="flex flex-row justify-between gap-2 text-xl">
+            <div class="flex items-start gap-2">
+              <sl-badge class="mt-1" type="neutral" pill>{{ i + 1 }}</sl-badge>
+              {{ result.questionTitle }}
+            </div>
           </div>
           <div *ngIf="result.imageURI">
             <img [src]="result.imageURI" class="ml-20 max-h-32" />
