@@ -257,7 +257,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     if (this.isEditing(question)) {
       this.handleCancelEdit();
       this.router.navigate(
-        [], 
+        [],
         {
           relativeTo: this.route,
           queryParams: { q: undefined },
@@ -271,7 +271,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     )) {
       return;
     }
-  
+
     if (target) {
       // TODO: fix scrolling into component
       // target.scrollIntoView({ behavior: 'smooth' });
@@ -279,7 +279,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
     // Set query params to trigger queryParams observable and edit fn
     this.router.navigate(
-      [], 
+      [],
       {
         relativeTo: this.route,
         queryParams: { q: question.id },
@@ -332,6 +332,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
             clonedQuestions.splice(index, 1);
           }
           this.questions = clonedQuestions;
+          this.questionIndex = this.questions.length;
         }
       });
     }
@@ -365,10 +366,12 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
   private handleQueryParamChange(params: any) {
     if (params.q) {
-      const question = this.questions.find((q) => params.q === q.id);
+      const question = this.questions.find((q) => params.q === `${q.id}`);
       if (question) {
         this.onEdit(question);
       }
+    } else {
+      this.questionIndex = this.questions.length;
     }
   }
 
