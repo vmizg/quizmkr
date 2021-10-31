@@ -57,7 +57,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           const { settings, questions } = this.dataState || {};
           return forkJoin([
             settings ? of(settings) : this.apiService.getAssessment(params.aid),
-            questions ? of({ questions }) : this.apiService.getQuestions(params.qid),
+            questions ? of(questions) : this.apiService.getQuestions(params.qid),
           ]);
         }),
         tap(([assessment, questions]: any) => {
