@@ -17,7 +17,7 @@ const defaultParams = {
 export class HomeComponent implements OnInit, OnDestroy {
   private clockSubscription$?: Subscription;
 
-  loadingInProgress = true;
+  loadingInProgress = false;
   inProgress: Assessment[] = [];
   loadingResults = true;
   results: AssessmentResult[] = [];
@@ -30,22 +30,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.clockSubscription$ = interval(1000)
       .pipe(tap(() => (this.currentDate = new Date())))
-      .subscribe();
-
-    this.apiService
-      .getAssessments(defaultParams)
-      .pipe(
-        tap((data) => {
-          this.loadingInProgress = false;
-          if (data) {
-            this.inProgress = data;
-          }
-        }),
-        catchError(() => {
-          this.loadingInProgress = false;
-          return EMPTY;
-        })
-      )
       .subscribe();
 
     this.apiService
