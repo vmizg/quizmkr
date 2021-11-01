@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, forkJoin, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { shuffleArray } from 'src/app/utilities';
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentComponent implements OnInit {
+export class AssessmentComponent implements OnInit, OnDestroy {
   private paramsSubscription$?: Subscription;
 
   @ViewChild('totalQEl') totalQRef?: ElementRef<HTMLInputElement>;
@@ -31,11 +31,7 @@ export class AssessmentComponent implements OnInit {
   };
   overshoot = false;
 
-  constructor(
-    private apiService: ApiService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.loading = true;
@@ -173,7 +169,7 @@ export class AssessmentComponent implements OnInit {
 
     // We need to save question indexes before we manipulate the list
     // for easier result tracking later
-    let indexedQs = questions.map((q, i) => ({ ...q, index: i }) as Question);
+    let indexedQs = questions.map((q, i) => ({ ...q, index: i } as Question));
     indexedQs = indexedQs.slice(rangeFrom, rangeTo);
 
     if (!this.settings.randomize) {

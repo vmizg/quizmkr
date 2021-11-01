@@ -62,7 +62,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         }),
         tap(([assessment, questions]: any) => {
           this.settings = assessment as Assessment;
-          let _questions = questions as Question[] || [];
+          let _questions = (questions as Question[]) || [];
           if (_questions.length === 0) {
             this.router.navigate(['/quizzes', this.settings.quiz.id]);
             return;

@@ -112,7 +112,12 @@
       <div *ngIf="!settings.randomize && overshoot" class="flex flex-col">
         <span class="text-l font-semibold" style="color: rgb(var(--sl-color-amber-500))">Warning!</span>
         <div class="flex flex-col text-md">
-          <span>The system will only pick questions <span class="font-semibold">{{ settings.rangeFrom }} to {{ settings.rangeFrom + settings.totalQuestions - 1 }}</span>. Select "Randomize questions" to pick from the whole range.</span>
+          <span
+            >The system will only pick questions
+            <span class="font-semibold"
+              >{{ settings.rangeFrom }} to {{ settings.rangeFrom + settings.totalQuestions - 1 }}</span
+            >. Select "Randomize questions" to pick from the whole range.</span
+          >
         </div>
       </div>
     </div>

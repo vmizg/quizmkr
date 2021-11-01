@@ -6,11 +6,9 @@
           <sl-spinner></sl-spinner>
           <span>Loading...</span>
         </div>
-        <span
-          *ngIf="!loading && resultSheet && resultSheet.details.length > 0"
-          class="text-2xl font-semibold"
-          >{{ resultSheet.assessment.quiz.title }}</span
-        >
+        <span *ngIf="!loading && resultSheet && resultSheet.details.length > 0" class="text-2xl font-semibold">{{
+          resultSheet.assessment.quiz.title
+        }}</span>
         <span class="text-l">Assessment result sheet</span>
       </div>
       <div class="flex flex-row gap-4 items-center text-l">
@@ -21,9 +19,7 @@
     </div>
   </sl-card>
   <sl-card *ngIf="resultSheet">
-    <div slot="header">
-      Summary
-    </div>
+    <div slot="header">Summary</div>
     <div class="flex flex-col gap-2 w-full">
       <div class="flex flex-col justify-center items-center">
         <span class="text-xl">Score:</span>
@@ -31,7 +27,9 @@
       </div>
       <div class="flex flex-row justify-between items-center">
         <span>Answered correctly</span>
-        <span class="font-semibold">{{ (resultSheet.score / 100) * resultSheet.details.length }} / {{ resultSheet.details.length }}</span>
+        <span class="font-semibold"
+          >{{ (resultSheet.score / 100) * resultSheet.details.length }} / {{ resultSheet.details.length }}</span
+        >
       </div>
       <div class="flex flex-row justify-between items-center">
         <span>Time taken to complete</span>
@@ -65,7 +63,7 @@
             <img [src]="result.imageURI" class="ml-20 max-h-32" />
           </div>
           <div *ngFor="let option of result.options; let j = index" class="flex flex-row items-center ml-8">
-            <div class="flex text-xl mr-4" style="flex: 0 0 2rem;">
+            <div class="flex text-xl mr-4" style="flex: 0 0 2rem">
               <sl-icon
                 *ngIf="option.correct"
                 name="check-circle"

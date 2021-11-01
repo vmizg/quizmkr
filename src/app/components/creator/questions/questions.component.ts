@@ -60,25 +60,26 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   ) {
     this.loading = true;
 
-    this.queryParamsSubscription$ = this.route.queryParams.pipe(tap((params) => {
-      this.handleQueryParamChange(params);
-    })).subscribe();
+    this.queryParamsSubscription$ = this.route.queryParams
+      .pipe(
+        tap((params) => {
+          this.handleQueryParamChange(params);
+        })
+      )
+      .subscribe();
 
     this.paramsSubscription$ = this.route.params
       .pipe(
         concatMap((params) => {
           this.quizId = params.qid;
-          return forkJoin([
-            this.apiService.getQuiz(this.quizId),
-            this.apiService.getQuestions(this.quizId),
-          ]);
+          return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
         }),
         tap(([quiz, questions]) => {
           this.loading = false;
           if (quiz) {
             this.quizTitle = quiz.title;
             this.questions = questions || [];
-            this.handleQueryParamChange(this.route.snapshot.queryParams)
+            this.handleQueryParamChange(this.route.snapshot.queryParams);
           } else {
             this.router.navigate(['/creator']);
           }
@@ -141,7 +142,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   handleRemoveOption(optionInput: HTMLElement) {
-    if ((optionInput as HTMLInputElement).value && !confirm("The option you're trying to remove is non-empty. Do you want to continue?")) {
+    if (
+      (optionInput as HTMLInputElement).value &&
+      !confirm("The option you're trying to remove is non-empty. Do you want to continue?")
+    ) {
       return;
     }
     this.totalOptions--;
@@ -256,19 +260,20 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   handleEditQuestion(question: Question, target?: HTMLElement): void {
     if (this.isEditing(question)) {
       this.handleCancelEdit();
-      this.router.navigate(
-        [],
-        {
-          relativeTo: this.route,
-          queryParams: { q: undefined },
-          queryParamsHandling: 'merge'
-        });
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { q: undefined },
+        queryParamsHandling: 'merge',
+      });
       return;
     }
 
-    if (this.edited && !confirm(
-      'WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.'
-    )) {
+    if (
+      this.edited &&
+      !confirm(
+        'WARNING: you have a question that is currently being edited. By clicking confirm you will lose all changes in the current form.'
+      )
+    ) {
       return;
     }
 
@@ -278,13 +283,11 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
 
     // Set query params to trigger queryParams observable and edit fn
-    this.router.navigate(
-      [],
-      {
-        relativeTo: this.route,
-        queryParams: { q: question.id },
-        queryParamsHandling: 'merge'
-      });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { q: question.id },
+      queryParamsHandling: 'merge',
+    });
   }
 
   renderEditQuestion(question: Question): void {
@@ -345,7 +348,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
     const [file] = Array.from(inputEl.files || []);
     if (file) {
-      this.uploadImage(file).subscribe(() => inputEl.value = '');
+      this.uploadImage(file).subscribe(() => (inputEl.value = ''));
     }
   }
 

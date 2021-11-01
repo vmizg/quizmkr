@@ -56,18 +56,18 @@ const resize = (
   ctx.drawImage(image, 0, 0, width, height);
 
   if (type === 'jpeg') {
-    // Set the transparent background of canvas to white  
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);   
-    for (let i = 0; i < imageData.data.length; i += 4) {   
-        // When the pixel is transparent, it is set to white  
-        if (imageData.data[i + 3] == 0) {   
-            imageData.data[i] = 255;   
-            imageData.data[i + 1] = 255;   
-            imageData.data[i + 2] = 255;   
-            imageData.data[i + 3] = 255;    
-        }   
+    // Set the transparent background of canvas to white
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      // When the pixel is transparent, it is set to white
+      if (imageData.data[i + 3] == 0) {
+        imageData.data[i] = 255;
+        imageData.data[i + 1] = 255;
+        imageData.data[i + 2] = 255;
+        imageData.data[i + 3] = 255;
+      }
     }
-    ctx.putImageData(imageData, 0, 0);  
+    ctx.putImageData(imageData, 0, 0);
   }
 
   const dataUrl = canvas.toDataURL(`image/${type}`);

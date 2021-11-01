@@ -71,16 +71,16 @@ export const shuffleArray = (arr: any[]) => {
   let temp;
 
   while (i--) {
-      j = getRandomInteger(0, i+1);
+    j = getRandomInteger(0, i + 1);
 
-      // Swap randomly chosen element with current element
-      temp = shuffled[i];
-      shuffled[i] = shuffled[j];
-      shuffled[j] = temp;
+    // Swap randomly chosen element with current element
+    temp = shuffled[i];
+    shuffled[i] = shuffled[j];
+    shuffled[j] = temp;
   }
 
   return shuffled;
-}
+};
 
 export const areSetsEqual = (a?: Set<any>, b?: Set<any>) => {
   return !!a && !!b && a.size === b.size && [...a].every((value) => b.has(value));

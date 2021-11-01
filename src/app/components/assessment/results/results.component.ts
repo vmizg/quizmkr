@@ -41,10 +41,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
           return this.resultState ? of(this.resultState) : this.apiService.getResult(id);
         }),
         concatMap((result) => {
-          return forkJoin([
-            of(result),
-            this.apiService.getQuestions(result.assessment.quiz.id)
-          ]);
+          return forkJoin([of(result), this.apiService.getQuestions(result.assessment.quiz.id)]);
         }),
         tap(([result, questions]) => {
           if (result && questions) {

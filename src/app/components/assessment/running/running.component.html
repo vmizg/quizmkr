@@ -5,7 +5,10 @@
       <a (click)="handleAbandon()" style="cursor: pointer; color: rgb(var(--sl-color-danger-600))">Abandon</a>
     </div>
   </sl-card>
-  <sl-card class="question-card" [style]="{ '--question-count': questions.length, '--question-index': activeQuestionIndex + 1 }">
+  <sl-card
+    class="question-card"
+    [style]="{ '--question-count': questions.length, '--question-index': activeQuestionIndex + 1 }"
+  >
     <div slot="header" class="question-card-header">
       <span class="mr-4 font-semibold">{{ activeQuestionIndex + 1 }} / {{ questions.length }}</span>
       <div class="step-indicator-wrapper">

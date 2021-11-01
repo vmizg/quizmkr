@@ -33,7 +33,9 @@
     <sl-form (sl-submit)="handleAddQuestion($event)" #questionForm>
       <sl-card class="question-container" [class.edit-mode]="existingQuestion">
         <div slot="header" class="font-semibold">
-          <sl-badge [type]="existingQuestion ? 'primary' : 'neutral'" class="mr-2" pill>{{ questionIndex + 1 }}</sl-badge>
+          <sl-badge [type]="existingQuestion ? 'primary' : 'neutral'" class="mr-2" pill>{{
+            questionIndex + 1
+          }}</sl-badge>
           {{ existingQuestion ? 'Edit' : 'New' }} question
         </div>
         <div class="flex flex-col gap-4">
@@ -48,9 +50,7 @@
               required
             >
             </sl-textarea>
-            <sl-button *ngIf="!image" (click)="uploader.click()" outline
-              ><sl-icon name="image"></sl-icon
-            ></sl-button>
+            <sl-button *ngIf="!image" (click)="uploader.click()" outline><sl-icon name="image"></sl-icon></sl-button>
             <div *ngIf="image" class="question-image relative m-auto ml-4">
               <img [src]="image" class="h-full max-h-64 m-auto" />
               <div class="absolute top-2 right-2 flex flex-row gap-2">
@@ -145,7 +145,12 @@
       *ngIf="questions && questions.length > 0"
     >
       <div class="flex flex-col gap-2">
-        <sl-card *cdkVirtualFor="let q of questions; let i = index" class="question-card" [class.edit-mode]="isEditing(q)" #targetQ>
+        <sl-card
+          *cdkVirtualFor="let q of questions; let i = index"
+          class="question-card"
+          [class.edit-mode]="isEditing(q)"
+          #targetQ
+        >
           <div class="flex flex-row items-center justify-between gap-4 h-12">
             <div class="question-title">
               <sl-badge [type]="isEditing(q) ? 'primary' : 'neutral'" class="mr-2" pill>{{ i + 1 }}</sl-badge>
