@@ -1,23 +1,11 @@
 <div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl">
-  <sl-card class="header-card">
-    <div class="flex flex-row justify-between">
-      <div class="flex flex-col">
-        <div *ngIf="loading" class="flex flex-row items-center gap-4 text-2xl font-semibold">
-          <sl-spinner></sl-spinner>
-          <span>Loading...</span>
-        </div>
-        <span *ngIf="!loading && resultSheet && resultSheet.details.length > 0" class="text-2xl font-semibold">{{
-          resultSheet.assessment.quiz.title
-        }}</span>
-        <span class="text-l">Assessment result sheet</span>
-      </div>
-      <div class="flex flex-row gap-4 items-center text-l">
-        <sl-avatar style="line-height: 56px">
-          <sl-icon slot="icon" name="check-circle" class="text-xl"></sl-icon>
-        </sl-avatar>
-      </div>
-    </div>
-  </sl-card>
+  <app-card-header
+    [title]="resultSheet?.assessment?.quiz?.title"
+    subtitle="Assessment result sheet"
+    [loading]="loading"
+    [visible]="!!(resultSheet && resultSheet.details.length > 0)"
+    icon="check-circle">
+  </app-card-header>
   <sl-card *ngIf="resultSheet">
     <div slot="header">Summary</div>
     <div class="flex flex-col gap-2 w-full">

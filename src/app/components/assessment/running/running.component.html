@@ -1,21 +1,11 @@
 <div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl">
-  <sl-card class="header-card">
-    <div class="flex flex-row justify-between">
-      <div *ngIf="loading" class="flex flex-row items-center gap-4 text-2xl font-semibold">
-        <sl-spinner></sl-spinner>
-        <span>Loading...</span>
-      </div>
-      <div *ngIf="!loading && activeQuestion && settings" class="flex flex-col">
-        <span class="text-2xl font-semibold">{{ settings.quiz.title }}</span>
-        <span class="text-l">Question {{ activeQuestionIndex + 1 }} of {{ questions.length }}</span>
-      </div>
-      <div class="flex flex-row gap-4 items-center text-l">
-        <sl-avatar style="line-height: 56px">
-          <sl-icon slot="icon" name="compass" class="text-xl"></sl-icon>
-        </sl-avatar>
-      </div>
-    </div>
-  </sl-card>
+  <app-card-header
+    [title]="settings?.quiz?.title"
+    subtitle="Question {{ activeQuestionIndex + 1 }} of {{ questions.length }}"
+    [loading]="loading"
+    [visible]="!!(activeQuestion && settings)"
+    icon="compass">
+  </app-card-header>
   <ng-container *ngIf="!loading && activeQuestion && settings">
     <sl-card
       class="question-card"

@@ -14,6 +14,7 @@ import { QuizzesComponent } from './components/quizzes/quizzes.component';
 import { AssessmentComponent } from './components/assessment/assessment.component';
 import { RunningAssessmentComponent } from './components/assessment/running/running.component';
 import { ResultsComponent } from './components/assessment/results/results.component';
+import { CardHeaderComponent } from './components/card-header/card-header.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { ResultsComponent } from './components/assessment/results/results.compon
     QuestionsComponent,
     QuizzesComponent,
     ResultsComponent,
+    CardHeaderComponent,
   ],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, ScrollingModule],
   providers: [ApiService, PendingChangesGuard],

@@ -1,0 +1,12 @@
+:host {
+  display: contents;
+}
+
+sl-avatar {
+  line-height: 3.5rem;
+  margin-top: -0.125rem;
+}
+
+sl-card::part(body) {
+  height: 6rem;
+}

@@ -3,33 +3,23 @@
   [style]="cssVars"
 >
   <div class="flex flex-col gap-2 w-full xl:w-3/5">
-    <sl-card class="header-card">
-      <div class="flex flex-row justify-between">
-        <div class="flex flex-row items-center gap-4 text-2xl font-semibold">
-          <ng-container *ngIf="loading">
-            <sl-spinner></sl-spinner>
-            <span>Loading...</span>
-          </ng-container>
-          <ng-container *ngIf="!loading && quizTitle">
-            <span>{{ quizTitle }}</span>
-            <!-- <sl-color-picker *ngIf="quizTitle" value="{{ quizColor }}" no-format-toggle (sl-change)="handleColorChange($event)">
-              {{ quizColor }}
-            </sl-color-picker> -->
-            <sl-icon-button
-              name="pencil"
-              label="Edit quiz"
-              (click)="handleEditQuiz()"
-              class="edit-quiz-button"
-            ></sl-icon-button>
-          </ng-container>
-        </div>
-        <div class="flex flex-row gap-4 items-center text-l">
-          <sl-avatar style="line-height: 56px">
-            <sl-icon slot="icon" name="asterisk" class="text-xl"></sl-icon>
-          </sl-avatar>
-        </div>
-      </div>
-    </sl-card>
+    <app-card-header
+      [loading]="loading"
+      [visible]="!!quizTitle"
+      icon="asterisk">
+      <ng-container titleContent>
+        <span>{{ quizTitle }}</span>
+        <!-- <sl-color-picker *ngIf="quizTitle" value="{{ quizColor }}" no-format-toggle (sl-change)="handleColorChange($event)">
+          {{ quizColor }}
+        </sl-color-picker> -->
+        <sl-icon-button
+          name="pencil"
+          label="Edit quiz"
+          (click)="handleEditQuiz()"
+          class="edit-quiz-button"
+        ></sl-icon-button>
+      </ng-container>
+    </app-card-header>
     <sl-form (sl-submit)="handleAddQuestion($event)" #questionForm>
       <sl-card class="question-container" [class.edit-mode]="existingQuestion">
         <div slot="header" class="font-semibold">
@@ -127,18 +117,11 @@
     </sl-form>
   </div>
   <div class="flex flex-col gap-2 w-full xl:w-2/5">
-    <sl-card>
-      <div class="flex flex-row justify-between items-center gap-4">
-        <div class="flex flex-row items-center gap-4 text-2xl font-semibold">
-          <span>Questions in quiz</span>
-        </div>
-        <div class="flex flex-row items-center gap-4 text-l">
-          <sl-avatar style="line-height: 56px">
-            <sl-icon slot="icon" name="question-circle" class="text-xl"></sl-icon>
-          </sl-avatar>
-        </div>
-      </div>
-    </sl-card>
+    <app-card-header
+      title="Questions in quiz"
+      icon="question-circle"
+    >
+    </app-card-header>
     <cdk-virtual-scroll-viewport
       itemSize="104"
       class="question-list-container"
