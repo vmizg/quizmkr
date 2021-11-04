@@ -24,6 +24,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   alphabet = 'ABCDEFGHIJKLMNO';
   resultState?: AssessmentResult;
   resultSheet?: ResultSheet;
+  answeredCorrectly = 0;
   timeTaken = '';
 
   loading = true;
@@ -56,6 +57,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
                 ...questions[details.questionIndex],
                 questionTitle: questions[details.questionIndex].title,
               };
+              if (resultDetails.answeredCorrectly) {
+                this.answeredCorrectly++;
+              }
               this.resultSheet.details.push(resultDetails);
             }
             let secondsTaken = Math.floor(result.timeTaken / 1000);

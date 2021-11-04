@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, of, interval, Subject, EMPTY } from 'rxjs';
+import { Subscription, of, interval, Subject, EMPTY, ReplaySubject } from 'rxjs';
 import { catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { Assessment, BaseAssesmentResult, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
@@ -33,7 +33,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private paramsSubscription$?: Subscription;
   private stateSubscription$?: Subscription;
   private interval$?: Subscription;
-  private image$ = new Subject<string>();
+  private image$ = new ReplaySubject<{ current: string; upcoming: string }>();
+  private upcomingImage$ = new ReplaySubject<string>();
   private timeLimit$ = new Subject();
 
   alphabet = 'ABCDEFGHIJKLMNO';
@@ -84,12 +85,36 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
     this.image$
       .pipe(
-        concatMap((imageId) => {
-          this.imageLoading = true;
-          if (this.imageCache[imageId]) {
-            return of(this.imageCache[imageId]);
+        concatMap(({ current, upcoming }) => {
+          if (!current && !upcoming) {
+            // Questions contain no images
+            return of('');
           }
-          return this.apiService.getImage(imageId).pipe(tap((imageUri) => (this.imageCache[imageId] = imageUri)));
+
+          const upcomingPic = this.imageCache[upcoming];
+          if (upcoming && !upcomingPic) {
+            // Signal to download the upcoming picture.
+            this.upcomingImage$.next(upcoming);
+          }
+
+          if (!current) {
+            // Current question has no picture, skip.
+            return of('');
+          }
+
+          const currentPic = this.imageCache[current];
+          if (currentPic) {
+            // Current picture in cache, nothing else to do.
+            return of(currentPic);
+          }
+
+          this.imageLoading = true;
+
+          // Fetch the current picture.
+          return this.apiService.getImage(current).pipe(
+            tap((img) => (this.imageCache[current] = img)),
+            catchError(() => of(''))
+          );
         }),
         tap((imageUri) => {
           this.imageUri = imageUri;
@@ -100,13 +125,30 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+
+    this.upcomingImage$
+      .pipe(
+        concatMap((upcoming) => {
+          const upcomingPic = this.imageCache[upcoming];
+          if (upcomingPic) {
+            return of();
+          }
+          return this.apiService.getImage(upcoming).pipe(tap((img) => (this.imageCache[upcoming] = img)));
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
     this.paramsSubscription$?.unsubscribe();
     this.stateSubscription$?.unsubscribe();
     this.interval$?.unsubscribe();
-    this.image$.unsubscribe();
+
+    this.image$.next();
+    this.image$.complete();
+
+    this.upcomingImage$.next();
+    this.upcomingImage$.complete();
   }
 
   private checkIfFinished() {
@@ -212,7 +254,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   setActiveQuestion(index: number) {
-    const question = this.questions[index || 0];
+    index = index || 0;
+    const question = this.questions[index];
     if (question.multiSelect === undefined) {
       let correctOptions = 0;
       for (const option of question.options) {
@@ -224,7 +267,10 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     }
     this.activeQuestionIndex = index;
     this.activeQuestion = question as PCheckboxQuestion | PRadioQuestion;
-    this.image$.next(question.imageId || '');
+    this.image$.next({
+      current: question.imageId || '',
+      upcoming: this.questions[index + 1]?.imageId || '',
+    });
   }
 
   handleAnswerInput(e: Event, index = 0) {
@@ -283,6 +329,6 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     ) {
       return;
     }
-    this.router.navigate(['/quizzes']);
+    this.router.navigate(['/quizzes', this.settings?.quiz.id]);
   }
 }
