@@ -35,11 +35,7 @@ body {
 
 sl-card::part(header),
 sl-card.header-card::part(base) {
-  background-image: linear-gradient(
-    135deg,
-    rgb(var(--sl-color-blue-gray-50)) 0%,
-    rgb(var(--sl-color-blue-gray-300)) 100%
-  );
+  background: rgb(var(--sl-color-blue-gray-200));
   border-top-left-radius: var(--border-radius);
   border-top-right-radius: var(--border-radius);
 }
