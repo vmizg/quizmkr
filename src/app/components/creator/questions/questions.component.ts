@@ -313,9 +313,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       }
     }
 
-    if (question.imageURI) {
-      this.image = question.imageURI;
-    }
+    // TODO: edit image
+    // if (question.imageURI) {
+    //   this.image = question.imageURI;
+    // }
   }
 
   handleCancelEdit(): void {

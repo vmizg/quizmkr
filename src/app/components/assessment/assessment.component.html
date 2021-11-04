@@ -16,7 +16,7 @@
       </div>
     </div>
   </sl-card>
-  <sl-card *ngIf="!loading && (!quizQuestions || quizQuestions.length === 0)">
+  <sl-card *ngIf="!loading && totalQuizQuestions === 0">
     <div class="flex flex-col">
       <span>You have not added any questions for this quiz yet.</span>
       <a [routerLink]="['/creator', quizId, 'questions']" style="color: rgb(var(--sl-color-primary-600))"
@@ -24,7 +24,7 @@
       >
     </div>
   </sl-card>
-  <sl-card *ngIf="quizQuestions.length > 0">
+  <sl-card *ngIf="totalQuizQuestions > 0">
     <div slot="header" class="font-semibold">Options</div>
     <div class="flex flex-col gap-4">
       <div class="flex flex-row gap-4 items-end">
@@ -43,21 +43,21 @@
         <sl-input
           class="w-1/2"
           type="number"
-          [label]="'Total questions (out of ' + quizQuestions.length + ')'"
+          [label]="'Total questions (out of ' + totalQuizQuestions + ')'"
           (sl-input)="handleTotalQuestionsInput($event)"
           [value]="settings.totalQuestions"
-          [max]="quizQuestions.length"
+          [max]="totalQuizQuestions"
           min="1"
           inputmode="decimal"
           #totalQEl
         >
         </sl-input>
-        <div class="flex flex-col" *ngIf="quizQuestions.length >= 10">
+        <div class="flex flex-col" *ngIf="totalQuizQuestions >= 10">
           Presets
           <div class="flex flex-row items-end gap-2">
-            <sl-button *ngIf="quizQuestions.length >= 10" type="neutral" (click)="handlePresetClick(10)">10</sl-button>
-            <sl-button *ngIf="quizQuestions.length >= 20" type="neutral" (click)="handlePresetClick(20)">20</sl-button>
-            <sl-button *ngIf="quizQuestions.length >= 50" type="neutral" (click)="handlePresetClick(50)">50</sl-button>
+            <sl-button *ngIf="totalQuizQuestions >= 10" type="neutral" (click)="handlePresetClick(10)">10</sl-button>
+            <sl-button *ngIf="totalQuizQuestions >= 20" type="neutral" (click)="handlePresetClick(20)">20</sl-button>
+            <sl-button *ngIf="totalQuizQuestions >= 50" type="neutral" (click)="handlePresetClick(50)">50</sl-button>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@
       >
     </div>
   </sl-card>
-  <sl-card *ngIf="quizQuestions.length > 0">
+  <sl-card *ngIf="totalQuizQuestions > 0">
     <div slot="header" class="font-semibold">Summary</div>
     <div class="flex flex-col gap-4">
       <div class="flex flex-col">
@@ -122,7 +122,7 @@
       </div>
     </div>
   </sl-card>
-  <sl-card *ngIf="quizQuestions.length > 0">
+  <sl-card *ngIf="totalQuizQuestions > 0">
     <div class="flex flex-row justify-between">
       <sl-button class="w-full" (click)="handleBegin()" type="primary">
         <sl-spinner *ngIf="beginning" slot="prefix"></sl-spinner>

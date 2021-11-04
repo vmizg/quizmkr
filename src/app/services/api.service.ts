@@ -65,8 +65,10 @@ export class ApiService {
       .pipe(map((result) => result as Assessment[]));
   }
 
-  getAssessment(id: string) {
-    return this.http.get(`/api/assessments/${id}`).pipe(map((result) => result as Assessment));
+  getAssessment(id: string, includeQuestions = false) {
+    return this.http
+      .get(`/api/assessments/${id}`, { params: this.constructParams({ include_questions: includeQuestions }) })
+      .pipe(map((result) => result as Assessment));
   }
 
   createAssessment(quizId: string, payload: BaseAssessment) {
@@ -103,6 +105,10 @@ export class ApiService {
 
   deleteResult(id: string) {
     return this.http.delete(`/api/results/${id}`).pipe(map((result) => (result ? true : false)));
+  }
+
+  getImage(id: string) {
+    return this.http.get(`/api/images/${id}`, { responseType: 'text' });
   }
 
   private constructParams(params?: any): HttpParams {

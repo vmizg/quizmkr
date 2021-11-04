@@ -59,9 +59,10 @@
               {{ result.questionTitle }}
             </div>
           </div>
-          <div *ngIf="result.imageURI">
+          <!-- TODO: include image -->
+          <!-- <div *ngIf="result.imageURI">
             <img [src]="result.imageURI" class="ml-20 max-h-32" />
-          </div>
+          </div> -->
           <div *ngFor="let option of result.options; let j = index" class="flex flex-row items-center ml-8">
             <div class="flex text-xl mr-4" style="flex: 0 0 2rem">
               <sl-icon

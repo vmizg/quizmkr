@@ -8,11 +8,10 @@ export interface Option extends BaseOption {
 }
 
 export interface PartialQuestion {
-  index?: number;
   title?: string;
   options?: BaseOption[];
   answerNote?: string;
-  imageURI?: string;
+  imageId?: string;
 }
 
 export interface BaseQuestion extends PartialQuestion {
@@ -38,6 +37,7 @@ export interface BaseQuiz extends PartialQuiz {
 
 export interface Quiz extends BaseQuiz {
   id: string;
+  totalQuestions: number;
 }
 
 export interface PartialAssessment {
@@ -46,7 +46,6 @@ export interface PartialAssessment {
   rangeTo?: number;
   timeLimit?: number;
   randomize?: boolean;
-  order?: number[];
 }
 
 export interface BaseAssessment extends PartialAssessment {
@@ -58,6 +57,8 @@ export interface BaseAssessment extends PartialAssessment {
 export interface Assessment extends BaseAssessment {
   id: string;
   quiz: Quiz;
+  order: number[];
+  questions: Question[];
 }
 
 export interface AssessmentResultDetails {

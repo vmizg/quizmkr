@@ -1,10 +1,9 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, forkJoin, Subscription } from 'rxjs';
+import { EMPTY, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { BaseAssessment, Question } from 'src/app/models/quiz';
+import { BaseAssessment } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-import { shuffleArray } from 'src/app/utilities';
 
 @Component({
   selector: 'app-assessment',
@@ -19,7 +18,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
 
   quizId = '';
   quizTitle = '';
-  quizQuestions: Question[] = [];
+  totalQuizQuestions = 0;
   loading = true;
   beginning = false;
 
@@ -39,17 +38,17 @@ export class AssessmentComponent implements OnInit, OnDestroy {
       .pipe(
         concatMap((params) => {
           this.quizId = params.qid;
-          return forkJoin([this.apiService.getQuiz(this.quizId), this.apiService.getQuestions(this.quizId)]);
+          return this.apiService.getQuiz(this.quizId);
         }),
-        tap(([quiz, questions]) => {
+        tap((quiz) => {
           this.loading = false;
           if (quiz) {
             this.quizTitle = quiz.title;
-            this.quizQuestions = questions || [];
+            this.totalQuizQuestions = quiz.totalQuestions;
 
             // Default to a maximum of 50 questions in the totalQuestions field
-            this.settings.totalQuestions = this.quizQuestions.length > 50 ? 50 : this.quizQuestions.length;
-            this.settings.rangeTo = this.quizQuestions.length;
+            this.settings.totalQuestions = this.totalQuizQuestions > 50 ? 50 : this.totalQuizQuestions;
+            this.settings.rangeTo = this.totalQuizQuestions;
           } else {
             this.router.navigate(['/quizzes']);
           }
@@ -85,7 +84,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   handleTotalQuestionsInput(e: Event) {
     const target = e.target as HTMLInputElement;
     const totalQuestions = Number(target.value);
-    if (totalQuestions > 0 && totalQuestions <= this.quizQuestions.length) {
+    if (totalQuestions > 0 && totalQuestions <= this.totalQuizQuestions) {
       this.settings.totalQuestions = totalQuestions;
       this.checkRangeOvershoot();
     } else if (target.value !== '') {
@@ -108,7 +107,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   handleRangeFromInput(e: Event) {
     const target = e.target as HTMLInputElement;
     const rangeFrom = Number(target.value);
-    if (rangeFrom > 0 && rangeFrom < this.settings.rangeTo && rangeFrom < this.quizQuestions.length) {
+    if (rangeFrom > 0 && rangeFrom < this.settings.rangeTo && rangeFrom < this.totalQuizQuestions) {
       this.settings.rangeFrom = rangeFrom;
       this.checkRangeOvershoot();
     } else if (target.value !== '') {
@@ -123,7 +122,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   handleRangeToInput(e: Event) {
     const target = e.target as HTMLInputElement;
     const rangeTo = Number(target.value);
-    if (rangeTo > 0 && rangeTo < this.quizQuestions.length) {
+    if (rangeTo > 0 && rangeTo < this.totalQuizQuestions) {
       this.settings.rangeTo = rangeTo;
       this.checkRangeOvershoot();
     } else if (target.value !== '') {
@@ -143,15 +142,12 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   handleBegin() {
     this.beginning = true;
 
-    const questions = this.prepareQuestions(this.quizQuestions);
-    this.settings.order = questions.map(({ index }) => index);
-
     this.apiService.createAssessment(this.quizId, this.settings).subscribe(
       (result) => {
         this.beginning = false;
         if (result) {
           this.router.navigate(['/quizzes', this.quizId, 'assessment', result.id], {
-            state: { settings: result, questions: this.quizQuestions },
+            state: { assessment: result },
           });
         }
       },
@@ -160,23 +156,5 @@ export class AssessmentComponent implements OnInit, OnDestroy {
         console.log(err);
       }
     );
-  }
-
-  private prepareQuestions(questions: Question[]) {
-    const totalQuestions = this.settings.totalQuestions || questions.length;
-    const rangeFrom = (this.settings.rangeFrom || 1) - 1; // 0-indexed
-    const rangeTo = this.settings.rangeTo || questions.length;
-
-    // We need to save question indexes before we manipulate the list
-    // for easier result tracking later
-    let indexedQs = questions.map((q, i) => ({ ...q, index: i } as Question));
-    indexedQs = indexedQs.slice(rangeFrom, rangeTo);
-
-    if (!this.settings.randomize) {
-      return indexedQs.slice(0, totalQuestions);
-    }
-
-    const rndQuestions = shuffleArray(indexedQs);
-    return rndQuestions.slice(0, totalQuestions);
   }
 }
