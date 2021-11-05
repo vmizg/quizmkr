@@ -85,7 +85,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
     this.image$
       .pipe(
-        concatMap(({ current, upcoming }) => {
+        concatMap((data) => {
+          const { current, upcoming } = data || {};
           if (!current && !upcoming) {
             // Questions contain no images
             return of('');
@@ -119,9 +120,6 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         tap((imageUri) => {
           this.imageUri = imageUri;
           this.imageLoading = false;
-        }),
-        catchError((_, caught) => {
-          return caught;
         })
       )
       .subscribe();
@@ -129,9 +127,12 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.upcomingImage$
       .pipe(
         concatMap((upcoming) => {
+          if (!upcoming) {
+            return of('');
+          }
           const upcomingPic = this.imageCache[upcoming];
           if (upcomingPic) {
-            return of();
+            return of('');
           }
           return this.apiService.getImage(upcoming).pipe(tap((img) => (this.imageCache[upcoming] = img)));
         })

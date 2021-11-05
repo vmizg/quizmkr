@@ -4,7 +4,8 @@
     subtitle="Question {{ activeQuestionIndex + 1 }} of {{ questions.length }}"
     [loading]="loading"
     [visible]="!!(activeQuestion && settings)"
-    icon="compass">
+    icon="compass"
+  >
   </app-card-header>
   <ng-container *ngIf="!loading && activeQuestion && settings">
     <sl-card

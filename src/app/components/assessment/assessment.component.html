@@ -4,7 +4,8 @@
     [subtitle]="'Assess your knowledge'"
     [loading]="loading"
     [visible]="!!quizTitle"
-    icon="compass">
+    icon="compass"
+  >
   </app-card-header>
   <sl-card *ngIf="!loading && totalQuizQuestions === 0">
     <div class="flex flex-col">

@@ -3,10 +3,7 @@
   [style]="cssVars"
 >
   <div class="flex flex-col gap-2 w-full xl:w-3/5">
-    <app-card-header
-      [loading]="loading"
-      [visible]="!!quizTitle"
-      icon="asterisk">
+    <app-card-header [loading]="loading" [visible]="!!quizTitle" icon="asterisk">
       <ng-container titleContent>
         <span>{{ quizTitle }}</span>
         <!-- <sl-color-picker *ngIf="quizTitle" value="{{ quizColor }}" no-format-toggle (sl-change)="handleColorChange($event)">
@@ -117,11 +114,7 @@
     </sl-form>
   </div>
   <div class="flex flex-col gap-2 w-full xl:w-2/5">
-    <app-card-header
-      title="Questions in quiz"
-      icon="question-circle"
-    >
-    </app-card-header>
+    <app-card-header title="Questions in quiz" icon="question-circle"> </app-card-header>
     <cdk-virtual-scroll-viewport
       itemSize="104"
       class="question-list-container"

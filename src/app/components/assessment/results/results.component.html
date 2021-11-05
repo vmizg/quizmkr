@@ -4,7 +4,8 @@
     subtitle="Assessment result sheet"
     [loading]="loading"
     [visible]="!!(resultSheet && resultSheet.details.length > 0)"
-    icon="check-circle">
+    icon="check-circle"
+  >
   </app-card-header>
   <sl-card *ngIf="resultSheet">
     <div slot="header">Summary</div>
@@ -15,9 +16,7 @@
       </div>
       <div class="flex flex-row justify-between items-center">
         <span>Answered correctly</span>
-        <span class="font-semibold"
-          >{{ answeredCorrectly }} / {{ resultSheet.details.length }}</span
-        >
+        <span class="font-semibold">{{ answeredCorrectly }} / {{ resultSheet.details.length }}</span>
       </div>
       <div class="flex flex-row justify-between items-center">
         <span>Time taken to complete</span>
