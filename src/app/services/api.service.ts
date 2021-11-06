@@ -1,7 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
+  Image,
   PartialQuiz,
   BaseQuiz,
   Quiz,
@@ -108,7 +110,11 @@ export class ApiService {
   }
 
   getImage(id: string) {
-    return this.http.get(`/api/images/${id}`, { responseType: 'text' });
+    return this.http.get(`/api/images/${id}`) as Observable<Image>;
+  }
+
+  postImage(questionId: string, dataURL: string) {
+    return this.http.post(`/api/questions/${questionId}/image`, { dataURL }) as Observable<Image>;
   }
 
   private constructParams(params?: any): HttpParams {

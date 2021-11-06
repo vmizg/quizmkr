@@ -19,60 +19,84 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
 }
 
 .question-container {
-  &::part(base) {
-    transition: border-color 200ms ease;
-  }
   &::part(header) {
-    transition: background-image 200ms ease;
   }
   &.edit-mode {
-    &::part(base) {
-      border-color: rgb(var(--sl-color-purple-500));
-    }
     &::part(header) {
-      background-image: linear-gradient(
-        135deg,
-        rgb(var(--sl-color-purple-50)) 0%,
-        rgb(var(--sl-color-purple-400)) 100%
-      );
     }
   }
 }
 
 .question-card {
   &::part(base) {
-    transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
   }
   &.edit-mode {
     &::part(base) {
-      background-color: rgb(var(--sl-color-purple-50));
-      border-color: rgb(var(--sl-color-purple-500));
-      box-shadow: inset 0px 0px 1rem 0.25rem rgb(var(--sl-color-purple-500));
+      font-weight: bold;
     }
   }
 }
 
+.question-statement {
+  width: 100%;
+
+  &::part(textarea) {
+    min-height: 12rem;
+  }
+}
+
 .question-image {
+  width: 24rem;
+  height: 12rem;
   border: solid var(--sl-input-border-width) rgb(var(--sl-input-border-color));
   border-radius: var(--sl-border-radius-medium);
+  display: flex;
+  padding: 0.5rem;
 
   img {
+    margin: auto;
+    max-width: 100%;
+    max-height: 100%;
     border-radius: var(--sl-border-radius-medium);
   }
 
-  sl-button {
+  .image-spinner {
+    font-size: 4rem;
+    margin: auto;
+  }
+
+  .image-upload {
+    font-size: 2rem;
+    text-align: center;
+    margin: auto;
+  }
+
+  .image-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .image-actions sl-button {
     opacity: 0;
   }
 
   &:hover {
-    sl-button {
+    .image-actions sl-button {
       opacity: 1;
     }
   }
 }
 
 .question-list-container {
-  height: 500px;
+  border-radius: var(--sl-border-radius-medium);
+  height: 38.25rem;
+
+  @media screen and (max-width: 80rem) {
+    height: 24rem;
+  }
 }
 
 .question-title {

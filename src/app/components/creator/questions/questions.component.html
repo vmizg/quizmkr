@@ -28,7 +28,7 @@
         <div class="flex flex-col gap-4">
           <div class="flex flex-row items-start gap-2">
             <sl-textarea
-              class="w-full"
+              class="question-statement"
               autofocus
               name="title"
               aria-label="Question statement"
@@ -37,13 +37,16 @@
               required
             >
             </sl-textarea>
-            <sl-button *ngIf="!image" (click)="uploader.click()" outline><sl-icon name="image"></sl-icon></sl-button>
-            <div *ngIf="image" class="question-image relative m-auto ml-4">
-              <img [src]="image" class="h-full max-h-64 m-auto" />
-              <div class="absolute top-2 right-2 flex flex-row gap-2">
-                <sl-button (click)="uploader.click()" size="small" circle><sl-icon name="pencil"></sl-icon></sl-button>
-                <sl-button (click)="image = ''" size="small" circle><sl-icon name="x-lg"></sl-icon></sl-button>
-              </div>
+            <div class="question-image relative m-auto ml-4">
+              <ng-container *ngIf="!imageLoading && !!image">
+                <img [src]="image" />
+                <div class="image-actions">
+                  <sl-button (click)="uploader.click()" size="small" circle><sl-icon name="pencil"></sl-icon></sl-button>
+                  <sl-button (click)="image = ''" size="small" circle><sl-icon name="x-lg"></sl-icon></sl-button>
+                </div>
+              </ng-container>
+              <sl-icon-button class="image-upload" *ngIf="!loading && !imageLoading && !image" (click)="uploader.click()" name="image"></sl-icon-button>
+              <sl-spinner class="image-spinner" *ngIf="imageLoading || loading"></sl-spinner>
             </div>
             <input hidden type="file" accept="image/*" (change)="handleUploadImage($event)" #uploader />
           </div>

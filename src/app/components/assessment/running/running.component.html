@@ -24,8 +24,8 @@
             <span class="font-semibold">{{ activeQuestion.title }}</span>
           </div>
           <div class="flex flex-row">
-            <div *ngIf="!imageLoading && imageUri">
-              <img [src]="imageUri" class="max-h-64" />
+            <div *ngIf="!imageLoading && !!image">
+              <img [src]="image" class="max-h-64" />
             </div>
             <div *ngIf="imageLoading" class="image-placeholder">
               <div>

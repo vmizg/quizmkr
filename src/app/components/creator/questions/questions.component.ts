@@ -11,8 +11,8 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable, Subscription, EMPTY } from 'rxjs';
-import { catchError, concatMap, tap } from 'rxjs/operators';
+import { forkJoin, Observable, Subscription, EMPTY, ReplaySubject, of } from 'rxjs';
+import { catchError, concatMap, map, tap } from 'rxjs/operators';
 import { BaseOption, BaseQuestion, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
@@ -29,13 +29,13 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   private queryParamsSubscription$?: Subscription;
   private paramsSubscription$?: Subscription;
   private changesSubscription$?: Subscription;
+  private image$ = new ReplaySubject<string>();
 
   @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
   @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
 
   alphabet = 'ABCDEFGHIJKLMNO';
   questions: Question[] = [];
-  image: string = '';
   quizId: string = '';
   quizTitle: string = '';
   quizColor: string = '';
@@ -45,10 +45,14 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   edited = false;
   adding = false;
 
-  questionId = null;
   questionIndex = 0;
   existingQuestion?: Question;
   existingQuestionToRender?: Question;
+
+  image: string = '';
+  imageLoading = false;
+  imageCache: { [key: string]: string } = {};
+  existingImageId: string = '';
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -91,6 +95,33 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         })
       )
       .subscribe();
+
+    this.image$
+      .pipe(
+        concatMap((imageId) => {
+          this.existingImageId = imageId || '';
+          if (!imageId) {
+            return of('');
+          }
+          const image = this.imageCache[imageId];
+          if (image) {
+            return of(image);
+          }
+          this.imageLoading = true;
+          return this.apiService.getImage(imageId).pipe(
+            map(({ image }) => {
+              this.imageCache[imageId] = image;
+              return image;
+            }),
+            catchError(() => of(''))
+          );
+        }),
+        tap((image) => {
+          this.image = image;
+          this.imageLoading = false;
+        })
+      )
+      .subscribe();
   }
 
   @HostListener('window:beforeunload')
@@ -118,6 +149,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.queryParamsSubscription$?.unsubscribe();
     this.paramsSubscription$?.unsubscribe();
     this.changesSubscription$?.unsubscribe();
+
+    this.image$.next();
+    this.image$.complete();
   }
 
   counter(i: number) {
@@ -216,27 +250,42 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       $obs = this.apiService.updateQuestion(questionId, question);
     }
 
-    $obs.subscribe(
-      (result) => {
-        if (result) {
+    $obs
+      .pipe(
+        concatMap((question) => {
+          if (!question) {
+            throw Error('Failed to create or update question');
+          }
+          if (this.image && !this.existingImageId) {
+            return this.apiService.postImage(question.id, this.image).pipe(
+              map((result) => {
+                this.existingImageId = result.id;
+                return { question };
+              })
+            );
+          }
+          return of({ question });
+        })
+      )
+      .subscribe(
+        ({ question }) => {
           let index = -1;
           const clonedQuestions = [...this.questions];
           if (questionId) {
             index = clonedQuestions.findIndex(({ id }) => id === questionId);
             if (index > -1) {
-              clonedQuestions.splice(index, 1, result);
+              clonedQuestions.splice(index, 1, question);
             }
           } else {
-            clonedQuestions.push(result);
+            clonedQuestions.push(question);
           }
           this.questions = clonedQuestions;
           this.resetForm(formControls);
+        },
+        (err) => {
+          console.log(err);
         }
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+      );
   }
 
   private onEdit(question: Question): void {
@@ -313,10 +362,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       }
     }
 
-    // TODO: edit image
-    // if (question.imageURI) {
-    //   this.image = question.imageURI;
-    // }
+    if (question.imageId !== undefined) {
+      this.image$.next(question.imageId);
+    }
   }
 
   handleCancelEdit(): void {
@@ -382,8 +430,12 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   private uploadImage(file: File) {
     return this.imageService.resizeImage(file).pipe(
       tap(({ dataUrl }) => {
-        this.image = dataUrl;
-        console.log(this.image);
+        if (dataUrl) {
+          this.image = dataUrl;
+          this.existingImageId = '';
+        } else {
+          throw Error('Did not receive a dataUrl while resizing the image');
+        }
       }),
       catchError((err) => {
         console.log(err);

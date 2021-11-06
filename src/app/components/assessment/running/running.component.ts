@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, of, interval, Subject, EMPTY, ReplaySubject } from 'rxjs';
-import { catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
+import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
 import { Assessment, BaseAssesmentResult, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { areSetsEqual } from 'src/app/utilities';
@@ -48,7 +48,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   dateFmt = 'mm:ss';
 
   loading = true;
-  imageUri = '';
+  image = '';
   imageLoading = false;
   imageCache: { [key: string]: string } = {};
 
@@ -113,12 +113,15 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
           // Fetch the current picture.
           return this.apiService.getImage(current).pipe(
-            tap((img) => (this.imageCache[current] = img)),
+            map(({ image }) => {
+              this.imageCache[current] = image;
+              return image;
+            }),
             catchError(() => of(''))
           );
         }),
-        tap((imageUri) => {
-          this.imageUri = imageUri;
+        tap((image) => {
+          this.image = image;
           this.imageLoading = false;
         })
       )
@@ -134,7 +137,12 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           if (upcomingPic) {
             return of('');
           }
-          return this.apiService.getImage(upcoming).pipe(tap((img) => (this.imageCache[upcoming] = img)));
+          return this.apiService.getImage(upcoming).pipe(
+            map(({ image }) => {
+              this.imageCache[upcoming] = image;
+              return image;
+            })
+          );
         })
       )
       .subscribe();

@@ -1,3 +1,8 @@
+export interface Image {
+  id: string;
+  image: string;
+}
+
 export interface BaseOption {
   title: string;
   correct?: boolean;

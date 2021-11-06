@@ -17,7 +17,7 @@ export interface ImageOptions {
 
 const DEFAULT_SIZE = 400;
 
-const dataURItoBlob = (dataURI: string) => {
+const dataURLtoBlob = (dataURI: string) => {
   const bytes =
     dataURI.split(',')[0].indexOf('base64') >= 0 ? atob(dataURI.split(',')[1]) : unescape(dataURI.split(',')[1]);
   const mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
@@ -71,7 +71,7 @@ const resize = (
   }
 
   const dataUrl = canvas.toDataURL(`image/${type}`);
-  return { dataUrl, blob: dataURItoBlob(dataUrl) };
+  return { dataUrl, blob: dataURLtoBlob(dataUrl) };
 };
 
 @Injectable({
