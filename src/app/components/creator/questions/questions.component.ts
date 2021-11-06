@@ -204,7 +204,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       title: title,
       options: [],
       ...(answerNote ? { answerNote } : {}),
-      ...(this.image ? { imageURI: this.image } : {}),
+      ...(!this.existingImageId && this.image ? { image: { image: this.image } } : {}),
     };
     const titleMap: any = {};
     let totalCorrect = 0;
@@ -250,42 +250,28 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       $obs = this.apiService.updateQuestion(questionId, question);
     }
 
-    $obs
-      .pipe(
-        concatMap((question) => {
-          if (!question) {
-            throw Error('Failed to create or update question');
-          }
-          if (this.image && !this.existingImageId) {
-            return this.apiService.postImage(question.id, this.image).pipe(
-              map((result) => {
-                this.existingImageId = result.id;
-                return { question };
-              })
-            );
-          }
-          return of({ question });
-        })
-      )
-      .subscribe(
-        ({ question }) => {
-          let index = -1;
-          const clonedQuestions = [...this.questions];
-          if (questionId) {
-            index = clonedQuestions.findIndex(({ id }) => id === questionId);
-            if (index > -1) {
-              clonedQuestions.splice(index, 1, question);
-            }
-          } else {
-            clonedQuestions.push(question);
-          }
-          this.questions = clonedQuestions;
-          this.resetForm(formControls);
-        },
-        (err) => {
-          console.log(err);
+    $obs.subscribe(
+      (question) => {
+        if (!question) {
+          return;
         }
-      );
+        let index = -1;
+        const clonedQuestions = [...this.questions];
+        if (questionId) {
+          index = clonedQuestions.findIndex(({ id }) => id === questionId);
+          if (index > -1) {
+            clonedQuestions.splice(index, 1, question);
+          }
+        } else {
+          clonedQuestions.push(question);
+        }
+        this.questions = clonedQuestions;
+        this.handleCancelEdit(formControls);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   private onEdit(question: Question): void {
@@ -309,11 +295,6 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   handleEditQuestion(question: Question, target?: HTMLElement): void {
     if (this.isEditing(question)) {
       this.handleCancelEdit();
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { q: undefined },
-        queryParamsHandling: 'merge',
-      });
       return;
     }
 
@@ -367,8 +348,13 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
   }
 
-  handleCancelEdit(): void {
-    this.resetForm();
+  handleCancelEdit(formControls?: HTMLInputElement[]): void {
+    this.resetForm(formControls);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { q: undefined },
+      queryParamsHandling: 'merge',
+    });
   }
 
   handleDeleteQuestion(question: Question): void {

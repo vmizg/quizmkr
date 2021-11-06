@@ -1,6 +1,9 @@
-export interface Image {
-  id: string;
+export interface BaseImage {
   image: string;
+}
+
+export interface Image extends BaseImage {
+  id: string;
 }
 
 export interface BaseOption {
@@ -14,6 +17,7 @@ export interface Option extends BaseOption {
 
 export interface PartialQuestion {
   title?: string;
+  image?: BaseImage;
   options?: BaseOption[];
   answerNote?: string;
   imageId?: string;

@@ -113,10 +113,6 @@ export class ApiService {
     return this.http.get(`/api/images/${id}`) as Observable<Image>;
   }
 
-  postImage(questionId: string, dataURL: string) {
-    return this.http.post(`/api/questions/${questionId}/image`, { dataURL }) as Observable<Image>;
-  }
-
   private constructParams(params?: any): HttpParams {
     let httpParams = new HttpParams();
     if (!params) {
