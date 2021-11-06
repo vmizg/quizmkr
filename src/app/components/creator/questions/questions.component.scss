@@ -69,6 +69,10 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
     font-size: 2rem;
     text-align: center;
     margin: auto;
+
+    &::part(base) {
+      padding: 3rem;
+    }
   }
 
   .image-actions {
