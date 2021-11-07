@@ -34,9 +34,8 @@
   </sl-card>
   <sl-card>
     <div class="flex flex-row justify-between">
-      <sl-button class="w-full" (click)="handleSubmit()" type="primary">
-        <sl-spinner *ngIf="submitting" slot="prefix"></sl-spinner>
-        {{ submitting ? (isExisting ? 'Saving changes...' : 'Submitting...') : isExisting ? 'Save changes' : 'Submit' }}
+      <sl-button class="w-full" (click)="handleSubmit()" type="primary" [loading]="submitting">
+        {{ isExisting ? 'Save changes' : 'Submit' }}
       </sl-button>
     </div>
   </sl-card>

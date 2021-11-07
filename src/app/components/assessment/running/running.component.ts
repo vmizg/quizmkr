@@ -52,6 +52,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   imageLoading = false;
   imageCache: { [key: string]: string } = {};
 
+  submitting = false;
+
   constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {
     this.dataState = this.router.getCurrentNavigation()?.extras.state as AssessmentRouteState;
   }
@@ -243,6 +245,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       // Sanity check, should never execute
       return;
     }
+    this.submitting = true;
     const currentDate = new Date();
     const currentTime = currentDate.getTime();
     const { score, details } = this.calculateScore();
@@ -252,14 +255,21 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       timeTaken: currentTime - this.startTime,
       dateCompleted: currentDate,
     };
-    this.apiService.submitAssessmentResult(this.settings.id, data).subscribe((result) => {
-      if (result) {
-        alert(
-          'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
-        );
-        this.router.navigate(['/results', result.id], { state: { result } });
+    this.apiService.submitAssessmentResult(this.settings.id, data).subscribe(
+      (result) => {
+        this.submitting = false;
+        if (result) {
+          alert(
+            'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
+          );
+          this.router.navigate(['/results', result.id], { state: { result } });
+        }
+      },
+      () => {
+        this.submitting = false;
+        alert('An error has occurred while submitting the assessment. Please try again.');
       }
-    });
+    );
   }
 
   setActiveQuestion(index: number) {

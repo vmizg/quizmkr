@@ -115,9 +115,8 @@
   </sl-card>
   <sl-card *ngIf="totalQuizQuestions > 0">
     <div class="flex flex-row justify-between">
-      <sl-button class="w-full" (click)="handleBegin()" type="primary">
-        <sl-spinner *ngIf="beginning" slot="prefix"></sl-spinner>
-        {{ beginning ? 'Starting quiz...' : 'Begin quiz' }}
+      <sl-button class="w-full" (click)="handleBegin()" type="primary" [loading]="beginning">
+        Begin assessment!
       </sl-button>
     </div>
   </sl-card>

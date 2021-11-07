@@ -64,7 +64,7 @@
           <sl-button type="primary" (click)="handleClickNext()" [hidden]="activeQuestionIndex === questions.length - 1"
             >Next</sl-button
           >
-          <sl-button type="success" (click)="handleClickSubmit()" [hidden]="activeQuestionIndex < questions.length - 1"
+          <sl-button type="success" (click)="handleClickSubmit()" [hidden]="activeQuestionIndex < questions.length - 1" [loading]="submitting"
             >Submit</sl-button
           >
         </div>

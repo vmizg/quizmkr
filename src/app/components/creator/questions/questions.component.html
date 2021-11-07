@@ -99,17 +99,8 @@
       </sl-card>
       <sl-card>
         <div class="flex flex-row justify-between gap-4">
-          <sl-button class="w-full" type="primary" submit>
-            <sl-spinner *ngIf="adding" slot="prefix"></sl-spinner>
-            {{
-              adding
-                ? existingQuestion
-                  ? 'Saving...'
-                  : 'Adding...'
-                : existingQuestion
-                ? 'Save question'
-                : 'Add question'
-            }}
+          <sl-button class="w-full" type="primary" [loading]="adding" submit>
+            {{ existingQuestion ? 'Save question' : 'Add question' }}
           </sl-button>
           <sl-button *ngIf="existingQuestion" (click)="handleCancelEdit()" type="neutral">Cancel</sl-button>
         </div>
