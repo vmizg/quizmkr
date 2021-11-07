@@ -137,6 +137,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   handleRandomizeChange(e: Event) {
     const randomize = (e.target as HTMLInputElement).checked;
     this.settings.randomize = randomize;
+    this.checkRangeOvershoot();
   }
 
   handleBegin() {
