@@ -1,3 +1,4 @@
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AssessmentComponent } from './components/assessment/assessment.component';
@@ -8,6 +9,7 @@ import { QuestionsComponent } from './components/creator/questions/questions.com
 import { HomeComponent } from './components/home/home.component';
 import { QuizzesComponent } from './components/quizzes/quizzes.component';
 import { PendingChangesGuard } from './guards/pending-changes.guard';
+import { InterceptorService } from './services/interceptor.service';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -24,5 +26,12 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: InterceptorService,
+      multi: true,
+    },
+  ],
 })
 export class AppRoutingModule {}

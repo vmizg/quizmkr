@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 interface MenuLink {
   id: number | string;
@@ -24,6 +25,7 @@ const isDarkTheme = (): boolean => {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
+  auth: AuthService;
   appTitle = 'Q U I Z M K R';
   menuLinks: MenuLink[] = [
     { id: 1, route: '/home', title: 'Home', icon: 'house' },
@@ -32,7 +34,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ];
   darkMode: boolean;
 
-  constructor(private route: ActivatedRoute, private router: Router) {
+  constructor(private route: ActivatedRoute, private router: Router, auth: AuthService) {
+    this.auth = auth;
     this.darkMode = isDarkTheme();
     if (!this.darkMode) {
       const htmlElement = document.documentElement;

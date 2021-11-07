@@ -11,3 +11,60 @@
 .quizmkr-spacer {
   flex: 0 0 10vw;
 }
+
+.logo {
+  color: var(--text-color-dark);
+}
+
+.quizmkr-nav {
+  sl-button::part(base) {
+    font-size: 1.15rem;
+  }
+
+  sl-button::part(suffix),
+  sl-button::part(prefix) {
+    font-size: 1.15rem;
+  }
+}
+
+.theme-switch {
+  --width: 60px;
+  --height: 32px;
+  --thumb-size: 32px;
+
+  sl-icon {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    transform: translateX(7px);
+    transition: var(--sl-transition-fast) transform ease, var(--sl-transition-fast) background-color,
+      var(--sl-transition-fast) border-color, var(--sl-transition-fast) box-shadow;
+  }
+
+  &.checked sl-icon {
+    transform: translateX(40px);
+  }
+
+  sl-switch::part(base) {
+    --width: 64px;
+    --height: 32px;
+    --thumb-size: 32px;
+  }
+
+  sl-switch::part(control) {
+    &,
+    &:active {
+      background-color: transparent;
+    }
+
+    &:hover {
+      background-color: rgb(var(--sl-color-yellow-600));
+    }
+  }
+
+  &.checked sl-switch::part(control) {
+    &:hover {
+      background-color: rgb(var(--sl-color-primary-600));
+    }
+  }
+}
