@@ -57,15 +57,33 @@ export class AuthService {
     this.handleAuthCallback();
   }
 
+  private storeToken(token: GetTokenSilentlyVerboseResponse) {
+    sessionStorage.setItem('JWT', JSON.stringify(token));
+  }
+
+  private getToken(): GetTokenSilentlyVerboseResponse | null {
+    const token = sessionStorage.getItem('JWT');
+    return token ? JSON.parse(token) : null;
+  }
+
   getTokenSilently$(options?: any): Observable<GetTokenSilentlyVerboseResponse> {
-    return this.auth0Client$.pipe(concatMap((client: Auth0Client) => from(client.getTokenSilently(options))));
+    // TODO: check expiry
+    const token = this.getToken();
+    if (token) {
+      return of(token);
+    }
+    return this.auth0Client$.pipe(
+      concatMap((client) => from(client.getTokenSilently(options))),
+      // Store token locally to avoid querying the server
+      tap((token) => this.storeToken(token))
+    );
   }
 
   // When calling, options can be passed if desired
   // https://auth0.github.io/auth0-spa-js/classes/auth0client.html#getuser
   getUser$(options?: any): Observable<any> {
     return this.auth0Client$.pipe(
-      concatMap((client: Auth0Client) => from(client.getUser(options))),
+      concatMap((client) => from(client.getUser(options))),
       tap((user) => this.userProfileSubject$.next(user))
     );
   }
@@ -74,7 +92,7 @@ export class AuthService {
     // This should only be called on app initialization
     // Set up local authentication streams
     const checkAuth$ = this.isAuthenticated$.pipe(
-      concatMap((loggedIn: boolean) => {
+      concatMap((loggedIn) => {
         if (loggedIn) {
           // If authenticated, get user and set in app
           // NOTE: you could pass options here if needed
@@ -91,7 +109,7 @@ export class AuthService {
     // A desired redirect path can be passed to login method
     // (e.g., from a route guard)
     // Ensure Auth0 client instance exists
-    this.auth0Client$.subscribe((client: Auth0Client) => {
+    this.auth0Client$.subscribe((client) => {
       // Call method to log in
       client.loginWithRedirect({
         redirect_uri: `${window.location.origin}`,
@@ -127,7 +145,7 @@ export class AuthService {
 
   logout() {
     // Ensure Auth0 client instance exists
-    this.auth0Client$.subscribe((client: Auth0Client) => {
+    this.auth0Client$.subscribe((client) => {
       // Call method to log out
       client.logout({
         client_id: environment.authClientId,

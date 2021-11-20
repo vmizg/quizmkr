@@ -9,7 +9,7 @@ import { areSetsEqual } from 'src/app/utilities';
 interface PQuestion extends Question {
   completed?: boolean;
   multiSelect?: boolean;
-  selectedAnswer?: Set<number>;
+  selectedAnswer?: Set<string>;
 }
 
 interface PRadioQuestion extends PQuestion {
@@ -179,16 +179,15 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
   private calculateScore() {
     const details = this.questions.map((q) => {
-      const correctAnswer = new Set<number>();
-      for (let i = 0; i < q.options.length; i++) {
-        if (q.options[i].correct) {
-          correctAnswer.add(i);
+      const correctAnswer = new Set<string>();
+      for (const option of q.options) {
+        if (option.correct) {
+          correctAnswer.add(option.id);
         }
       }
       const answeredCorrectly = areSetsEqual(q.selectedAnswer, correctAnswer);
       return {
         questionId: q.id,
-        questionIndex: q.index,
         selectedAnswer: q.selectedAnswer,
         correctAnswer,
         answeredCorrectly,
@@ -292,21 +291,23 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleAnswerInput(e: Event, index = 0) {
+  handleAnswerInput(e: Event) {
     if (this.activeQuestion) {
-      if (!this.activeQuestion.selectedAnswer) {
-        this.activeQuestion.selectedAnswer = new Set();
-      }
+      const inputEl = e.target as HTMLInputElement;
+      const value = inputEl.value;
+
       if (this.activeQuestion.multiSelect === true) {
-        const selected = (e.target as HTMLInputElement).checked;
+        if (!this.activeQuestion.selectedAnswer) {
+          this.activeQuestion.selectedAnswer = new Set();
+        }
+        const selected = inputEl.checked;
         if (selected) {
-          this.activeQuestion.selectedAnswer.add(index);
+          this.activeQuestion.selectedAnswer.add(value);
         } else {
-          this.activeQuestion.selectedAnswer.delete(index);
+          this.activeQuestion.selectedAnswer.delete(value);
         }
       } else {
-        const value = (e.target as HTMLInputElement).value;
-        this.activeQuestion.selectedAnswer = new Set([Number(value)]);
+        this.activeQuestion.selectedAnswer = new Set([value]);
       }
     }
   }

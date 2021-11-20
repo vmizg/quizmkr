@@ -211,6 +211,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
     for (let i = 0; i < this.totalOptions; i++) {
       const option: BaseOption = {
+        index: i,
         title: (formData.get(`option-${i}`) as string).trim(),
         correct: (formData.get(`correct-${i}`) as string) === 'on',
       };

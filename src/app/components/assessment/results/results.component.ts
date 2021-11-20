@@ -1,17 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, forkJoin, of, Subscription } from 'rxjs';
+import { EMPTY, of, Subscription } from 'rxjs';
 import { catchError, concatMap, tap } from 'rxjs/operators';
-import { AssessmentResult, AssessmentResultDetails, Question } from 'src/app/models/quiz';
+import { AssessmentResult, AssessmentResultDetails, Option } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-
-interface ResultDetails extends AssessmentResultDetails, Question {
-  questionTitle: string;
-}
-
-interface ResultSheet extends AssessmentResult {
-  details: ResultDetails[];
-}
 
 @Component({
   selector: 'app-results',
@@ -23,7 +15,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   alphabet = 'ABCDEFGHIJKLMNO';
   resultState?: AssessmentResult;
-  resultSheet?: ResultSheet;
+  resultSheet?: AssessmentResult;
   answeredCorrectly = 0;
   timeTaken = '';
 
@@ -41,27 +33,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
           const id = params.rid;
           return this.resultState ? of(this.resultState) : this.apiService.getResult(id);
         }),
-        concatMap((result) => {
-          return forkJoin([of(result), this.apiService.getQuestions(result.assessment.quiz.id)]);
-        }),
-        tap(([result, questions]) => {
-          if (result && questions) {
-            this.resultSheet = {
-              ...result,
-              details: [],
-            };
-            for (let i = 0; i < result.details.length; i++) {
-              const details = result.details[i];
-              const resultDetails: ResultDetails = {
-                ...details,
-                ...questions[details.questionIndex],
-                questionTitle: questions[details.questionIndex].title,
-              };
-              if (resultDetails.answeredCorrectly) {
-                this.answeredCorrectly++;
-              }
-              this.resultSheet.details.push(resultDetails);
-            }
+        tap((result) => {
+          if (result && result.details) {
+            this.resultSheet = result;
+            this.answeredCorrectly = result.details.filter(({ answeredCorrectly }) => answeredCorrectly).length;
             let secondsTaken = Math.floor(result.timeTaken / 1000);
             let minutesTaken = 0;
             if (secondsTaken >= 60) {
@@ -86,5 +61,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.paramsSubscription$?.unsubscribe();
+  }
+
+  isSelected(result: AssessmentResultDetails, option: Option) {
+    return result.selectedAnswer.includes(option.id);
   }
 }

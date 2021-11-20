@@ -7,6 +7,7 @@ export interface Image extends BaseImage {
 }
 
 export interface BaseOption {
+  index: number;
   title: string;
   correct?: boolean;
 }
@@ -66,21 +67,24 @@ export interface BaseAssessment extends PartialAssessment {
 export interface Assessment extends BaseAssessment {
   id: string;
   quiz: Quiz;
-  order: number[];
+  // order: number[];
   questions: Question[];
 }
 
-export interface AssessmentResultDetails {
+export interface BaseAssessmentResultDetails {
   questionId: string;
-  questionIndex: number;
   answeredCorrectly: boolean;
-  selectedAnswer: number[];
-  correctAnswer: number[];
+  selectedAnswer: string[];
+  correctAnswer: string[];
+}
+
+export interface AssessmentResultDetails extends BaseAssessmentResultDetails {
+  question: Question;
 }
 
 export interface BaseAssesmentResult {
   score: number;
-  details: AssessmentResultDetails[];
+  details: BaseAssessmentResultDetails[];
   timeTaken: number;
   dateCompleted: Date;
 }
@@ -88,4 +92,5 @@ export interface BaseAssesmentResult {
 export interface AssessmentResult extends BaseAssesmentResult {
   id: string;
   assessment: Assessment;
+  details: AssessmentResultDetails[];
 }

@@ -43,14 +43,14 @@
           <div class="flex flex-row justify-between gap-2 text-xl">
             <div class="flex items-start gap-2">
               <sl-badge class="mt-1" type="neutral" pill>{{ i + 1 }}</sl-badge>
-              {{ result.questionTitle }}
+              {{ result.question.title }}
             </div>
           </div>
           <!-- TODO: include image -->
           <!-- <div *ngIf="result.imageURI">
             <img [src]="result.imageURI" class="ml-20 max-h-32" />
           </div> -->
-          <div *ngFor="let option of result.options; let j = index" class="flex flex-row items-center ml-8">
+          <div *ngFor="let option of result.question.options; let j = index" class="flex flex-row items-center ml-8">
             <div class="flex text-xl mr-4" style="flex: 0 0 2rem">
               <sl-icon
                 *ngIf="option.correct"
@@ -58,7 +58,7 @@
                 style="color: rgb(var(--sl-color-green-500))"
               ></sl-icon>
               <sl-icon
-                *ngIf="!option.correct && result.selectedAnswer.indexOf(j) > -1"
+                *ngIf="!option.correct && isSelected(result, option)"
                 name="x-circle"
                 style="color: rgb(var(--sl-color-danger-500))"
               ></sl-icon>
@@ -67,7 +67,7 @@
               [style]="{
                 color: option.correct
                   ? 'rgb(var(--sl-color-green-500))'
-                  : !option.correct && result.selectedAnswer.indexOf(j) > -1
+                  : !option.correct && isSelected(result, option)
                   ? 'rgb(var(--sl-color-danger-500))'
                   : ''
               }"

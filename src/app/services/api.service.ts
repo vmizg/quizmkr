@@ -10,7 +10,6 @@ import {
   PartialQuestion,
   BaseQuestion,
   Question,
-  PartialAssessment,
   BaseAssessment,
   Assessment,
   BaseAssesmentResult,
@@ -75,10 +74,6 @@ export class ApiService {
 
   createAssessment(quizId: string, payload: BaseAssessment) {
     return this.http.post(`/api/quizzes/${quizId}/assessments`, payload).pipe(map((result) => result as Assessment));
-  }
-
-  updateAssessment(id: string, payload: PartialAssessment) {
-    return this.http.patch(`/api/assessments/${id}`, payload).pipe(map((result) => result as Assessment));
   }
 
   deleteAssessment(id: string) {

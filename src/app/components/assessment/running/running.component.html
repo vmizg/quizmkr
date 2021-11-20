@@ -36,8 +36,8 @@
               <sl-radio-group label="Select an option" no-fieldset (sl-change)="handleAnswerInput($event)">
                 <sl-radio
                   *ngFor="let option of activeQuestion.options; let i = index"
-                  [value]="i"
-                  [checked]="activeQuestion.selectedAnswer?.has(i)"
+                  [value]="option.id"
+                  [checked]="activeQuestion.selectedAnswer?.has(option.id)"
                 >
                   {{ alphabet[i] }}. {{ option.title }}
                 </sl-radio>
@@ -47,8 +47,9 @@
               <sl-checkbox
                 *ngFor="let option of activeQuestion.options; let i = index"
                 [name]="'option-' + i"
-                [checked]="activeQuestion.selectedAnswer?.has(i)"
-                (sl-change)="handleAnswerInput($event, i)"
+                [value]="option.id"
+                [checked]="activeQuestion.selectedAnswer?.has(option.id)"
+                (sl-change)="handleAnswerInput($event)"
               >
                 {{ alphabet[i] }}. {{ option.title }}
               </sl-checkbox>
