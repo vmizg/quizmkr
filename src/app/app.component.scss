@@ -18,37 +18,24 @@
 
 .quizmkr-nav {
   sl-button::part(base) {
-    font-size: 1.15rem;
+    font-size: 1rem;
   }
 
   sl-button::part(suffix),
   sl-button::part(prefix) {
-    font-size: 1.15rem;
+    font-size: 1rem;
   }
 }
 
 .theme-switch {
-  --width: 60px;
-  --height: 32px;
-  --thumb-size: 32px;
-
-  sl-icon {
-    position: absolute;
-    pointer-events: none;
-    z-index: 1;
-    transform: translateX(7px);
-    transition: var(--sl-transition-fast) transform ease, var(--sl-transition-fast) background-color,
-      var(--sl-transition-fast) border-color, var(--sl-transition-fast) box-shadow;
-  }
-
-  &.checked sl-icon {
-    transform: translateX(40px);
+  sl-switch {
+    display: contents;
   }
 
   sl-switch::part(base) {
-    --width: 64px;
-    --height: 32px;
-    --thumb-size: 32px;
+    --width: 48px;
+    --height: 24px;
+    --thumb-size: 24px;
   }
 
   sl-switch::part(control) {
@@ -58,12 +45,16 @@
     }
 
     &:hover {
-      background-color: rgb(var(--sl-color-yellow-600));
+      background-color: rgb(var(--sl-color-yellow-500));
     }
   }
 
-  &.checked sl-switch::part(control) {
-    &:hover {
+  sl-icon::part(base) {
+    color: var(--text-color-dark);
+  }
+
+  &.checked {
+    sl-switch::part(control):hover {
       background-color: rgb(var(--sl-color-primary-600));
     }
   }

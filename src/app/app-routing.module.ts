@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'creator/:qid', component: CreatorComponent, canDeactivate: [PendingChangesGuard] },
   { path: 'creator', component: CreatorComponent, canDeactivate: [PendingChangesGuard] },
   { path: 'results/:rid', component: ResultsComponent },
-  { path: 'quizzes/:qid/assessment/:aid', component: RunningAssessmentComponent },
+  { path: 'assessments/:aid', component: RunningAssessmentComponent },
   { path: 'quizzes/:qid', component: AssessmentComponent },
   { path: 'quizzes', component: QuizzesComponent },
   { path: '**', redirectTo: 'home', pathMatch: 'full' },

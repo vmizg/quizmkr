@@ -26,6 +26,6 @@
   <div class="quizmkr-spacer"></div>
 </div>
 <div class="theme-switch flex flex-row items-center absolute p-4 right-0" [class.checked]="darkMode">
-  <sl-icon name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
+  <sl-icon class="pr-2" name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
   <sl-switch (sl-change)="toggleTheme()" [checked]="darkMode"></sl-switch>
 </div>

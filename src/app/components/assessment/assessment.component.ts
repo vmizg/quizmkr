@@ -147,7 +147,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
       (result) => {
         this.beginning = false;
         if (result) {
-          this.router.navigate(['/quizzes', this.quizId, 'assessment', result.id], {
+          this.router.navigate(['/assessments', result.id], {
             state: { assessment: result },
           });
         }
