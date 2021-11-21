@@ -66,6 +66,10 @@ export class AuthService {
     return token ? JSON.parse(token) : null;
   }
 
+  private clearToken(): void {
+    sessionStorage.removeItem('JWT');
+  }
+
   getTokenSilently$(options?: any): Observable<GetTokenSilentlyVerboseResponse> {
     // TODO: check expiry
     const token = this.getToken();
@@ -146,6 +150,7 @@ export class AuthService {
   logout() {
     // Ensure Auth0 client instance exists
     this.auth0Client$.subscribe((client) => {
+      this.clearToken();
       // Call method to log out
       client.logout({
         client_id: environment.authClientId,

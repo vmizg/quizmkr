@@ -1,5 +1,8 @@
 <div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl">
-  <app-card-header title="Hey, stranger 👋" icon="house">
+  <app-card-header icon="house">
+    <ng-container titleContent>
+      Hey, stranger <sl-icon name="emoji-smile"></sl-icon>
+    </ng-container>
     <ng-container suffixContent>
       <sl-badge class="m-auto">{{ currentDate | date: 'mediumTime' }}</sl-badge>
     </ng-container>
