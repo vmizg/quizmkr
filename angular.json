@@ -106,8 +106,9 @@
       }
     }
   },
-  "defaultProject": "quiz-mkr",
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
