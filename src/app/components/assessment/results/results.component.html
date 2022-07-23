@@ -34,8 +34,8 @@
         class="w-full"
         [style]="{
           '--border-color': result.answeredCorrectly
-            ? 'rgb(var(--sl-color-green-500))'
-            : 'rgb(var(--sl-color-danger-500))',
+            ? 'var(--sl-color-green-500)'
+            : 'var(--sl-color-danger-500)',
           '--border-width': '0.15rem'
         }"
       >
@@ -55,20 +55,20 @@
               <sl-icon
                 *ngIf="option.correct"
                 name="check-circle"
-                style="color: rgb(var(--sl-color-green-500))"
+                style="color: var(--sl-color-green-500)"
               ></sl-icon>
               <sl-icon
                 *ngIf="!option.correct && isSelected(result, option)"
                 name="x-circle"
-                style="color: rgb(var(--sl-color-danger-500))"
+                style="color: var(--sl-color-danger-500)"
               ></sl-icon>
             </div>
             <span
               [style]="{
                 color: option.correct
-                  ? 'rgb(var(--sl-color-green-500))'
+                  ? 'var(--sl-color-green-500)'
                   : !option.correct && isSelected(result, option)
-                  ? 'rgb(var(--sl-color-danger-500))'
+                  ? 'var(--sl-color-danger-500)'
                   : ''
               }"
               >{{ alphabet[j] }}. {{ option.title }}</span

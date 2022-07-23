@@ -45,7 +45,7 @@
     }
 
     &:hover {
-      background-color: rgb(var(--sl-color-yellow-500));
+      background-color: var(--sl-color-yellow-500);
     }
   }
 
@@ -55,7 +55,7 @@
 
   &.checked {
     sl-switch::part(control):hover {
-      background-color: rgb(var(--sl-color-primary-600));
+      background-color: var(--sl-color-primary-600);
     }
   }
 }

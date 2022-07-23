@@ -155,10 +155,10 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.stateSubscription$?.unsubscribe();
     this.interval$?.unsubscribe();
 
-    this.image$.next();
+    this.image$.next({ current: '', upcoming: '' });
     this.image$.complete();
 
-    this.upcomingImage$.next();
+    this.upcomingImage$.next('');
     this.upcomingImage$.complete();
   }
 
@@ -224,7 +224,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         tap(() => {
           this.setTimeLeft(timeLimit);
           if (this.timeLeft && this.timeLeft.getTime() <= 0) {
-            this.timeLimit$.next();
+            this.timeLimit$.next('');
             this.timeLimit$.complete();
           }
         })

@@ -37,7 +37,9 @@ export class AuthService {
   // from: Convert that resulting promise into an observable
   isAuthenticated$ = this.auth0Client$.pipe(
     concatMap((client) => from(client.isAuthenticated())),
-    tap((res) => (this.loggedIn = res))
+    tap((res) => {
+      this.loggedIn = res;
+    })
   );
 
   handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client) => from(client.handleRedirectCallback())));
@@ -48,6 +50,9 @@ export class AuthService {
 
   // Create a local property for login status
   loggedIn: boolean = false;
+
+  // Login status check
+  authenticating: boolean = false;
 
   constructor(private router: Router) {
     // On initial load, check authentication state with authorization server
@@ -93,6 +98,7 @@ export class AuthService {
   }
 
   private localAuthSetup() {
+    this.authenticating = true;
     // This should only be called on app initialization
     // Set up local authentication streams
     const checkAuth$ = this.isAuthenticated$.pipe(
@@ -104,9 +110,10 @@ export class AuthService {
         }
         // If not authenticated, return stream that emits 'false'
         return of(loggedIn);
-      })
+      }),
+      tap(() => (this.authenticating = false))
     );
-    checkAuth$.subscribe();
+    return checkAuth$.subscribe();
   }
 
   login(redirectPath: string = '/') {
@@ -127,6 +134,7 @@ export class AuthService {
     const params = window.location.search;
     if (params.includes('code=') && params.includes('state=')) {
       let targetRoute: string; // Path to redirect to after login processsed
+      this.authenticating = true;
       const authComplete$ = this.handleRedirectCallback$.pipe(
         // Have client, now call method to handle auth callback redirect
         tap((cbRes) => {
@@ -143,6 +151,7 @@ export class AuthService {
       authComplete$.subscribe(() => {
         // Redirect to target route after callback processing
         this.router.navigate([targetRoute]);
+        this.authenticating = false;
       });
     }
   }

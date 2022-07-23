@@ -17,8 +17,8 @@
           <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
         </sl-button>
       </sl-button-group>
-      <sl-button size="large" type="success" (click)="auth.loggedIn ? auth.logout() : auth.login()">
-        <sl-icon slot="suffix" name="{{ auth.loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon>{{ auth.loggedIn ? 'Log out' : 'Log in' }}
+      <sl-button size="large" type="success" (click)="auth.loggedIn ? auth.logout() : auth.login()" [disabled]="auth.authenticating">
+        <sl-icon slot="suffix" name="{{ auth.loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon>{{ auth.authenticating ? 'Logging in...' : auth.loggedIn ? 'Log out' : 'Log in' }}
       </sl-button>
     </div>
     <router-outlet></router-outlet>

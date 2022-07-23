@@ -150,7 +150,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     this.paramsSubscription$?.unsubscribe();
     this.changesSubscription$?.unsubscribe();
 
-    this.image$.next();
+    this.image$.next('');
     this.image$.complete();
   }
 

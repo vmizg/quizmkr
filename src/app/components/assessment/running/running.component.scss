@@ -41,25 +41,25 @@ sl-checkbox {
   width: 16rem;
   height: 12rem;
   font-size: 3rem;
-  border: 1px solid rgb(var(--sl-color-gray-200));
+  border: 1px solid var(--sl-color-gray-200);
   border-radius: 0.25rem;
 }
 
 .step-indicator-wrapper {
   flex: 1;
-  border: solid 1px rgb(var(--sl-color-gray-200));
+  border: solid 1px var(--sl-color-gray-200);
   border-radius: var(--sl-border-radius-medium);
 }
 
 .step-indicator {
   height: 100%;
-  color: rgb(var(--sl-color-gray-50));
+  color: var(--sl-color-gray-50);
   background-image: linear-gradient(
     to right,
-    rgb(var(--sl-color-green-200)) 0%,
-    rgb(var(--sl-color-green-700)) 33%,
-    rgb(var(--sl-color-green-500)) 66%,
-    rgb(var(--sl-color-green-200)) 100%
+    var(--sl-color-green-200) 0%,
+    var(--sl-color-green-700) 33%,
+    var(--sl-color-green-500) 66%,
+    var(--sl-color-green-200) 100%
   );
   background-size: 400% 400%;
   animation: gradient 5s ease infinite alternate-reverse;

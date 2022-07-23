@@ -16,10 +16,10 @@
           <span>Loading...</span>
         </div>
         <div *ngFor="let asm of inProgress; let i = index" class="flex flex-row items-center gap-2">
-          <sl-icon name="record-circle" style="color: rgb(var(--sl-color-amber-500))"></sl-icon>
+          <sl-icon name="record-circle" style="color: var(--sl-color-amber-500)"></sl-icon>
           <a
             [routerLink]="['/quizzes', asm.quiz.id, 'assessment', asm.id]"
-            style="color: rgb(var(--sl-color-primary-600))"
+            style="color: var(--sl-color-primary-600)"
             >({{ asm.id }}) {{ asm.quiz.title }}</a
           >
         </div>
@@ -34,12 +34,12 @@
         </div>
         <div *ngIf="!loadingResults && results.length === 0" class="flex flex-col text-gray-500">
           <span>You have no recent assessment results.</span>
-          <a [routerLink]="['/quizzes']" style="color: rgb(var(--sl-color-primary-600))">Start doing quizzes here!</a>
+          <a [routerLink]="['/quizzes']" style="color: var(--sl-color-primary-600)">Start doing quizzes here!</a>
         </div>
         <div *ngFor="let result of results; let i = index" class="flex flex-row justify-between gap-2">
           <div class="flex flex-row items-center gap-2">
-            <sl-icon name="check-circle" style="color: rgb(var(--sl-color-green-500))"></sl-icon>
-            <a [routerLink]="['/results', result.id]" style="color: rgb(var(--sl-color-primary-600))">
+            <sl-icon name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
+            <a [routerLink]="['/results', result.id]" style="color: var(--sl-color-primary-600)">
               {{ result.assessment.quiz.title }}</a
             >
             ({{ result.dateCompleted | date: 'medium' }})
@@ -49,7 +49,7 @@
             <span class="font-semibold">{{ result.score }}%</span>
             <a
               (click)="handleDeleteResult(result)"
-              style="cursor: pointer; margin-left: 1rem; color: rgb(var(--sl-color-danger-600))"
+              style="cursor: pointer; margin-left: 1rem; color: var(--sl-color-danger-600)"
               >Clear</a
             >
           </div>
@@ -64,8 +64,8 @@
           <span>Loading...</span>
         </div>
         <div *ngFor="let quiz of latest; let i = index" class="flex flex-row items-center gap-2">
-          <sl-icon name="compass" style="color: rgb(var(--sl-color-primary-600))"></sl-icon>
-          <a [routerLink]="['/quizzes', quiz.id]" style="color: rgb(var(--sl-color-primary-600))">{{ quiz.title }}</a>
+          <sl-icon name="compass" style="color: var(--sl-color-primary-600)"></sl-icon>
+          <a [routerLink]="['/quizzes', quiz.id]" style="color: var(--sl-color-primary-600)">{{ quiz.title }}</a>
         </div>
       </div>
     </sl-card>
