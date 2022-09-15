@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import createAuth0Client, { GetTokenSilentlyVerboseResponse } from '@auth0/auth0-spa-js';
+import createAuth0Client, { GetTokenSilentlyVerboseResponse, User } from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 import { from, of, Observable, BehaviorSubject, combineLatest, throwError } from 'rxjs';
 import { tap, catchError, concatMap, shareReplay } from 'rxjs/operators';
@@ -45,7 +45,7 @@ export class AuthService {
   handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client) => from(client.handleRedirectCallback())));
 
   // Create subject and public observable of user profile data
-  private userProfileSubject$ = new BehaviorSubject<any>(null);
+  private userProfileSubject$ = new BehaviorSubject<User | null>(null);
   userProfile$ = this.userProfileSubject$.asObservable();
 
   // Create a local property for login status
@@ -93,7 +93,7 @@ export class AuthService {
   getUser$(options?: any): Observable<any> {
     return this.auth0Client$.pipe(
       concatMap((client) => from(client.getUser(options))),
-      tap((user) => this.userProfileSubject$.next(user))
+      tap((user) => this.userProfileSubject$.next(user || null))
     );
   }
 

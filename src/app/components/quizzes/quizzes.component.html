@@ -1,34 +1,38 @@
-<div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl">
-  <app-card-header
-    title="Q U I Z Z E S"
-    subtitle="Quizzes that you have created or imported will appear below"
-    icon="compass"
-  >
-  </app-card-header>
-  <sl-card *ngFor="let quiz of quizzes">
-    <div class="flex flex-row justify-between gap-4">
-      <div class="flex flex-row items-center gap-2">
-        <sl-button type="warning" circle outline (click)="handleEditQuiz(quiz)"
-          ><sl-icon name="pencil-square"></sl-icon
-        ></sl-button>
-        <sl-button type="danger" circle outline (click)="handleDeleteQuiz(quiz)"
-          ><sl-icon name="trash"></sl-icon
-        ></sl-button>
-        <span>{{ quiz.title }}</span>
+<app-page-layout>
+  <ng-container headerContent>
+    <app-card-header
+      title="Q U I Z Z E S"
+      subtitle="Quizzes that you have created or imported will appear below"
+      icon="compass"
+    >
+    </app-card-header>
+  </ng-container>
+  <ng-container leftSideContent>
+    <sl-card *ngFor="let quiz of quizzes">
+      <div class="flex flex-row justify-between gap-4">
+        <div class="flex flex-row items-center gap-2">
+          <sl-button type="warning" circle outline (click)="handleEditQuiz(quiz)"
+            ><sl-icon name="pencil-square"></sl-icon
+          ></sl-button>
+          <sl-button type="danger" circle outline (click)="handleDeleteQuiz(quiz)"
+            ><sl-icon name="trash"></sl-icon
+          ></sl-button>
+          <span>{{ quiz.title }}</span>
+        </div>
+        <div class="flex flex-row gap-2">
+          <sl-button type="success" (click)="handleBeginAssessment(quiz)">Begin quiz</sl-button>
+        </div>
       </div>
-      <div class="flex flex-row gap-2">
-        <sl-button type="success" (click)="handleBeginAssessment(quiz)">Begin quiz</sl-button>
+    </sl-card>
+    <sl-card *ngIf="!quizzes || quizzes.length === 0">
+      <div *ngIf="loading" class="flex flex-row items-center gap-2">
+        <sl-spinner></sl-spinner>
+        <span>Loading...</span>
       </div>
-    </div>
-  </sl-card>
-  <sl-card *ngIf="!quizzes || quizzes.length === 0">
-    <div *ngIf="loading" class="flex flex-row items-center gap-2">
-      <sl-spinner></sl-spinner>
-      <span>Loading...</span>
-    </div>
-    <div *ngIf="!loading" class="flex flex-col text-gray-500">
-      <span>You have not created any quizzes yet.</span>
-      <a [routerLink]="['/creator']" style="color: var(--sl-color-primary-600)">Create one by clicking here!</a>
-    </div>
-  </sl-card>
-</div>
+      <div *ngIf="!loading" class="flex flex-col text-gray-500">
+        <span>You have not created any quizzes yet.</span>
+        <a [routerLink]="['/creator']" style="color: var(--sl-color-primary-600)">Create one by clicking here!</a>
+      </div>
+    </sl-card>
+  </ng-container>
+</app-page-layout>

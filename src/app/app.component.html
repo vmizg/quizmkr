@@ -1,9 +1,7 @@
 <div class="quizmkr">
   <div class="quizmkr-spacer"></div>
-  <div class="flex flex-col flex-1 sm:max-w-screen-sm md:max-w-screen-md xl:max-w-56 2xl:max-w-64">
-    <div
-      class="logo text-4xl text-center font-light pt-16 flex flex-row items-center place-content-between gap-x-2"
-    >
+  <div class="flex flex-col flex-1 sm:max-w-screen-md md:max-w-screen-xl xl:max-w-56 2xl:max-w-64">
+    <div class="logo text-4xl text-center font-light pt-16 flex flex-row items-center place-content-between gap-x-2">
       {{ appTitle }}
     </div>
     <div class="quizmkr-nav flex flex-row place-content-between pt-12 pb-16">
@@ -17,8 +15,14 @@
           <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
         </sl-button>
       </sl-button-group>
-      <sl-button size="large" type="success" (click)="auth.loggedIn ? auth.logout() : auth.login()" [disabled]="auth.authenticating">
-        <sl-icon slot="suffix" name="{{ auth.loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon>{{ auth.authenticating ? 'Logging in...' : auth.loggedIn ? 'Log out' : 'Log in' }}
+      <sl-button
+        size="large"
+        type="success"
+        (click)="auth.loggedIn ? auth.logout() : auth.login()"
+        [disabled]="auth.authenticating"
+      >
+        <sl-icon slot="suffix" name="{{ auth.loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon
+        >{{ auth.authenticating && !auth.loggedIn ? 'Logging in...' : auth.loggedIn ? 'Log out' : 'Log in' }}
       </sl-button>
     </div>
     <router-outlet></router-outlet>

@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EMPTY, interval, Subscription } from 'rxjs';
-import { catchError, concatMap, tap } from 'rxjs/operators';
+import { EMPTY, interval, Subject } from 'rxjs';
+import { catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { AssessmentResult, Assessment, Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 const defaultParams = {
   order: 'id_desc',
-  limit: 8,
+  limit: 10,
 };
 
 @Component({
@@ -15,8 +16,6 @@ const defaultParams = {
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  private clockSubscription$?: Subscription;
-
   loadingInProgress = false;
   inProgress: Assessment[] = [];
   loadingResults = true;
@@ -24,12 +23,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadingLatest = true;
   latest: Quiz[] = [];
   currentDate = new Date();
+  username = 'stranger';
 
-  constructor(private apiService: ApiService) {}
+  private destroyed$ = new Subject<void>();
+
+  constructor(private apiService: ApiService, private auth: AuthService) {
+    this.auth.userProfile$
+      .pipe(
+        tap((user) => {
+          this.username = user ? user.nickname || user.name || 'stranger' : 'stranger';
+        }),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe();
+  }
 
   ngOnInit() {
-    this.clockSubscription$ = interval(1000)
-      .pipe(tap(() => (this.currentDate = new Date())))
+    interval(1000)
+      .pipe(
+        tap(() => (this.currentDate = new Date())),
+        takeUntil(this.destroyed$)
+      )
       .subscribe();
 
     this.apiService
@@ -44,7 +58,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.loadingLatest = false;
           return EMPTY;
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
 
@@ -60,13 +75,15 @@ export class HomeComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.loadingResults = false;
           return EMPTY;
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
   }
 
   ngOnDestroy() {
-    this.clockSubscription$?.unsubscribe();
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   handleDeleteResult(result: AssessmentResult) {

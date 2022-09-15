@@ -9,8 +9,7 @@
   gap: 8px;
 }
 
-sl-form,
-sl-form::part(base) {
+form {
   display: contents;
 }
 

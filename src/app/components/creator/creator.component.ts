@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, Observable, Subscription, combineLatest } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { EMPTY, Observable, combineLatest, Subject } from 'rxjs';
+import { concatMap, map, takeUntil } from 'rxjs/operators';
 import { BaseQuiz, Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -13,8 +13,6 @@ import { ApiService } from 'src/app/services/api.service';
 export class CreatorComponent implements OnInit, OnDestroy {
   @ViewChild('tagInput') tagInputRef!: ElementRef<HTMLElement>;
 
-  paramsSubscription$?: Subscription;
-
   id = '';
   title = '';
   desc = '';
@@ -25,10 +23,12 @@ export class CreatorComponent implements OnInit, OnDestroy {
   submitting = false;
   redirectTo = 'questions';
 
+  private destroyed$ = new Subject<void>();
+
   constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    this.paramsSubscription$ = combineLatest([this.route.params, this.route.queryParams])
+    combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         concatMap(([params, queryParams]) => {
           if (params.qid) {
@@ -47,13 +47,15 @@ export class CreatorComponent implements OnInit, OnDestroy {
             this.tags = quiz.tags || [];
             this.isExisting = true;
           }
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
   }
 
   ngOnDestroy(): void {
-    this.paramsSubscription$?.unsubscribe();
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   handleTitleInput(e: Event) {

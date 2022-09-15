@@ -30,8 +30,7 @@ interface AssessmentRouteState {
   styleUrls: ['./running.component.scss'],
 })
 export class RunningAssessmentComponent implements OnInit, OnDestroy {
-  private paramsSubscription$?: Subscription;
-  private stateSubscription$?: Subscription;
+  private destroyed$ = new Subject<void>();
   private interval$?: Subscription;
   private image$ = new ReplaySubject<{ current: string; upcoming: string }>();
   private upcomingImage$ = new ReplaySubject<string>();
@@ -60,7 +59,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
-    this.paramsSubscription$ = this.route.params
+    this.route.params
       .pipe(
         concatMap((params) => {
           const { assessment } = this.dataState || {};
@@ -81,7 +80,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           this.loading = false;
           this.router.navigate(['/quizzes']);
           return EMPTY;
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
 
@@ -151,8 +151,9 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.paramsSubscription$?.unsubscribe();
-    this.stateSubscription$?.unsubscribe();
+    this.destroyed$.next();
+    this.destroyed$.complete();
+
     this.interval$?.unsubscribe();
 
     this.image$.next({ current: '', upcoming: '' });

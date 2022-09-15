@@ -15,6 +15,7 @@ import { AssessmentComponent } from './components/assessment/assessment.componen
 import { RunningAssessmentComponent } from './components/assessment/running/running.component';
 import { ResultsComponent } from './components/assessment/results/results.component';
 import { CardHeaderComponent } from './components/card-header/card-header.component';
+import { PageLayoutComponent } from './components/page-layout/page-layout.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { CardHeaderComponent } from './components/card-header/card-header.compon
     QuizzesComponent,
     ResultsComponent,
     CardHeaderComponent,
+    PageLayoutComponent,
   ],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, ScrollingModule],
   providers: [ApiService, PendingChangesGuard],

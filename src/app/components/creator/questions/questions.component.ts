@@ -11,13 +11,12 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable, Subscription, EMPTY, ReplaySubject, of } from 'rxjs';
-import { catchError, concatMap, map, tap } from 'rxjs/operators';
+import { forkJoin, Observable, EMPTY, ReplaySubject, of, Subject } from 'rxjs';
+import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
 import { BaseOption, BaseQuestion, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { ComponentCanDeactivate } from 'src/app/guards/pending-changes.guard';
 import { generateColor, invertColor } from 'src/app/utilities';
-import { ShoelaceFormService } from 'src/app/services/shoelace-form.service';
 import { ImageService } from 'src/app/services/image.service';
 
 @Component({
@@ -26,13 +25,13 @@ import { ImageService } from 'src/app/services/image.service';
   styleUrls: ['./questions.component.scss'],
 })
 export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, ComponentCanDeactivate {
-  private queryParamsSubscription$?: Subscription;
-  private paramsSubscription$?: Subscription;
-  private changesSubscription$?: Subscription;
   private image$ = new ReplaySubject<string>();
+  private destroyed$ = new Subject<void>();
 
   @ViewChild('questionForm') questionForm!: ElementRef<HTMLFormElement>;
-  @ViewChildren('questionOptions') questionOptions!: QueryList<HTMLDivElement>;
+  @ViewChild('statementInput') statementInput!: ElementRef<HTMLTextAreaElement>;
+  @ViewChildren('questionOptions') questionOptions!: QueryList<ElementRef<HTMLDivElement>>;
+  @ViewChild('answerNote') answerNote!: ElementRef<HTMLInputElement>;
 
   alphabet = 'ABCDEFGHIJKLMNO';
   questions: Question[] = [];
@@ -58,21 +57,21 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     private cd: ChangeDetectorRef,
     private apiService: ApiService,
     private imageService: ImageService,
-    private formService: ShoelaceFormService,
     private route: ActivatedRoute,
     private router: Router
   ) {
     this.loading = true;
 
-    this.queryParamsSubscription$ = this.route.queryParams
+    this.route.queryParams
       .pipe(
         tap((params) => {
           this.handleQueryParamChange(params);
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
 
-    this.paramsSubscription$ = this.route.params
+    this.route.params
       .pipe(
         concatMap((params) => {
           this.quizId = params.qid;
@@ -92,7 +91,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
           this.loading = false;
           this.router.navigate(['/creator']);
           return EMPTY;
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
 
@@ -136,7 +136,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   ngAfterViewInit(): void {
-    this.changesSubscription$ = this.questionOptions.changes.subscribe(() => {
+    this.questionOptions.changes.pipe(takeUntil(this.destroyed$)).subscribe(() => {
       if (this.existingQuestionToRender) {
         this.renderEditQuestion(this.existingQuestionToRender);
         this.existingQuestionToRender = undefined;
@@ -146,9 +146,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   ngOnDestroy(): void {
-    this.queryParamsSubscription$?.unsubscribe();
-    this.paramsSubscription$?.unsubscribe();
-    this.changesSubscription$?.unsubscribe();
+    this.destroyed$.next();
+    this.destroyed$.complete();
 
     this.image$.next('');
     this.image$.complete();
@@ -187,8 +186,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   handleAddQuestion(e: Event) {
-    const { formData, formControls }: { formData: FormData; formControls: HTMLInputElement[] } = (e as CustomEvent)
-      .detail;
+    const { formData }: { formData: FormData; formControls: HTMLInputElement[] } = (e as CustomEvent).detail;
 
     const title = (formData.get('title') as string).trim();
     if (!title) {
@@ -267,7 +265,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
           clonedQuestions.push(question);
         }
         this.questions = clonedQuestions;
-        this.handleCancelEdit(formControls);
+        this.handleCancelEdit();
       },
       (err) => {
         console.log(err);
@@ -276,8 +274,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   private onEdit(question: Question): void {
-    const formControls = this.questionForm.nativeElement.getFormControls();
-    this.formService.resetForm(formControls);
+    // const formControls = this.questionForm.nativeElement.getFormControls();
+    // this.formService.resetForm(formControls);
+    this.questionForm.nativeElement.reset();
+
     this.edited = false;
     this.image = '';
 
@@ -322,26 +322,22 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   renderEditQuestion(question: Question): void {
-    const formControls = this.questionForm.nativeElement.getFormControls();
-
     let optionIndex = 0;
     let correctIndex = 0;
 
-    for (const control of formControls) {
-      if (!control.name) {
-        continue;
-      }
-      if (control.name === 'title') {
-        control.value = question.title;
-      } else if (control.name.startsWith('option')) {
-        control.value = question.options[optionIndex].title;
-        optionIndex++;
-      } else if (control.name.startsWith('correct')) {
-        control.checked = !!question.options[correctIndex].correct;
-        correctIndex++;
-      } else if (control.name === 'answer-note') {
-        control.value = question.answerNote;
-      }
+    this.statementInput.nativeElement.value = question.title;
+    this.answerNote.nativeElement.value = question.answerNote || '';
+
+    for (const item of this.questionOptions) {
+      const element = item.nativeElement;
+      const option = element.querySelector('.option-input') as HTMLInputElement;
+      const toggle = element.querySelector('.correct-toggle') as HTMLInputElement;
+
+      option.value = question.options[optionIndex].title;
+      optionIndex++;
+
+      toggle.checked = !!question.options[correctIndex].correct;
+      correctIndex++;
     }
 
     if (question.imageId !== undefined) {
@@ -349,8 +345,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
   }
 
-  handleCancelEdit(formControls?: HTMLInputElement[]): void {
-    this.resetForm(formControls);
+  handleCancelEdit(): void {
+    this.resetForm();
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { q: undefined },
@@ -440,9 +436,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     };
   }
 
-  private resetForm(formControls?: HTMLInputElement[]) {
-    const controls = formControls || this.questionForm.nativeElement.getFormControls();
-    this.formService.resetForm(controls);
+  private resetForm() {
+    this.questionForm.nativeElement.reset();
+
     this.totalOptions = 3;
     this.questionIndex = this.questions.length;
     this.existingQuestion = undefined;

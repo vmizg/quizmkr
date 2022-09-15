@@ -1,0 +1,8 @@
+:host {
+    display: contents;
+}
+
+.left-side:empty,
+.right-side:empty {
+    display: none;
+}

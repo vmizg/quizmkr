@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, of, Subscription } from 'rxjs';
-import { catchError, concatMap, tap } from 'rxjs/operators';
+import { EMPTY, of, Subject } from 'rxjs';
+import { catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { AssessmentResult, AssessmentResultDetails, Option } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -11,7 +11,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./results.component.scss'],
 })
 export class ResultsComponent implements OnInit, OnDestroy {
-  private paramsSubscription$?: Subscription;
+  private destroyed$ = new Subject<void>();
 
   alphabet = 'ABCDEFGHIJKLMNO';
   resultState?: AssessmentResult;
@@ -27,7 +27,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
-    this.paramsSubscription$ = this.route.params
+    this.route.params
       .pipe(
         concatMap((params) => {
           const id = params.rid;
@@ -54,13 +54,15 @@ export class ResultsComponent implements OnInit, OnDestroy {
         catchError(() => {
           this.loading = false;
           return EMPTY;
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
   }
 
   ngOnDestroy(): void {
-    this.paramsSubscription$?.unsubscribe();
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   isSelected(result: AssessmentResultDetails, option: Option) {

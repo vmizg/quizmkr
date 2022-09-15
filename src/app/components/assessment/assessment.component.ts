@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, Subscription } from 'rxjs';
-import { catchError, concatMap, tap } from 'rxjs/operators';
+import { EMPTY, Subject } from 'rxjs';
+import { catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { BaseAssessment } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -11,7 +11,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./assessment.component.scss'],
 })
 export class AssessmentComponent implements OnInit, OnDestroy {
-  private paramsSubscription$?: Subscription;
+  private destroyed$ = new Subject<void>();
 
   @ViewChild('totalQEl') totalQRef?: ElementRef<HTMLInputElement>;
   @ViewChild('rangeToEl') rangeToRef?: ElementRef<HTMLInputElement>;
@@ -34,7 +34,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
-    this.paramsSubscription$ = this.route.params
+    this.route.params
       .pipe(
         concatMap((params) => {
           this.quizId = params.qid;
@@ -57,13 +57,15 @@ export class AssessmentComponent implements OnInit, OnDestroy {
           this.loading = false;
           this.router.navigate(['/quizzes']);
           return EMPTY;
-        })
+        }),
+        takeUntil(this.destroyed$)
       )
       .subscribe();
   }
 
   ngOnDestroy(): void {
-    this.paramsSubscription$?.unsubscribe();
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   private checkRangeOvershoot() {
