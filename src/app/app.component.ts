@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from './services/auth.service';
 
 interface MenuLink {
@@ -19,6 +20,12 @@ const isDarkTheme = (): boolean => {
   );
 };
 
+const MENU_LINKS = [
+  { id: 1, route: '/home', title: 'Home', icon: 'house' },
+  { id: 2, route: '/creator', title: 'Creator', icon: 'asterisk' },
+  { id: 2, route: '/quizzes', title: 'Quizzes', icon: 'compass' },
+];
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -27,12 +34,10 @@ const isDarkTheme = (): boolean => {
 export class AppComponent implements OnInit, OnDestroy {
   auth: AuthService;
   appTitle = 'Q U I Z M K R';
-  menuLinks: MenuLink[] = [
-    { id: 1, route: '/home', title: 'Home', icon: 'house' },
-    { id: 2, route: '/creator', title: 'Creator', icon: 'asterisk' },
-    { id: 2, route: '/quizzes', title: 'Quizzes', icon: 'compass' },
-  ];
+  menuLinks: MenuLink[] = MENU_LINKS;
   darkMode: boolean;
+
+  authSubscription?: Subscription;
 
   constructor(private route: ActivatedRoute, private router: Router, auth: AuthService) {
     this.auth = auth;
@@ -41,6 +46,10 @@ export class AppComponent implements OnInit, OnDestroy {
       const htmlElement = document.documentElement;
       htmlElement.classList.remove('sl-theme-dark');
     }
+    this.authSubscription = this.auth.isAuthenticated$.subscribe((loggedIn) => {
+      this.toggleMenuLinks(loggedIn);
+    });
+    this.toggleMenuLinks(this.auth.loggedIn);
   }
 
   ngOnInit(): void {
@@ -51,6 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     window.matchMedia &&
       window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.darkModeListener);
+    this.authSubscription?.unsubscribe();
   }
 
   darkModeListener(e: MediaQueryListEvent): void {
@@ -71,6 +81,14 @@ export class AppComponent implements OnInit, OnDestroy {
       htmlElement.classList.remove('sl-theme-dark');
     }
     localStorage.setItem(THEME_KEY, this.darkMode ? 'dark' : 'light');
+  }
+
+  toggleMenuLinks(loggedIn: boolean): void {
+    if (loggedIn) {
+      this.menuLinks = MENU_LINKS;
+    } else {
+      this.menuLinks = [MENU_LINKS[0]];
+    }
   }
 
   isRouteActive(link: MenuLink): boolean {
