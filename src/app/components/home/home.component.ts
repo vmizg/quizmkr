@@ -91,6 +91,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           if (!this.loggedIn && loggedIn) {
             this.quizzes$.next();
             this.results$.next();
+          } else {
+            this.loadingLatest = false;
+            this.loadingResults = false;
           }
           this.loggedIn = loggedIn;
         }),

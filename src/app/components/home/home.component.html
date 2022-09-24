@@ -51,14 +51,12 @@
             </div>
             <span class="text-gray-500">{{ result.dateCompleted | date: 'medium' }}</span>
           </div>
-          <div>
-            <span>SCORE: </span>
-            <span class="font-semibold">{{ result.score }}%</span>
-            <a
-              (click)="handleDeleteResult(result)"
-              style="cursor: pointer; margin-left: 1rem; color: var(--sl-color-danger-600)"
-              >Clear</a
-            >
+          <div class="flex flex-col text-right">
+            <div>
+              <span>SCORE: </span>
+              <span class="font-semibold">{{ result.score }}%</span>
+            </div>
+            <a (click)="handleDeleteResult(result)" style="cursor: pointer; color: var(--sl-color-danger-600)">Clear</a>
           </div>
         </div>
       </div>
@@ -73,8 +71,13 @@
           <span>Loading...</span>
         </div>
         <div *ngFor="let quiz of latest; let i = index" class="flex flex-row items-center gap-2">
-          <sl-icon name="compass" style="color: var(--sl-color-primary-600)"></sl-icon>
-          <a [routerLink]="['/quizzes', quiz.id]" style="color: var(--sl-color-primary-600)">{{ quiz.title }}</a>
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <sl-icon name="compass" style="color: var(--sl-color-primary-600)"></sl-icon>
+              <a [routerLink]="['/quizzes', quiz.id]" style="color: var(--sl-color-primary-600)">{{ quiz.title }}</a>
+            </div>
+            <span class="text-gray-500">Total questions: {{ quiz.totalQuestions }}</span>
+          </div>
         </div>
         <div *ngIf="!loadingLatest && latest.length === 0" class="flex flex-col text-gray-500">
           <span>You have not created any quizzes yet.</span>
