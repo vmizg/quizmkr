@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EMPTY, interval, Subject } from 'rxjs';
-import { catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
+import { catchError, concatMap, take, takeUntil, tap } from 'rxjs/operators';
 import { AssessmentResult, Assessment, Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   currentDate = new Date();
   username = 'stranger';
 
+  private results$ = new Subject<void>();
   private destroyed$ = new Subject<void>();
 
   constructor(private apiService: ApiService, private auth: AuthService) {
@@ -63,9 +64,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.apiService
-      .getResults(defaultParams)
+    this.results$
       .pipe(
+        concatMap(() => this.apiService.getResults(defaultParams)),
         tap((data) => {
           this.loadingResults = false;
           if (data) {
@@ -79,6 +80,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe();
+    this.results$.next();
   }
 
   ngOnDestroy() {
@@ -96,16 +98,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.apiService
         .deleteResult(result.id)
         .pipe(
-          // TODO: refactor this to reuse the same function as called in ngOnInit
-          concatMap(() => {
-            return this.apiService.getResults(defaultParams);
-          }),
-          tap((data) => {
-            this.loadingResults = false;
-            if (data) {
-              this.results = data;
-            }
-          })
+          tap(() => this.results$.next()),
+          take(1)
         )
         .subscribe();
     }
