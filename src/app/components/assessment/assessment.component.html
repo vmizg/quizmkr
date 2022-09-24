@@ -49,9 +49,15 @@
           <div class="flex flex-col" *ngIf="totalQuizQuestions >= 10">
             Presets
             <div class="flex flex-row items-end gap-2">
-              <sl-button *ngIf="totalQuizQuestions >= 10" type="neutral" (click)="handlePresetClick(10)">10</sl-button>
-              <sl-button *ngIf="totalQuizQuestions >= 20" type="neutral" (click)="handlePresetClick(20)">20</sl-button>
-              <sl-button *ngIf="totalQuizQuestions >= 50" type="neutral" (click)="handlePresetClick(50)">50</sl-button>
+              <sl-button *ngIf="totalQuizQuestions >= 10" variant="neutral" (click)="handlePresetClick(10)"
+                >10</sl-button
+              >
+              <sl-button *ngIf="totalQuizQuestions >= 20" variant="neutral" (click)="handlePresetClick(20)"
+                >20</sl-button
+              >
+              <sl-button *ngIf="totalQuizQuestions >= 50" variant="neutral" (click)="handlePresetClick(50)"
+                >50</sl-button
+              >
             </div>
           </div>
         </div>
@@ -90,7 +96,7 @@
     </sl-card>
   </ng-container>
   <ng-container rightSideContent *ngIf="totalQuizQuestions > 0">
-    <sl-card>
+    <sl-card class="flex flex-1 flex-col lg:flex-row">
       <div slot="header" class="font-semibold">Summary</div>
       <div class="flex flex-col gap-4">
         <div class="flex flex-col">
@@ -120,7 +126,7 @@
     </sl-card>
     <sl-card>
       <div class="flex flex-row justify-between">
-        <sl-button class="w-full" (click)="handleBegin()" type="primary" [loading]="beginning">
+        <sl-button class="w-full" (click)="handleBegin()" variant="primary" [loading]="beginning">
           Begin assessment!
         </sl-button>
       </div>

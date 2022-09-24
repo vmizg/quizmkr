@@ -33,16 +33,14 @@
       <sl-card
         class="w-full"
         [style]="{
-          '--border-color': result.answeredCorrectly
-            ? 'var(--sl-color-green-500)'
-            : 'var(--sl-color-danger-500)',
+          '--border-color': result.answeredCorrectly ? 'var(--sl-color-green-500)' : 'var(--sl-color-danger-500)',
           '--border-width': '0.15rem'
         }"
       >
         <div class="flex flex-col w-full gap-2">
           <div class="flex flex-row justify-between gap-2 text-xl">
             <div class="flex items-start gap-2">
-              <sl-badge class="mt-1" type="neutral" pill>{{ i + 1 }}</sl-badge>
+              <sl-badge class="mt-1" variant="neutral" pill>{{ i + 1 }}</sl-badge>
               {{ result.question.title }}
             </div>
           </div>
@@ -52,11 +50,7 @@
           </div> -->
           <div *ngFor="let option of result.question.options; let j = index" class="flex flex-row items-center ml-8">
             <div class="flex text-xl mr-4" style="flex: 0 0 2rem">
-              <sl-icon
-                *ngIf="option.correct"
-                name="check-circle"
-                style="color: var(--sl-color-green-500)"
-              ></sl-icon>
+              <sl-icon *ngIf="option.correct" name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
               <sl-icon
                 *ngIf="!option.correct && isSelected(result, option)"
                 name="x-circle"

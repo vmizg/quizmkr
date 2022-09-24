@@ -31,16 +31,25 @@
           <span>Loading...</span>
         </div>
         <div *ngIf="!loadingResults && results.length === 0" class="flex flex-col text-gray-500">
-          <span>You have no recent assessment results.</span>
-          <a [routerLink]="['/quizzes']" style="color: var(--sl-color-primary-600)">Start doing quizzes here!</a>
+          <ng-container *ngIf="loggedIn">
+            <span>You have no recent assessment results.</span>
+          </ng-container>
+          <ng-container *ngIf="!loggedIn">
+            <span>You are not logged in.</span>
+            <a (click)="handleLogIn()" style="cursor: pointer; color: var(--sl-color-primary-600)"
+              >Please log in to see your latest assessment results.</a
+            >
+          </ng-container>
         </div>
         <div *ngFor="let result of results; let i = index" class="flex flex-row justify-between gap-2">
-          <div class="flex flex-row items-center gap-2">
-            <sl-icon name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
-            <a [routerLink]="['/results', result.id]" style="color: var(--sl-color-primary-600)">
-              {{ result.assessment.quiz.title }}</a
-            >
-            ({{ result.dateCompleted | date: 'medium' }})
+          <div class="flex flex-col">
+            <div class="flex flex-row items-center gap-2">
+              <sl-icon name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
+              <a [routerLink]="['/results', result.id]" style="color: var(--sl-color-primary-600)">
+                {{ result.assessment.quiz.title }}</a
+              >
+            </div>
+            <span class="text-gray-500">{{ result.dateCompleted | date: 'medium' }}</span>
           </div>
           <div>
             <span>SCORE: </span>
@@ -55,17 +64,21 @@
       </div>
     </sl-card>
   </ng-container>
-  <ng-container rightSideContent>
+  <ng-container *ngIf="loggedIn" rightSideContent>
     <sl-card>
       <div slot="header" class="font-semibold">Latest quizzes</div>
       <div class="flex flex-col gap-4">
-        <div *ngIf="loadingLatest" class="flex flex-row items-center gap-2">
+        <div *ngIf="loadingLatest" class="flex flex-row items-center gap-2 text-gray-500">
           <sl-spinner></sl-spinner>
           <span>Loading...</span>
         </div>
         <div *ngFor="let quiz of latest; let i = index" class="flex flex-row items-center gap-2">
           <sl-icon name="compass" style="color: var(--sl-color-primary-600)"></sl-icon>
           <a [routerLink]="['/quizzes', quiz.id]" style="color: var(--sl-color-primary-600)">{{ quiz.title }}</a>
+        </div>
+        <div *ngIf="!loadingLatest && latest.length === 0" class="flex flex-col text-gray-500">
+          <span>You have not created any quizzes yet.</span>
+          <a [routerLink]="['/quizzes']" style="color: var(--sl-color-primary-600)">Create your first quiz here</a>
         </div>
       </div>
     </sl-card>

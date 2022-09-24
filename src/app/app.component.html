@@ -9,7 +9,7 @@
         <sl-button
           *ngFor="let link of menuLinks"
           size="large"
-          type="{{ isRouteActive(link) ? 'primary' : 'default' }}"
+          variant="{{ isRouteActive(link) ? 'primary' : 'default' }}"
           (click)="onNavigate(link)"
         >
           <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
@@ -17,7 +17,7 @@
       </sl-button-group>
       <sl-button
         size="large"
-        type="success"
+        variant="{{ auth.authenticating ? 'neutral' : 'success' }}"
         (click)="auth.loggedIn ? auth.logout() : auth.login()"
         [disabled]="auth.authenticating"
       >

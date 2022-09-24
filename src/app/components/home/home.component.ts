@@ -24,11 +24,23 @@ export class HomeComponent implements OnInit, OnDestroy {
   latest: Quiz[] = [];
   currentDate = new Date();
   username = 'stranger';
+  loggedIn = false;
 
   private results$ = new Subject<void>();
   private destroyed$ = new Subject<void>();
 
   constructor(private apiService: ApiService, private auth: AuthService) {
+    this.loggedIn = this.auth.loggedIn;
+  }
+
+  ngOnInit() {
+    interval(1000)
+      .pipe(
+        tap(() => (this.currentDate = new Date())),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe();
+
     this.auth.userProfile$
       .pipe(
         tap((user) => {
@@ -37,12 +49,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe();
-  }
 
-  ngOnInit() {
-    interval(1000)
+    this.auth.isAuthenticated$
       .pipe(
-        tap(() => (this.currentDate = new Date())),
+        tap((loggedIn) => {
+          this.loggedIn = loggedIn;
+        }),
         takeUntil(this.destroyed$)
       )
       .subscribe();
@@ -86,6 +98,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroyed$.next();
     this.destroyed$.complete();
+  }
+
+  handleLogIn() {
+    this.auth.login('/home');
   }
 
   handleDeleteResult(result: AssessmentResult) {

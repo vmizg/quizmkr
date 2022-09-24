@@ -62,18 +62,25 @@
       <div class="flex flex-row justify-between items-center">
         <div class="flex flex-row gap-4">
           <sl-button (click)="handleClickPrev()" [disabled]="activeQuestionIndex === 0">Previous</sl-button>
-          <sl-button type="primary" (click)="handleClickNext()" [hidden]="activeQuestionIndex === questions.length - 1"
+          <sl-button
+            variant="primary"
+            (click)="handleClickNext()"
+            [hidden]="activeQuestionIndex === questions.length - 1"
             >Next</sl-button
           >
-          <sl-button type="success" (click)="handleClickSubmit()" [hidden]="activeQuestionIndex < questions.length - 1" [loading]="submitting"
+          <sl-button
+            variant="success"
+            (click)="handleClickSubmit()"
+            [hidden]="activeQuestionIndex < questions.length - 1"
+            [loading]="submitting"
             >Submit</sl-button
           >
         </div>
         <div *ngIf="settings.timeLimit" class="text-center">
-          <sl-badge type="neutral" class="time-left" pill>{{ timeLeft | date: dateFmt }} </sl-badge>
+          <sl-badge variant="neutral" class="time-left" pill>{{ timeLeft | date: dateFmt }} </sl-badge>
         </div>
         <div class="flex flex-row gap-4">
-          <sl-button (click)="handleAbandon()" type="danger" outline>Abandon</sl-button>
+          <sl-button variant="danger" (click)="handleAbandon()" outline>Abandon</sl-button>
         </div>
       </div>
     </sl-card>

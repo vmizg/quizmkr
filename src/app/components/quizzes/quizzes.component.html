@@ -11,16 +11,16 @@
     <sl-card *ngFor="let quiz of quizzes">
       <div class="flex flex-row justify-between gap-4">
         <div class="flex flex-row items-center gap-2">
-          <sl-button type="warning" circle outline (click)="handleEditQuiz(quiz)"
+          <sl-button variant="warning" circle outline (click)="handleEditQuiz(quiz)"
             ><sl-icon name="pencil-square"></sl-icon
           ></sl-button>
-          <sl-button type="danger" circle outline (click)="handleDeleteQuiz(quiz)"
+          <sl-button variant="danger" circle outline (click)="handleDeleteQuiz(quiz)"
             ><sl-icon name="trash"></sl-icon
           ></sl-button>
           <span>{{ quiz.title }}</span>
         </div>
         <div class="flex flex-row gap-2">
-          <sl-button type="success" (click)="handleBeginAssessment(quiz)">Begin quiz</sl-button>
+          <sl-button variant="success" (click)="handleBeginAssessment(quiz)">Begin quiz</sl-button>
         </div>
       </div>
     </sl-card>

@@ -61,7 +61,7 @@
           <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
             <sl-button
               style="width: 6rem"
-              type="{{ correctToggle.checked ? 'success' : 'neutral' }}"
+              variant="{{ correctToggle.checked ? 'success' : 'neutral' }}"
               [outline]="!correctToggle.checked"
               (click)="correctToggle.checked = !correctToggle.checked; handleEdit()"
             >
@@ -91,7 +91,7 @@
               style="width: 4rem"
               (click)="handleRemoveOption(optionInput)"
               [disabled]="totalOptions < 3"
-              type="neutral"
+              variant="neutral"
               outline
               tabindex="-1"
             >
@@ -108,10 +108,10 @@
       </sl-card>
       <sl-card>
         <div class="flex flex-row justify-between gap-4">
-          <sl-button class="w-full" type="primary" [loading]="adding" submit>
+          <sl-button class="w-full" variant="primary" [loading]="adding" submit>
             {{ existingQuestion ? 'Save question' : 'Add question' }}
           </sl-button>
-          <sl-button *ngIf="existingQuestion" (click)="handleCancelEdit()" type="neutral">Cancel</sl-button>
+          <sl-button *ngIf="existingQuestion" (click)="handleCancelEdit()" variant="neutral">Cancel</sl-button>
         </div>
       </sl-card>
     </form>
@@ -136,10 +136,10 @@
               <span>{{ q.title }}</span>
             </div>
             <div class="flex flex-row gap-2">
-              <sl-button type="neutral" circle outline (click)="handleEditQuestion(q, targetQ)"
+              <sl-button variant="neutral" circle outline (click)="handleEditQuestion(q, targetQ)"
                 ><sl-icon [name]="isEditing(q) ? 'x-lg' : 'pencil-square'"></sl-icon
               ></sl-button>
-              <sl-button type="danger" circle outline (click)="handleDeleteQuestion(q)" tabindex="-1"
+              <sl-button variant="danger" circle outline (click)="handleDeleteQuestion(q)" tabindex="-1"
                 ><sl-icon name="trash"></sl-icon
               ></sl-button>
             </div>
