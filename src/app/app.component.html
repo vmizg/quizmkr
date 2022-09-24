@@ -17,7 +17,7 @@
       </sl-button-group>
       <sl-button
         size="large"
-        variant="{{ auth.authenticating ? 'neutral' : 'success' }}"
+        variant="{{ auth.authenticating || auth.loggedIn ? 'default' : 'success' }}"
         (click)="auth.loggedIn ? auth.logout() : auth.login()"
         [disabled]="auth.authenticating"
       >
