@@ -108,7 +108,7 @@
       </sl-card>
       <sl-card>
         <div class="flex flex-row justify-between gap-4">
-          <sl-button class="w-full" variant="primary" [loading]="adding" submit>
+          <sl-button class="w-full" variant="primary" [loading]="adding" type="submit">
             {{ existingQuestion ? 'Save question' : 'Add question' }}
           </sl-button>
           <sl-button *ngIf="existingQuestion" (click)="handleCancelEdit()" variant="neutral">Cancel</sl-button>

@@ -186,7 +186,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   handleAddQuestion(e: Event) {
-    const { formData }: { formData: FormData; formControls: HTMLInputElement[] } = (e as CustomEvent).detail;
+    e.preventDefault();
+    const formData = new FormData(this.questionForm.nativeElement);
 
     const title = (formData.get('title') as string).trim();
     if (!title) {
@@ -242,7 +243,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       return;
     }
 
+    this.adding = true;
     let $obs: Observable<Question | null>;
+
     if (!questionId) {
       $obs = this.apiService.createQuestion(this.quizId, question);
     } else {
@@ -252,6 +255,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     $obs.subscribe(
       (question) => {
         if (!question) {
+          this.adding = false;
           return;
         }
         let index = -1;
@@ -266,6 +270,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         }
         this.questions = clonedQuestions;
         this.handleCancelEdit();
+        this.adding = false;
       },
       (err) => {
         console.log(err);
@@ -274,8 +279,6 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   }
 
   private onEdit(question: Question): void {
-    // const formControls = this.questionForm.nativeElement.getFormControls();
-    // this.formService.resetForm(formControls);
     this.questionForm.nativeElement.reset();
 
     this.edited = false;

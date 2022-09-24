@@ -9,6 +9,7 @@ import { AuthService } from '../services/auth.service';
 export class AuthGuard implements CanActivate {
   constructor(private auth: AuthService) {}
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    console.log('not?', this.auth.loggedIn);
     if (!this.auth.loggedIn) {
       this.auth.login();
       return false;
