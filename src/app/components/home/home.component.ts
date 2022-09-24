@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   loggedIn = false;
 
   private results$ = new Subject<void>();
+  private quizzes$ = new Subject<void>();
   private destroyed$ = new Subject<void>();
 
   constructor(private apiService: ApiService, private auth: AuthService) {
@@ -41,27 +42,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.auth.userProfile$
+    this.quizzes$
       .pipe(
-        tap((user) => {
-          this.username = user ? user.nickname || user.name || 'stranger' : 'stranger';
-        }),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe();
-
-    this.auth.isAuthenticated$
-      .pipe(
-        tap((loggedIn) => {
-          this.loggedIn = loggedIn;
-        }),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe();
-
-    this.apiService
-      .getQuizzes(defaultParams)
-      .pipe(
+        concatMap(() => this.apiService.getQuizzes(defaultParams)),
         tap((data) => {
           this.loadingLatest = false;
           if (data) {
@@ -92,7 +75,28 @@ export class HomeComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe();
-    this.results$.next();
+
+    this.auth.userProfile$
+      .pipe(
+        tap((user) => {
+          this.username = user ? user.nickname || user.name || 'stranger' : 'stranger';
+        }),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe();
+
+    this.auth.isAuthenticated$
+      .pipe(
+        tap((loggedIn) => {
+          if (!this.loggedIn && loggedIn) {
+            this.quizzes$.next();
+            this.results$.next();
+          }
+          this.loggedIn = loggedIn;
+        }),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {

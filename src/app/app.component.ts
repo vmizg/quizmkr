@@ -37,19 +37,27 @@ export class AppComponent implements OnInit, OnDestroy {
   menuLinks: MenuLink[] = MENU_LINKS;
   darkMode: boolean;
 
+  loggedIn: boolean;
+  authenticating: boolean;
   authSubscription?: Subscription;
 
   constructor(private route: ActivatedRoute, private router: Router, auth: AuthService) {
     this.auth = auth;
     this.darkMode = isDarkTheme();
+
     if (!this.darkMode) {
       const htmlElement = document.documentElement;
       htmlElement.classList.remove('sl-theme-dark');
     }
+
     this.authSubscription = this.auth.isAuthenticated$.subscribe((loggedIn) => {
       this.toggleMenuLinks(loggedIn);
+      this.authenticating = false;
+      this.loggedIn = loggedIn;
     });
     this.toggleMenuLinks(this.auth.loggedIn);
+    this.authenticating = this.auth.authenticating;
+    this.loggedIn = this.auth.loggedIn;
   }
 
   ngOnInit(): void {
