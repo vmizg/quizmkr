@@ -2,8 +2,8 @@
   "name": "quiz-mkr",
   "description": "Q U I Z M K R - a minimalist quiz maker and assessment app",
   "version": "0.0.1",
-  "author": "vmizg",
-  "license": "GPL-3.0",
+  "author": "Vytautas Mizgiris",
+  "license": "UNLICENSED",
   "repository": {
     "type": "git",
     "url": "https://github.com/vmizg/quiz-mkr.git"
