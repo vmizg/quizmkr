@@ -50,7 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
       htmlElement.classList.remove('sl-theme-dark');
     }
 
-    this.authSubscription = this.auth.isAuthenticated$.subscribe((loggedIn) => {
+    this.authSubscription = this.auth.isLoggedIn$.subscribe((loggedIn) => {
       this.toggleMenuLinks(loggedIn);
       this.authenticating = false;
       this.loggedIn = loggedIn;

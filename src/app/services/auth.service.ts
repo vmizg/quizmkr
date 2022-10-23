@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import createAuth0Client, { GetTokenSilentlyVerboseResponse, User } from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
-import { from, of, Observable, BehaviorSubject, combineLatest, throwError } from 'rxjs';
+import { from, of, Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { tap, catchError, concatMap, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
@@ -28,31 +28,39 @@ export class AuthService {
     ) as Observable<Auth0Client>
   ).pipe(
     shareReplay(1), // Every subscription receives the same shared value
-    catchError((err) => throwError(err))
+    catchError((err) => {
+      throw err;
+    })
   );
+
+  // Login status check
+  authenticating: boolean = false;
+
+  // Create a local property for login status
+  loggedIn: boolean = false;
+
+  private isLoggedInSubject$ = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.isLoggedInSubject$.asObservable();
 
   // Define observables for SDK methods that return promises by default
   // For each Auth0 SDK method, first ensure the client instance is ready
   // concatMap: Using the client instance, call SDK method; SDK returns a promise
   // from: Convert that resulting promise into an observable
-  isAuthenticated$ = this.auth0Client$.pipe(
+  private isAuthenticated$ = this.auth0Client$.pipe(
     concatMap((client) => from(client.isAuthenticated())),
     tap((res) => {
       this.loggedIn = res;
+      this.isLoggedInSubject$.next(res);
     })
   );
-
-  handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client) => from(client.handleRedirectCallback())));
 
   // Create subject and public observable of user profile data
   private userProfileSubject$ = new BehaviorSubject<User | null>(null);
   userProfile$ = this.userProfileSubject$.asObservable();
 
-  // Create a local property for login status
-  loggedIn: boolean = false;
-
-  // Login status check
-  authenticating: boolean = false;
+  private handleRedirectCallback$ = this.auth0Client$.pipe(
+    concatMap((client) => from(client.handleRedirectCallback()))
+  );
 
   constructor(private router: Router) {
     // On initial load, check authentication state with authorization server

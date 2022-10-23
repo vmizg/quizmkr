@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.auth.isAuthenticated$
+    this.auth.isLoggedIn$
       .pipe(
         tap((loggedIn) => {
           if (!this.loggedIn && loggedIn) {
