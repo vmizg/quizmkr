@@ -1,16 +1,7 @@
-@import '~tailwindcss/base';
-@import '~tailwindcss/components';
-@import '~tailwindcss/utilities';
-
-:root,
-:host,
-.sl-theme-light,
-.sl-theme-dark {
-  --sl-font-sans: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  --text-color-light: rgba(17, 24, 39);
-  --text-color-dark: rgba(249, 250, 251);
-}
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import './theme.scss';
 
 html,
 body {
