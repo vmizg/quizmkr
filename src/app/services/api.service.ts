@@ -73,7 +73,7 @@ export class ApiService {
   }
 
   createAssessment(quizId: string, payload: BaseAssessment) {
-    return this.http.post(`/api/quizzes/${quizId}/assessments`, payload).pipe(map((result) => result as Assessment));
+    return this.http.post(`/api/assessments`, { ...payload, quizId }).pipe(map((result) => result as Assessment));
   }
 
   deleteAssessment(id: string) {
