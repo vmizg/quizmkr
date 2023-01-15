@@ -30,7 +30,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   };
   overshoot = false;
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
     this.loading = true;
@@ -145,8 +145,8 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   handleBegin() {
     this.beginning = true;
 
-    this.apiService.createAssessment(this.quizId, this.settings).subscribe(
-      (result) => {
+    this.apiService.createAssessment(this.quizId, this.settings).subscribe({
+      next: (result) => {
         this.beginning = false;
         if (result) {
           this.router.navigate(['/assessments', result.id], {
@@ -154,10 +154,10 @@ export class AssessmentComponent implements OnInit, OnDestroy {
           });
         }
       },
-      (err) => {
+      error: (err) => {
         this.beginning = false;
         console.log(err);
       }
-    );
+    });
   }
 }

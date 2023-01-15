@@ -33,12 +33,13 @@ export class AuthService {
     })
   );
 
-  // Login status check
+  // Is authenticating status
   authenticating: boolean = false;
+  private isAuthenticatingSubject$ = new BehaviorSubject<boolean>(false);
+  isAuthenticating$ = this.isAuthenticatingSubject$.asObservable();
 
-  // Create a local property for login status
+  // Current login status
   loggedIn: boolean = false;
-
   private isLoggedInSubject$ = new BehaviorSubject<boolean>(false);
   isLoggedIn$ = this.isLoggedInSubject$.asObservable();
 
@@ -48,10 +49,7 @@ export class AuthService {
   // from: Convert that resulting promise into an observable
   private isAuthenticated$ = this.auth0Client$.pipe(
     concatMap((client) => from(client.isAuthenticated())),
-    tap((res) => {
-      this.loggedIn = res;
-      this.isLoggedInSubject$.next(res);
-    })
+    tap((res) => this.isLoggedInSubject$.next(res))
   );
 
   // Create subject and public observable of user profile data
@@ -63,6 +61,13 @@ export class AuthService {
   );
 
   constructor(private router: Router) {
+    // Always update the local state
+    this.isAuthenticating$.subscribe((status) => {
+      this.authenticating = status;
+    });
+    this.isLoggedIn$.subscribe((status) => {
+      this.loggedIn = status;
+    });
     // On initial load, check authentication state with authorization server
     // Set up local auth streams if user is already authenticated
     this.localAuthSetup();
@@ -106,7 +111,7 @@ export class AuthService {
   }
 
   private localAuthSetup() {
-    this.authenticating = true;
+    this.isAuthenticatingSubject$.next(true);
     // This should only be called on app initialization
     // Set up local authentication streams
     const checkAuth$ = this.isAuthenticated$.pipe(
@@ -119,7 +124,7 @@ export class AuthService {
         // If not authenticated, return stream that emits 'false'
         return of(loggedIn);
       }),
-      tap(() => (this.authenticating = false))
+      tap(() => (this.isAuthenticatingSubject$.next(false)))
     );
     return checkAuth$.subscribe();
   }
@@ -142,7 +147,7 @@ export class AuthService {
     const params = window.location.search;
     if (params.includes('code=') && params.includes('state=')) {
       let targetRoute: string; // Path to redirect to after login processsed
-      this.authenticating = true;
+      this.isAuthenticatingSubject$.next(true);
       const authComplete$ = this.handleRedirectCallback$.pipe(
         // Have client, now call method to handle auth callback redirect
         tap((cbRes) => {
@@ -159,7 +164,7 @@ export class AuthService {
       authComplete$.subscribe(() => {
         // Redirect to target route after callback processing
         this.router.navigate([targetRoute]);
-        this.authenticating = false;
+        this.isAuthenticatingSubject$.next(false);
       });
     }
   }

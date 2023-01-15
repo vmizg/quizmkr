@@ -20,7 +20,7 @@ import {
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getQuizzes(params?: any) {
     return this.http
@@ -73,7 +73,7 @@ export class ApiService {
   }
 
   createAssessment(quizId: string, payload: BaseAssessment) {
-    return this.http.post(`/api/assessments`, { ...payload, quizId }).pipe(map((result) => result as Assessment));
+    return this.http.post(`/api/assessments`, { ...payload, quiz: { id: quizId } }).pipe(map((result) => result as Assessment));
   }
 
   deleteAssessment(id: string) {

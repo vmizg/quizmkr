@@ -32,14 +32,16 @@ const MENU_LINKS = [
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
+  authenticating$?: Subscription;
+  loggedIn$?: Subscription;
+
   auth: AuthService;
   appTitle = 'Q U I Z M K R';
   menuLinks: MenuLink[] = MENU_LINKS;
   darkMode: boolean;
 
-  loggedIn: boolean;
   authenticating: boolean;
-  authSubscription?: Subscription;
+  loggedIn: boolean;
 
   constructor(private route: ActivatedRoute, private router: Router, auth: AuthService) {
     this.auth = auth;
@@ -50,11 +52,14 @@ export class AppComponent implements OnInit, OnDestroy {
       htmlElement.classList.remove('sl-theme-dark');
     }
 
-    this.authSubscription = this.auth.isLoggedIn$.subscribe((loggedIn) => {
+    this.authenticating$ = this.auth.isAuthenticating$.subscribe((status) => {
+      this.authenticating = status;
+    });
+    this.loggedIn$ = this.auth.isLoggedIn$.subscribe((loggedIn) => {
       this.toggleMenuLinks(loggedIn);
-      this.authenticating = false;
       this.loggedIn = loggedIn;
     });
+
     this.toggleMenuLinks(this.auth.loggedIn);
     this.authenticating = this.auth.authenticating;
     this.loggedIn = this.auth.loggedIn;
@@ -68,7 +73,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     window.matchMedia &&
       window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.darkModeListener);
-    this.authSubscription?.unsubscribe();
+    this.authenticating$?.unsubscribe();
+    this.loggedIn$?.unsubscribe();
   }
 
   darkModeListener(e: MediaQueryListEvent): void {
