@@ -178,34 +178,13 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     return { finished, unfinishedIndex };
   }
 
-  private calculateScore() {
-    const details = this.questions.map((q) => {
-      const correctAnswer = new Set<string>();
-      for (const option of q.options) {
-        if (option.correct) {
-          correctAnswer.add(option.id);
-        }
-      }
-      const answeredCorrectly = areSetsEqual(q.selectedAnswer, correctAnswer);
+  private getSubmissionDetails() {
+    return this.questions.map((q) => {
       return {
         questionId: q.id,
-        selectedAnswer: q.selectedAnswer,
-        correctAnswer,
-        answeredCorrectly,
+        selectedAnswer: q.selectedAnswer ? Array.from(q.selectedAnswer) : [],
       };
     });
-    const correctAnswers = details.filter(({ answeredCorrectly }) => answeredCorrectly);
-    const score = Math.floor((correctAnswers.length / details.length) * 100);
-    return {
-      details: details.map((value) => {
-        return {
-          ...value,
-          selectedAnswer: Array.from(value.selectedAnswer || []),
-          correctAnswer: Array.from(value.correctAnswer),
-        };
-      }),
-      score,
-    };
   }
 
   private setTimeLeft(timeLimit: number) {
@@ -230,14 +209,12 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           }
         })
       )
-      .subscribe(
-        () => {},
-        () => {},
-        () => {
+      .subscribe({
+        complete: () => {
           alert('TIME IS UP! Your quiz will now be submitted');
           this.submitAssessment();
         }
-      );
+      });
   }
 
   private submitAssessment() {
@@ -248,15 +225,14 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.submitting = true;
     const currentDate = new Date();
     const currentTime = currentDate.getTime();
-    const { score, details } = this.calculateScore();
+    const details = this.getSubmissionDetails();
     const data: BaseAssesmentResult = {
-      score: score,
       details: details,
       timeTaken: currentTime - this.startTime,
       dateCompleted: currentDate,
     };
-    this.apiService.submitAssessmentResult(this.settings.id, data).subscribe(
-      (result) => {
+    this.apiService.submitAssessmentResult(this.settings.id, data).subscribe({
+      next: (result) => {
         this.submitting = false;
         if (result) {
           alert(
@@ -265,11 +241,11 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           this.router.navigate(['/results', result.id], { state: { result } });
         }
       },
-      () => {
+      error: () => {
         this.submitting = false;
         alert('An error has occurred while submitting the assessment. Please try again.');
       }
-    );
+    });
   }
 
   setActiveQuestion(index: number) {
@@ -294,20 +270,18 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
   handleAnswerInput(e: Event) {
     if (this.activeQuestion) {
-      const inputEl = e.target as HTMLInputElement;
-      const value = inputEl.value;
+      const { value, checked } = e.target as HTMLInputElement;
 
       if (this.activeQuestion.multiSelect === true) {
         if (!this.activeQuestion.selectedAnswer) {
           this.activeQuestion.selectedAnswer = new Set();
         }
-        const selected = inputEl.checked;
-        if (selected) {
+        if (checked) {
           this.activeQuestion.selectedAnswer.add(value);
         } else {
           this.activeQuestion.selectedAnswer.delete(value);
         }
-      } else {
+      } else if (checked) {
         this.activeQuestion.selectedAnswer = new Set([value]);
       }
     }

@@ -73,9 +73,9 @@ export interface Assessment extends BaseAssessment {
 
 export interface BaseAssessmentResultDetails {
   questionId: string;
-  answeredCorrectly: boolean;
   selectedAnswer: string[];
-  correctAnswer: string[];
+  correctAnswer?: string[];
+  answeredCorrectly?: boolean;
 }
 
 export interface AssessmentResultDetails extends BaseAssessmentResultDetails {
@@ -83,7 +83,7 @@ export interface AssessmentResultDetails extends BaseAssessmentResultDetails {
 }
 
 export interface BaseAssesmentResult {
-  score: number;
+  score?: number;
   details: BaseAssessmentResultDetails[];
   timeTaken: number;
   dateCompleted: Date;
