@@ -17,6 +17,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   resultState?: AssessmentResult;
   resultSheet?: AssessmentResult;
   answeredCorrectly = 0;
+  score = 0;
   timeTaken = '';
 
   loading = true;
@@ -37,6 +38,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
           if (result && result.details) {
             this.resultSheet = result;
             this.answeredCorrectly = result.details.filter(({ answeredCorrectly }) => answeredCorrectly).length;
+            this.score = (this.answeredCorrectly / result.details.length) * 100;
             let secondsTaken = Math.floor(result.timeTaken / 1000);
             let minutesTaken = 0;
             if (secondsTaken >= 60) {

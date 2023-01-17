@@ -1,18 +1,13 @@
 <div class="flex flex-col gap-2 pb-12 justify-stretch w-full max-w-4xl">
-  <app-card-header
-    [title]="resultSheet?.assessment?.quiz?.title"
-    subtitle="Assessment result sheet"
-    [loading]="loading"
-    [visible]="!!(resultSheet && resultSheet.details.length > 0)"
-    icon="check-circle"
-  >
+  <app-card-header [title]="resultSheet?.assessment?.quiz?.title" subtitle="Assessment result sheet" [loading]="loading"
+    [visible]="!!(resultSheet && resultSheet.details.length > 0)" icon="check-circle">
   </app-card-header>
   <sl-card *ngIf="resultSheet">
     <div slot="header">Summary</div>
     <div class="flex flex-col gap-2 w-full">
       <div class="flex flex-col justify-center items-center">
         <span class="text-xl">Score:</span>
-        <span class="font-semibold text-3xl">{{ resultSheet.score }}%</span>
+        <span class="font-semibold text-3xl">{{ score }}%</span>
       </div>
       <div class="flex flex-row justify-between items-center">
         <span>Answered correctly</span>
@@ -30,13 +25,10 @@
   </sl-card>
   <div class="flex flex-col gap-2 w-full" *ngIf="resultSheet && resultSheet.details.length > 0">
     <sl-card *ngFor="let result of resultSheet.details; let i = index">
-      <sl-card
-        class="w-full"
-        [style]="{
+      <sl-card class="w-full" [style]="{
           '--border-color': result.answeredCorrectly ? 'var(--sl-color-green-500)' : 'var(--sl-color-danger-500)',
           '--border-width': '0.15rem'
-        }"
-      >
+        }">
         <div class="flex flex-col w-full gap-2">
           <div class="flex flex-row justify-between gap-2 text-xl">
             <div class="flex items-start gap-2">
@@ -51,22 +43,16 @@
           <div *ngFor="let option of result.question.options; let j = index" class="flex flex-row items-center ml-8">
             <div class="flex text-xl mr-4" style="flex: 0 0 2rem">
               <sl-icon *ngIf="option.correct" name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
-              <sl-icon
-                *ngIf="!option.correct && isSelected(result, option)"
-                name="x-circle"
-                style="color: var(--sl-color-danger-500)"
-              ></sl-icon>
+              <sl-icon *ngIf="!option.correct && isSelected(result, option)" name="x-circle"
+                style="color: var(--sl-color-danger-500)"></sl-icon>
             </div>
-            <span
-              [style]="{
+            <span [style]="{
                 color: option.correct
                   ? 'var(--sl-color-green-500)'
                   : !option.correct && isSelected(result, option)
                   ? 'var(--sl-color-danger-500)'
                   : ''
-              }"
-              >{{ alphabet[j] }}. {{ option.title }}</span
-            >
+              }">{{ alphabet[j] }}. {{ option.title }}</span>
           </div>
         </div>
       </sl-card>
