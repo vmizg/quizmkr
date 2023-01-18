@@ -20,11 +20,11 @@
       <div class="grid gap-4">
         <div class="flex flex-row justify-between gap-2">
           <sl-input
-            class="mr-auto w-full"
-            placeholder="Add tags separated by comma"
-            (sl-input)="handleTagInput($event)"
-            [value]="tag"
-          ></sl-input>
+          class="mr-auto w-full"
+          placeholder="Add tags separated by comma"
+          (sl-input)="handleTagInput($event)"
+          [value]="tag"
+        ></sl-input>
           <sl-button (click)="handleAddTags()" variant="primary" outline>Add tag(-s)</sl-button>
           <sl-button (click)="handleClearTags()" variant="danger" outline>Clear all</sl-button>
         </div>
@@ -44,7 +44,7 @@
     </sl-card>
   </ng-container>
   <ng-container rightSideContent>
-    <sl-card>
+    <sl-card class="hidden lg:contents">
       <div class="flex flex-col"></div>
     </sl-card>
   </ng-container>
