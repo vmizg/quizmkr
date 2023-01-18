@@ -7,9 +7,8 @@
   place-content: center;
 }
 
-.quizmkr-sidenav,
 .quizmkr-spacer {
-  flex: 0 0 10vw;
+  flex: 0 0 2rem;
 }
 
 .logo {
@@ -39,6 +38,7 @@
   }
 
   sl-switch::part(control) {
+
     &,
     &:active {
       background-color: transparent;

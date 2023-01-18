@@ -45,7 +45,28 @@
   </ng-container>
   <ng-container rightSideContent>
     <sl-card class="hidden lg:contents">
-      <div class="flex flex-col"></div>
+      <div class="overview">
+        <div *ngIf="!title" class="title">
+          <sl-skeleton></sl-skeleton>
+          <sl-skeleton></sl-skeleton>
+        </div>
+        <div *ngIf="title" class="title">
+          <sl-avatar>
+            <sl-icon slot="icon" name="asterisk" class="text-xl"></sl-icon>
+          </sl-avatar>
+          <span>{{ title }}</span>
+        </div>
+        <ng-container *ngIf="!desc">
+          <sl-skeleton></sl-skeleton>
+          <sl-skeleton></sl-skeleton>
+          <sl-skeleton></sl-skeleton>
+        </ng-container>
+        <div *ngIf="desc" class="description">
+          <span class="caption">Description:</span>
+          <br />
+          {{ desc }}
+        </div>
+      </div>
     </sl-card>
   </ng-container>
 </app-page-layout>

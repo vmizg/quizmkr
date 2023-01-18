@@ -1,9 +1,9 @@
 <app-page-layout>
   <ng-container headerContent>
-    <app-card-header icon="house">
-      <ng-container titleContent> Hey, {{ username }} <sl-icon name="emoji-smile"></sl-icon> </ng-container>
+    <app-card-header>
+      <ng-container titleContent> Hey, {{ username }}!</ng-container>
       <ng-container suffixContent>
-        <sl-badge class="m-auto">{{ currentDate | date: 'mediumTime' }}</sl-badge>
+        <div class="flex items-center gap-2 text-xl"><sl-icon name="clock"></sl-icon>{{ currentDate | date:'HH:mm' }}</div>
       </ng-container>
     </app-card-header>
   </ng-container>
@@ -53,7 +53,7 @@
           </div>
           <div class="flex flex-col text-right">
             <div>
-              <span>SCORE: </span>
+              <span>Score: </span>
               <span class="font-semibold">{{ result.score }}%</span>
             </div>
             <a (click)="handleDeleteResult(result)" style="cursor: pointer; color: var(--sl-color-danger-600)">Clear</a>

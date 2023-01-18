@@ -4,3 +4,7 @@
   flex-direction: column;
   align-items: center;
 }
+
+sl-card::part(body) {
+  min-height: 5.5rem;
+}
