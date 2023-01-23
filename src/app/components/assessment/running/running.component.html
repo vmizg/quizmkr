@@ -4,19 +4,21 @@
     [visible]="!!(activeQuestion && settings)" icon="compass">
   </app-card-header>
   <ng-container *ngIf="!loading && activeQuestion && settings">
-    <sl-card class="question-card"
-      [style]="{ '--question-count': questions.length, '--question-index': activeQuestionIndex + 1 }">
+    <sl-card
+      class="question-card"
+      [style]="{ '--question-count': questions.length, '--question-index': activeQuestionIndex + 1 }"
+    >
       <!-- <div slot="header" class="question-card-header">
         <div class="step-indicator-wrapper">
           <div class="step-indicator font-semibold text-sm"></div>
         </div>
       </div> -->
+      <div slot="header" class="flex flex-row items-start gap-2 text-xl">
+        <sl-badge variant="neutral" pill>{{ activeQuestionIndex + 1 }}</sl-badge>
+        <span class="font-semibold">{{ activeQuestion.title }}</span>
+      </div>
       <form style="display: contents">
-        <div class="flex flex-col gap-4 pb-4">
-          <div class="flex flex-row items-start gap-2 text-xl">
-            <sl-badge pill>{{ activeQuestionIndex + 1 }}</sl-badge>
-            <span class="font-semibold">{{ activeQuestion.title }}</span>
-          </div>
+        <div class="flex flex-col gap-4">
           <div class="flex flex-row">
             <div *ngIf="!imageLoading && !!image">
               <img [src]="image" class="max-h-64" />
@@ -55,13 +57,17 @@
       <div class="flex flex-row justify-between items-center">
         <div class="flex flex-row gap-4">
           <sl-button (click)="handleClickPrev()" [disabled]="activeQuestionIndex === 0">Previous</sl-button>
-          <sl-button variant="primary" (click)="handleClickNext()"
-            [hidden]="activeQuestionIndex === questions.length - 1">Next</sl-button>
-          <sl-button variant="success" (click)="handleSubmit()"
-            [hidden]="activeQuestionIndex < questions.length - 1" [loading]="submitting">Submit</sl-button>
+          <sl-button (click)="handleClickNext()" [hidden]="activeQuestionIndex === questions.length - 1">Next</sl-button>
+          <sl-button
+            variant="primary"
+            (click)="handleSubmit()"
+            [hidden]="activeQuestionIndex < questions.length - 1" [loading]="submitting"
+          >
+            Submit
+          </sl-button>
         </div>
         <div *ngIf="timeLeft !== undefined" class="text-center">
-          <sl-badge variant="neutral" class="time-left" pill>{{ getTimer() }} </sl-badge>
+          <sl-badge variant="neutral" class="time-left" pill>{{ getTimer() }}</sl-badge>
         </div>
         <div class="flex flex-row gap-4">
           <sl-button variant="danger" (click)="handleAbandon()" outline>Abandon</sl-button>
@@ -86,10 +92,10 @@
   <sl-button slot="footer" variant="primary" (click)="closeDialog(timesUpDialog)">Close</sl-button>
 </sl-dialog>
 <sl-dialog label="Submit" #submitDialog>
-  WARNING: this will submit your answers. Are you sure you want to do that?
+  WARNING: this are about to submit your answers. Are you sure you want to do that?
   <div slot="footer" class="dialog-footer">
     <sl-button (click)="closeDialog(submitDialog);">Cancel</sl-button>
-    <sl-button variant="primary" (click)="handleSubmitConfirm();">Submit</sl-button>
+    <sl-button variant="success" (click)="handleSubmitConfirm();">Submit</sl-button>
   </div>
 </sl-dialog>
 <sl-dialog label="Complete" (sl-hide)="afterSuccessDialogClose()" #successDialog>

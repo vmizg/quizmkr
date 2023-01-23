@@ -5,6 +5,8 @@
   align-items: center;
 }
 
-sl-card::part(body) {
-  min-height: 5.5rem;
+@media screen and (min-width: 1024px) {
+  sl-card::part(body) {
+    min-height: 5.5rem;
+  }
 }

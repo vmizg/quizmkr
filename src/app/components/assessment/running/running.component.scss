@@ -24,7 +24,8 @@ sl-radio+sl-radio {
 }
 
 .question-card::part(header) {
-  background-image: none;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .question-card-header {
