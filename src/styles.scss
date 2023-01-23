@@ -13,7 +13,7 @@ body {
 body {
   font-family: var(--sl-font-sans);
   color: var(--text-color-light);
-  background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+  background: linear-gradient(to bottom, #3B4371, #F3904F);
   background-attachment: fixed;
   transition: background-image 100ms ease;
   box-sizing: border-box;
@@ -44,23 +44,31 @@ app-root {
 }
 
 ::-webkit-scrollbar {
-  width: 12px; /* width of the entire scrollbar */
+  width: 12px;
+  /* width of the entire scrollbar */
 }
 
 ::-webkit-scrollbar-track {
-  background: #0000001a; /* color of the tracking area */
+  background: #0000001a;
+  /* color of the tracking area */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--sl-color-gray-300); /* color of the scroll thumb */
-  border-radius: 20px; /* roundness of the scroll thumb */
-  border: 3px solid var(--sl-color-gray-300); /* creates padding around scroll thumb */
+  background-color: var(--sl-color-gray-300);
+  /* color of the scroll thumb */
+  border-radius: 20px;
+  /* roundness of the scroll thumb */
+  border: 3px solid var(--sl-color-gray-300);
+  /* creates padding around scroll thumb */
 }
 
 .sl-theme-dark {
   ::-webkit-scrollbar-thumb {
-    background-color: var(--sl-color-gray-400); /* color of the scroll thumb */
-    border-radius: 20px; /* roundness of the scroll thumb */
-    border: 3px solid var(--sl-color-gray-400); /* creates padding around scroll thumb */
+    background-color: var(--sl-color-gray-400);
+    /* color of the scroll thumb */
+    border-radius: 20px;
+    /* roundness of the scroll thumb */
+    border: 3px solid var(--sl-color-gray-400);
+    /* creates padding around scroll thumb */
   }
 }
