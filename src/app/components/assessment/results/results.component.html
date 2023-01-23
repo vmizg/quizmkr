@@ -24,11 +24,8 @@
     </div>
   </sl-card>
   <div class="flex flex-col gap-2 w-full" *ngIf="resultSheet && resultSheet.details.length > 0">
-    <sl-card *ngFor="let result of resultSheet.details; let i = index">
-      <sl-card class="w-full" [style]="{
-          '--border-color': result.answeredCorrectly ? 'var(--sl-color-green-500)' : 'var(--sl-color-danger-500)',
-          '--border-width': '0.15rem'
-        }">
+    <sl-card *ngFor="let result of resultSheet.details; let i = index" [class]="result.answeredCorrectly ? 'outer green' : 'outer red'">
+      <sl-card class="inner w-full">
         <div class="flex flex-col w-full gap-2">
           <div class="flex flex-row justify-between gap-2 text-xl">
             <div class="flex items-start gap-2">

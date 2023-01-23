@@ -4,3 +4,23 @@
   flex-direction: column;
   align-items: center;
 }
+
+sl-card.outer {
+  --padding: 0 0 0 3rem;
+
+  &.green {
+    &::part(base) {
+      background-color: var(--sl-color-green-200);
+    }
+  }
+
+  &.red {
+    &::part(base) {
+      background-color: var(--sl-color-red-200);
+    }
+  }
+}
+
+sl-card.inner {
+  --border-radius: 0;
+}
