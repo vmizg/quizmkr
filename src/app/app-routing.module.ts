@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AssessmentComponent } from './components/assessment/assessment.component';
 import { ResultsComponent } from './components/assessment/results/results.component';
 import { RunningAssessmentComponent } from './components/assessment/running/running.component';
+import { RedirectComponent } from './components/auth/redirect/redirect.component';
 import { CreatorComponent } from './components/creator/creator.component';
 import { QuestionsComponent } from './components/creator/questions/questions.component';
 import { HomeComponent } from './components/home/home.component';
@@ -13,7 +14,15 @@ import { PendingChangesGuard } from './guards/pending-changes.guard';
 import { InterceptorService } from './services/interceptor.service';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent },
+  {
+    path: 'auth/redirect',
+    component: RedirectComponent,
+  },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard]
+  },
   {
     path: 'creator/:qid/questions',
     component: QuestionsComponent,
@@ -90,4 +99,4 @@ const routes: Routes = [
     },
   ],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

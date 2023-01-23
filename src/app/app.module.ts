@@ -16,6 +16,7 @@ import { RunningAssessmentComponent } from './components/assessment/running/runn
 import { ResultsComponent } from './components/assessment/results/results.component';
 import { CardHeaderComponent } from './components/card-header/card-header.component';
 import { PageLayoutComponent } from './components/page-layout/page-layout.component';
+import { RedirectComponent } from './components/auth/redirect/redirect.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { PageLayoutComponent } from './components/page-layout/page-layout.compon
     ResultsComponent,
     CardHeaderComponent,
     PageLayoutComponent,
+    RedirectComponent,
   ],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, ScrollingModule],
   providers: [ApiService, PendingChangesGuard],

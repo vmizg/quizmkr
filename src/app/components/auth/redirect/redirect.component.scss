@@ -1,0 +1,14 @@
+sl-card {
+    display: flex;
+    width: 100%;
+}
+
+sl-card::part(base) {
+    width: 100%;
+}
+
+sl-card::part(body) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

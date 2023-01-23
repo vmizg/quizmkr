@@ -2,9 +2,12 @@ import { Injectable } from '@angular/core';
 import createAuth0Client, { GetTokenSilentlyVerboseResponse, User } from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 import { from, of, Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { tap, catchError, concatMap, shareReplay } from 'rxjs/operators';
+import { tap, catchError, concatMap, shareReplay, takeWhile } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { HOME_ROUTE, REDIRECT_ROUTE } from '../constants';
+
+const REDIRECT_URI = `${window.location.origin}/${REDIRECT_ROUTE}`;
 
 /**
  * Many thanks to the author of:
@@ -22,7 +25,7 @@ export class AuthService {
       createAuth0Client({
         domain: environment.authClientHostname,
         client_id: environment.authClientId,
-        redirect_uri: `${window.location.origin}`,
+        redirect_uri: REDIRECT_URI,
         audience: environment.apiUrl,
       })
     ) as Observable<Auth0Client>
@@ -136,7 +139,7 @@ export class AuthService {
     this.auth0Client$.subscribe((client) => {
       // Call method to log in
       client.loginWithRedirect({
-        redirect_uri: `${window.location.origin}`,
+        redirect_uri: REDIRECT_URI,
         appState: { target: redirectPath },
       });
     });
@@ -152,13 +155,19 @@ export class AuthService {
         // Have client, now call method to handle auth callback redirect
         tap((cbRes) => {
           // Get and set target redirect route from callback results
-          targetRoute = cbRes.appState && cbRes.appState.target ? cbRes.appState.target : '/';
+          targetRoute = cbRes.appState && cbRes.appState.target ? cbRes.appState.target : `/${HOME_ROUTE}`;
+
+          // Never stay at the intermediate page
+          if (targetRoute.includes(REDIRECT_ROUTE)) {
+            targetRoute = `/${HOME_ROUTE}`;
+          }
         }),
         concatMap(() => {
           // Redirect callback complete; get user and login status
           return combineLatest([this.getUser$(), this.isAuthenticated$]);
         })
       );
+
       // Subscribe to authentication completion observable
       // Response will be an array of user and login status
       authComplete$.subscribe(() => {
@@ -166,6 +175,20 @@ export class AuthService {
         this.router.navigate([targetRoute]);
         this.isAuthenticatingSubject$.next(false);
       });
+    } else if (window.location.pathname.includes(REDIRECT_ROUTE)) {
+      // Move users back to the home page if they manually land on redirect route
+      if (this.authenticating) {
+        this.isAuthenticating$.pipe(
+          tap((authenticating) => {
+            if (!authenticating) {
+              this.router.navigate([HOME_ROUTE]);
+            }
+          }),
+          takeWhile((authenticating) => authenticating)
+        ).subscribe();
+      } else {
+        this.router.navigate([HOME_ROUTE]);
+      }
     }
   }
 
