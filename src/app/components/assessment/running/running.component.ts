@@ -40,11 +40,23 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private upcomingImage$ = new ReplaySubject<string>();
   private timeLimit$ = new Subject();
 
+  @ViewChild('unfinishedDialog')
+  unfinishedDialog?: ElementRef<SlDialog>;
+
   @ViewChild('timesUpDialog')
   timesUpDialog?: ElementRef<SlDialog>;
 
+  @ViewChild('submitDialog')
+  submitDialog?: ElementRef<SlDialog>;
+
+  @ViewChild('abandonDialog')
+  abandonDialog?: ElementRef<SlDialog>;
+
   @ViewChild('successDialog')
   successDialog?: ElementRef<SlDialog>;
+
+  @ViewChild('errorDialog')
+  errorDialog?: ElementRef<SlDialog>;
 
   alphabet = 'ABCDEFGHIJKLMNO';
   dataState?: AssessmentRouteState;
@@ -176,7 +188,6 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private checkIfFinished() {
     let finished = true;
     let unfinishedIndex = -1;
-    console.log(this.questions);
     for (let i = 0; i < this.questions.length; i++) {
       const q = this.questions[i];
       const answered = q.selectedAnswer && q.selectedAnswer.length > 0;
@@ -245,10 +256,6 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     return time;
   }
 
-  closeTimesUpDialog() {
-    this.timesUpDialog?.nativeElement.hide();
-  }
-
   submitAssessment() {
     if (!this.settings) {
       // Sanity check, should never execute
@@ -273,13 +280,9 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.submitting = false;
-        alert('An error has occurred while submitting the assessment. Please try again.');
+        this.errorDialog?.nativeElement.show();
       }
     });
-  }
-
-  closeSuccessDialog() {
-    this.successDialog?.nativeElement.hide();
   }
 
   afterSuccessDialogClose() {
@@ -348,30 +351,33 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.setActiveQuestion(index);
   }
 
-  handleClickSubmit() {
+  handleSubmit() {
     const { finished, unfinishedIndex } = this.checkIfFinished();
     if (!finished) {
       if (unfinishedIndex > -1) {
         this.setActiveQuestion(unfinishedIndex);
       }
-      alert('You have not finished answering all questions.');
+      this.unfinishedDialog?.nativeElement.show();
       return;
     }
-    if (!confirm('WARNING: this will submit your quiz. Are you sure you want to do that?')) {
-      return;
-    }
+    this.submitDialog?.nativeElement.show();
+  }
+
+  handleSubmitConfirm() {
     this.handleClickNext();
     this.submitAssessment();
+    this.closeDialog(this.submitDialog?.nativeElement);
   }
 
   handleAbandon() {
-    if (
-      !confirm(
-        'WARNING: if you abandon now, quiz progress will not be saved and you will have to take it again. Are you sure you want to do that?'
-      )
-    ) {
-      return;
-    }
+    this.abandonDialog?.nativeElement.show();
+  }
+
+  handleAbandonConfirm() {
     this.router.navigate(['/quizzes', this.settings?.quiz.id]);
+  }
+
+  closeDialog(dialog?: HTMLElement) {
+    (dialog as SlDialog)?.hide();
   }
 }

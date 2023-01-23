@@ -5,6 +5,11 @@
   align-items: center;
 }
 
+.dialog-footer {
+  display: flex;
+  place-content: space-between;
+}
+
 sl-radio {
   margin-bottom: 0;
 }

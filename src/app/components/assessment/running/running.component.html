@@ -57,7 +57,7 @@
           <sl-button (click)="handleClickPrev()" [disabled]="activeQuestionIndex === 0">Previous</sl-button>
           <sl-button variant="primary" (click)="handleClickNext()"
             [hidden]="activeQuestionIndex === questions.length - 1">Next</sl-button>
-          <sl-button variant="success" (click)="handleClickSubmit()"
+          <sl-button variant="success" (click)="handleSubmit()"
             [hidden]="activeQuestionIndex < questions.length - 1" [loading]="submitting">Submit</sl-button>
         </div>
         <div *ngIf="timeLeft !== undefined" class="text-center">
@@ -70,11 +70,33 @@
     </sl-card>
   </ng-container>
 </div>
-<sl-dialog label="Time is up!" (sl-hide)="submitAssessment()" #timesUpDialog>
-  Your time has run out. The assessment will now be submitted.
-  <sl-button slot="footer" variant="primary" (click)="closeTimesUpDialog()">Close</sl-button>
+<sl-dialog label="Warning" #unfinishedDialog>
+  You have not finished answering all questions.
+  <sl-button slot="footer" (click)="closeDialog(unfinishedDialog)">Continue</sl-button>
 </sl-dialog>
-<sl-dialog label="Assessment complete" (sl-hide)="afterSuccessDialogClose()" #successDialog>
+<sl-dialog label="Abandon" #abandonDialog>
+  WARNING: if you abandon now, quiz progress will not be saved and you will have to take it again. Are you sure you want to do that?
+  <div slot="footer" class="dialog-footer">
+    <sl-button (click)="closeDialog(abandonDialog);">Cancel</sl-button>
+    <sl-button variant="danger" (click)="handleAbandonConfirm();">Confirm</sl-button>
+  </div>
+</sl-dialog>
+<sl-dialog label="Time is up" (sl-hide)="submitAssessment()" #timesUpDialog>
+  Your time has run out. The assessment will now be submitted.
+  <sl-button slot="footer" variant="primary" (click)="closeDialog(timesUpDialog)">Close</sl-button>
+</sl-dialog>
+<sl-dialog label="Submit" #submitDialog>
+  WARNING: this will submit your answers. Are you sure you want to do that?
+  <div slot="footer" class="dialog-footer">
+    <sl-button (click)="closeDialog(submitDialog);">Cancel</sl-button>
+    <sl-button variant="primary" (click)="handleSubmitConfirm();">Submit</sl-button>
+  </div>
+</sl-dialog>
+<sl-dialog label="Complete" (sl-hide)="afterSuccessDialogClose()" #successDialog>
   You have successfully submitted your answers! You will now be redirected to the home page where you can see your results.
-  <sl-button slot="footer" variant="primary" (click)="closeSuccessDialog()">Close</sl-button>
+  <sl-button slot="footer" variant="primary" (click)="closeDialog(successDialog)">Close</sl-button>
+</sl-dialog>
+<sl-dialog label="Error" #errorDialog>
+  An error has occurred while submitting the assessment. Please try again.
+  <sl-button slot="footer" (click)="closeDialog(errorDialog)">Continue</sl-button>
 </sl-dialog>
