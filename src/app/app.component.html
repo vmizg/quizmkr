@@ -1,25 +1,36 @@
 <div class="quizmkr">
   <div class="quizmkr-spacer"></div>
   <div class="flex flex-col flex-1 md:max-w-5xl">
-    <div class="logo text-center font-light pt-16 flex flex-row items-center gap-4">
+    <div class="logo text-center font-light pt-12 flex flex-row items-center gap-4">
       <span class="text-4xl">{{ appTitle }}</span>
     </div>
-    <div class="quizmkr-nav flex flex-row place-content-between pt-12 pb-12">
-      <sl-button-group>
-        <sl-button
-          *ngFor="let link of menuLinks"
-          size="large"
-          variant="{{ isRouteActive(link) ? 'primary' : 'default' }}"
-          (click)="onNavigate(link)"
-        >
-          <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
-        </sl-button>
-      </sl-button-group>
+    <div class="quizmkr-nav flex flex-row place-content-between gap-4 pt-12 pb-12">
+      <div class="flex flex-row gap-4">
+        <sl-button-group>
+          <sl-button
+            *ngFor="let link of menuLinks"
+            size="medium"
+            variant="{{ isRouteActive(link) ? 'primary' : 'default' }}"
+            (click)="onNavigate(link)"
+          >
+            <sl-icon slot="prefix" name="{{ link.icon }}"></sl-icon>{{ link.title }}
+          </sl-button>
+        </sl-button-group>
+        <sl-button-group>
+          <sl-button size="medium" (click)="toggleTheme()">
+            <sl-icon slot="prefix" name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon
+            >Theme
+          </sl-button>
+          <sl-button size="medium">
+            <sl-icon slot="prefix" name="gear"></sl-icon
+            >Settings
+          </sl-button>
+        </sl-button-group>
+      </div>
       <sl-button
-        size="large"
-        variant="{{ authenticating || loggedIn ? 'default' : 'success' }}"
-        (click)="loggedIn ? handleLogout() : handleLogin()"
-        [disabled]="authenticating"
+        size="medium"
+        variant="{{ authenticating || loggedIn ? 'warning' : 'success' }}"
+        (click)="authenticating ? null : loggedIn ? handleLogout() : handleLogin()"
       >
         <sl-icon slot="suffix" name="{{ loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon
         >{{ authenticating && !loggedIn ? 'Logging in...' : loggedIn ? 'Log out' : 'Log in' }}
@@ -28,8 +39,4 @@
     <router-outlet></router-outlet>
   </div>
   <div class="quizmkr-spacer"></div>
-</div>
-<div class="theme-switch flex flex-row items-center absolute p-4 right-0" [class.checked]="darkMode">
-  <sl-icon class="pr-2" name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
-  <sl-switch (sl-change)="toggleTheme()" [checked]="darkMode"></sl-switch>
 </div>
