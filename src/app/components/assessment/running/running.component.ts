@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, of, interval, Subject, EMPTY, ReplaySubject } from 'rxjs';
 import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
-import { Assessment, BaseAssesmentResult, Question } from 'src/app/models/quiz';
+import { Assessment, AssessmentResult, BaseAssesmentResult, Question } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-import { areSetsEqual } from 'src/app/utilities';
 
 interface PQuestion extends Question {
   completed?: boolean;
@@ -24,6 +23,11 @@ interface AssessmentRouteState {
   assessment?: Assessment;
 }
 
+interface SlDialog extends HTMLElement {
+  show: () => void;
+  hide: () => void;
+}
+
 @Component({
   selector: 'app-running-assessment',
   templateUrl: './running.component.html',
@@ -36,6 +40,12 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private upcomingImage$ = new ReplaySubject<string>();
   private timeLimit$ = new Subject();
 
+  @ViewChild('timesUpDialog')
+  timesUpDialog?: ElementRef<SlDialog>;
+
+  @ViewChild('successDialog')
+  successDialog?: ElementRef<SlDialog>;
+
   alphabet = 'ABCDEFGHIJKLMNO';
   dataState?: AssessmentRouteState;
   settings?: Assessment;
@@ -43,8 +53,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   activeQuestion?: PRadioQuestion | PCheckboxQuestion;
   activeQuestionIndex = 0;
   startTime: number = 0;
-  timeLeft?: Date;
-  dateFmt = 'mm:ss';
+  timeLeft?: number;
+  result?: AssessmentResult;
 
   loading = true;
   image = '';
@@ -166,6 +176,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   private checkIfFinished() {
     let finished = true;
     let unfinishedIndex = -1;
+    console.log(this.questions);
     for (let i = 0; i < this.questions.length; i++) {
       const q = this.questions[i];
       const answered = q.selectedAnswer && q.selectedAnswer.size > 0;
@@ -187,37 +198,56 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  private setTimeLeft(timeLimit: number) {
-    const currentDate = new Date().getTime();
-    this.timeLeft = new Date(timeLimit * 60 * 1000 + 1000 + this.startTime - currentDate);
-  }
-
   private setupTimer(timeLimit?: number) {
     if (!timeLimit) {
       return;
     }
-    this.dateFmt = timeLimit > 60 ? 'h:mm:ss' : 'mm:ss';
-    this.setTimeLeft(timeLimit);
+    this.timeLeft = timeLimit * 60; // In seconds
     this.interval$ = interval(1000)
       .pipe(
         takeUntil(this.timeLimit$),
-        tap(() => {
-          this.setTimeLeft(timeLimit);
-          if (this.timeLeft && this.timeLeft.getTime() <= 0) {
+      )
+      .subscribe({
+        next: () => {
+          this.timeLeft!--;
+          if (this.timeLeft !== undefined && this.timeLeft <= 0) {
             this.timeLimit$.next('');
             this.timeLimit$.complete();
           }
-        })
-      )
-      .subscribe({
+        },
         complete: () => {
-          alert('TIME IS UP! Your quiz will now be submitted');
-          this.submitAssessment();
+          this.timesUpDialog?.nativeElement.show();
         }
       });
   }
 
-  private submitAssessment() {
+  getTimer() {
+    let total = this.timeLeft!;
+
+    let hours: string | number = Math.floor(total / 3600);
+    total = total - hours * 3600;
+
+    let minutes: string | number = Math.floor(total / 60);
+    total = total - minutes * 60;
+
+    let seconds: string | number = total;
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    let time = `${minutes}:${seconds}`;
+    if (hours >= 1) {
+      time = `${hours}:${time}`;
+    }
+
+    return time;
+  }
+
+  closeTimesUpDialog() {
+    this.timesUpDialog?.nativeElement.hide();
+  }
+
+  submitAssessment() {
     if (!this.settings) {
       // Sanity check, should never execute
       return;
@@ -235,10 +265,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       next: (result) => {
         this.submitting = false;
         if (result) {
-          alert(
-            'You have successfully submitted the quiz! You will now be redirected to the home page where you can see your results.'
-          );
-          this.router.navigate(['/results', result.id], { state: { result } });
+          this.result = result;
+          this.successDialog?.nativeElement.show();
         }
       },
       error: () => {
@@ -246,6 +274,17 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         alert('An error has occurred while submitting the assessment. Please try again.');
       }
     });
+  }
+
+  closeSuccessDialog() {
+    this.successDialog?.nativeElement.hide();
+  }
+
+  afterSuccessDialogClose() {
+    if (this.result) {
+      this.router.navigate(['/results', this.result.id], { state: { result: { ...this.result } } });
+      this.result = undefined;
+    }
   }
 
   setActiveQuestion(index: number) {
@@ -281,7 +320,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         } else {
           this.activeQuestion.selectedAnswer.delete(value);
         }
-      } else if (checked) {
+      } else {
         this.activeQuestion.selectedAnswer = new Set([value]);
       }
     }

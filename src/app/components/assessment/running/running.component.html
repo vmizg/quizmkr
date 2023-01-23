@@ -54,8 +54,8 @@
           <sl-button variant="success" (click)="handleClickSubmit()"
             [hidden]="activeQuestionIndex < questions.length - 1" [loading]="submitting">Submit</sl-button>
         </div>
-        <div *ngIf="settings.timeLimit" class="text-center">
-          <sl-badge variant="neutral" class="time-left" pill>{{ timeLeft | date: dateFmt }} </sl-badge>
+        <div *ngIf="timeLeft !== undefined" class="text-center">
+          <sl-badge variant="neutral" class="time-left" pill>{{ getTimer() }} </sl-badge>
         </div>
         <div class="flex flex-row gap-4">
           <sl-button variant="danger" (click)="handleAbandon()" outline>Abandon</sl-button>
@@ -64,3 +64,11 @@
     </sl-card>
   </ng-container>
 </div>
+<sl-dialog label="Time is up!" (sl-hide)="submitAssessment()" #timesUpDialog>
+  Your time has run out. The assessment will now be submitted.
+  <sl-button slot="footer" variant="primary" (click)="closeTimesUpDialog()">Close</sl-button>
+</sl-dialog>
+<sl-dialog label="Assessment complete" (sl-hide)="afterSuccessDialogClose()" #successDialog>
+  You have successfully submitted your answers! You will now be redirected to the home page where you can see your results.
+  <sl-button slot="footer" variant="primary" (click)="closeSuccessDialog()">Close</sl-button>
+</sl-dialog>
