@@ -8,7 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 interface PQuestion extends Question {
   completed?: boolean;
   multiSelect?: boolean;
-  selectedAnswer?: Set<string>;
+  selectedAnswer?: Array<string>;
 }
 
 interface PRadioQuestion extends PQuestion {
@@ -179,7 +179,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     console.log(this.questions);
     for (let i = 0; i < this.questions.length; i++) {
       const q = this.questions[i];
-      const answered = q.selectedAnswer && q.selectedAnswer.size > 0;
+      const answered = q.selectedAnswer && q.selectedAnswer.length > 0;
       if (!answered) {
         finished = false;
         unfinishedIndex = i;
@@ -191,9 +191,11 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
   private getSubmissionDetails() {
     return this.questions.map((q) => {
+      const answers = q.selectedAnswer ?? [];
+      answers.sort();
       return {
         questionId: q.id,
-        selectedAnswer: q.selectedAnswer ? Array.from(q.selectedAnswer) : [],
+        selectedAnswer: answers,
       };
     });
   }
@@ -310,18 +312,25 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   handleAnswerInput(e: Event) {
     if (this.activeQuestion) {
       const { value, checked } = e.target as HTMLInputElement;
+      const { multiSelect } = this.activeQuestion;
 
-      if (this.activeQuestion.multiSelect === true) {
+      if (multiSelect === true) {
         if (!this.activeQuestion.selectedAnswer) {
-          this.activeQuestion.selectedAnswer = new Set();
+          this.activeQuestion.selectedAnswer = [];
         }
+        const { selectedAnswer } = this.activeQuestion;
         if (checked) {
-          this.activeQuestion.selectedAnswer.add(value);
+          if (!selectedAnswer.find((v) => v === value)) {
+            selectedAnswer.push(value);
+          }
         } else {
-          this.activeQuestion.selectedAnswer.delete(value);
+          const index = selectedAnswer.findIndex((v) => v === value);
+          if (index > -1) {
+            selectedAnswer.splice(index, 1);
+          }
         }
       } else {
-        this.activeQuestion.selectedAnswer = new Set([value]);
+        this.activeQuestion.selectedAnswer = [value];
       }
     }
   }
