@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
 import { EMPTY, interval, Subject } from 'rxjs';
 import { catchError, concatMap, take, takeUntil, tap } from 'rxjs/operators';
 import { AssessmentResult, Assessment, Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
-import { AuthService } from 'src/app/services/auth.service';
 
 const defaultParams = {
   order: 'id_desc',
   limit: 10,
 };
+const defaultUsername = 'stranger';
 
 @Component({
   selector: 'app-home',
@@ -23,16 +24,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadingLatest = true;
   latest: Quiz[] = [];
   currentDate = new Date();
-  username = 'stranger';
+  username = defaultUsername;
   loggedIn = false;
 
   private results$ = new Subject<void>();
   private quizzes$ = new Subject<void>();
   private destroyed$ = new Subject<void>();
 
-  constructor(private apiService: ApiService, private auth: AuthService) {
-    this.loggedIn = this.auth.loggedIn;
-  }
+  constructor(private apiService: ApiService, private auth: AuthService) { }
 
   ngOnInit() {
     interval(1000)
@@ -76,16 +75,16 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.auth.userProfile$
+    this.auth.user$
       .pipe(
         tap((user) => {
-          this.username = user ? user.nickname || user.name || 'stranger' : 'stranger';
+          this.username = (user && (user.nickname || user.name)) || defaultUsername;
         }),
         takeUntil(this.destroyed$)
       )
       .subscribe();
 
-    this.auth.isLoggedIn$
+    this.auth.isAuthenticated$
       .pipe(
         tap((loggedIn) => {
           if (!this.loggedIn && loggedIn) {
@@ -107,8 +106,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.destroyed$.complete();
   }
 
-  handleLogIn() {
-    this.auth.login('/home');
+  handleLogin() {
+    this.auth.loginWithPopup();
   }
 
   handleDeleteResult(result: AssessmentResult) {

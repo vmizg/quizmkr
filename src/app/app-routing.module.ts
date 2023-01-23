@@ -1,27 +1,19 @@
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AssessmentComponent } from './components/assessment/assessment.component';
 import { ResultsComponent } from './components/assessment/results/results.component';
 import { RunningAssessmentComponent } from './components/assessment/running/running.component';
-import { RedirectComponent } from './components/auth/redirect/redirect.component';
 import { CreatorComponent } from './components/creator/creator.component';
 import { QuestionsComponent } from './components/creator/questions/questions.component';
 import { HomeComponent } from './components/home/home.component';
 import { QuizzesComponent } from './components/quizzes/quizzes.component';
 import { AuthGuard } from './guards/auth.guard';
 import { PendingChangesGuard } from './guards/pending-changes.guard';
-import { InterceptorService } from './services/interceptor.service';
 
 const routes: Routes = [
   {
-    path: 'auth/redirect',
-    component: RedirectComponent,
-  },
-  {
     path: 'home',
-    component: HomeComponent,
-    canActivate: [AuthGuard]
+    component: HomeComponent
   },
   {
     path: 'creator/:qid/questions',
@@ -91,12 +83,5 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: InterceptorService,
-      multi: true,
-    },
-  ],
 })
 export class AppRoutingModule { }

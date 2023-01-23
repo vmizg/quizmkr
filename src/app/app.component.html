@@ -17,12 +17,12 @@
       </sl-button-group>
       <sl-button
         size="large"
-        variant="{{ auth.authenticating || loggedIn ? 'default' : 'success' }}"
-        (click)="loggedIn ? auth.logout() : auth.login()"
-        [disabled]="auth.authenticating"
+        variant="{{ authenticating || loggedIn ? 'default' : 'success' }}"
+        (click)="loggedIn ? handleLogout() : handleLogin()"
+        [disabled]="authenticating"
       >
         <sl-icon slot="suffix" name="{{ loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon
-        >{{ auth.authenticating && !loggedIn ? 'Logging in...' : loggedIn ? 'Log out' : 'Log in' }}
+        >{{ authenticating && !loggedIn ? 'Logging in...' : loggedIn ? 'Log out' : 'Log in' }}
       </sl-button>
     </div>
     <router-outlet></router-outlet>

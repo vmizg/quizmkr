@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService } from './services/auth.service';
+import { AuthService } from '@auth0/auth0-angular';
 
 interface MenuLink {
   id: number | string;
@@ -40,8 +40,8 @@ export class AppComponent implements OnInit, OnDestroy {
   menuLinks: MenuLink[] = MENU_LINKS;
   darkMode: boolean;
 
-  authenticating: boolean;
-  loggedIn: boolean;
+  authenticating = true;
+  loggedIn = false;
 
   constructor(private route: ActivatedRoute, private router: Router, auth: AuthService) {
     this.auth = auth;
@@ -52,17 +52,13 @@ export class AppComponent implements OnInit, OnDestroy {
       htmlElement.classList.remove('sl-theme-dark');
     }
 
-    this.authenticating$ = this.auth.isAuthenticating$.subscribe((status) => {
+    this.authenticating$ = this.auth.isLoading$.subscribe((status) => {
       this.authenticating = status;
     });
-    this.loggedIn$ = this.auth.isLoggedIn$.subscribe((loggedIn) => {
+    this.loggedIn$ = this.auth.isAuthenticated$.subscribe((loggedIn) => {
       this.toggleMenuLinks(loggedIn);
       this.loggedIn = loggedIn;
     });
-
-    this.toggleMenuLinks(this.auth.loggedIn);
-    this.authenticating = this.auth.authenticating;
-    this.loggedIn = this.auth.loggedIn;
   }
 
   ngOnInit(): void {
@@ -117,5 +113,13 @@ export class AppComponent implements OnInit, OnDestroy {
   onNavigate(link: MenuLink): void {
     const route = [link.route];
     this.router.navigate(route);
+  }
+
+  handleLogin() {
+    this.auth.loginWithPopup();
+  }
+
+  handleLogout() {
+    this.auth.logout();
   }
 }
