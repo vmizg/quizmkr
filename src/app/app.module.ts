@@ -17,9 +17,7 @@ import { RunningAssessmentComponent } from './components/assessment/running/runn
 import { ResultsComponent } from './components/assessment/results/results.component';
 import { CardHeaderComponent } from './components/card-header/card-header.component';
 import { PageLayoutComponent } from './components/page-layout/page-layout.component';
-import { RedirectComponent } from './components/auth/redirect/redirect.component';
 import { environment } from '../environments/environment';
-import { REDIRECT_ROUTE } from './constants';
 
 @NgModule({
   declarations: [
@@ -33,7 +31,6 @@ import { REDIRECT_ROUTE } from './constants';
     ResultsComponent,
     CardHeaderComponent,
     PageLayoutComponent,
-    RedirectComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,26 +40,26 @@ import { REDIRECT_ROUTE } from './constants';
       clientId: environment.authClientId,
       authorizationParams: {
         audience: environment.apiUrl,
-        redirect_uri: `${window.location.origin}/${REDIRECT_ROUTE}`,
+        redirect_uri: window.location.origin,
       },
       httpInterceptor: {
         allowedList: [
           {
             uri: '/api/*',
-          }
-        ]
-      }
+          },
+        ],
+      },
     }),
     AppRoutingModule,
-    ScrollingModule
+    ScrollingModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
     ApiService,
     AuthGuard,
-    PendingChangesGuard
+    PendingChangesGuard,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule { }
+export class AppModule {}

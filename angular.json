@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "quiz-mkr": {
+    "quizmkr": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/quiz-mkr",
+            "outputPath": "dist/quizmkr",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -50,6 +50,14 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                  },
+                "fonts": true
+              },
               "outputHashing": "all"
             },
             "development": {
@@ -70,10 +78,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "quiz-mkr:build:production"
+              "browserTarget": "quizmkr:build:production"
             },
             "development": {
-              "browserTarget": "quiz-mkr:build:development"
+              "browserTarget": "quizmkr:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -81,7 +89,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "quiz-mkr:build"
+            "browserTarget": "quizmkr:build"
           }
         },
         "test": {

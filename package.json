@@ -1,17 +1,17 @@
 {
-  "name": "quiz-mkr",
+  "name": "quizmkr",
   "description": "Q U I Z M K R - a minimalist quiz maker and assessment app",
   "version": "0.0.1",
   "author": "Vytautas Mizgiris",
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vmizg/quiz-mkr.git"
+    "url": "https://github.com/vmizg/quizmkr.git"
   },
   "bugs": {
-    "url": "https://github.com/vmizg/quiz-mkr/issues"
+    "url": "https://github.com/vmizg/quizmkr/issues"
   },
-  "homepage": "https://github.com/vmizg/quiz-mkr",
+  "homepage": "https://github.com/vmizg/quizmkr",
   "engines": {
     "node": ">=16.14.0",
     "npm": ">=8"
