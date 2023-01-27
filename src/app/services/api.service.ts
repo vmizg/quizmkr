@@ -60,6 +60,10 @@ export class ApiService {
     return this.http.delete(`/api/questions/${id}`).pipe(map((result) => (result ? true : false)));
   }
 
+  getQuestionImage(questionId: string) {
+    return this.http.get(`/api/questions/${questionId}/image`) as Observable<Image>;
+  }
+
   getAssessments(params?: any) {
     return this.http
       .get(`/api/assessments`, { params: this.constructParams(params) })
@@ -102,10 +106,6 @@ export class ApiService {
 
   deleteResult(id: string) {
     return this.http.delete(`/api/results/${id}`).pipe(map((result) => (result ? true : false)));
-  }
-
-  getImage(id: string) {
-    return this.http.get(`/api/images/${id}`) as Observable<Image>;
   }
 
   private constructParams(params?: any): HttpParams {

@@ -136,7 +136,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           this.imageLoading = true;
 
           // Fetch the current picture.
-          return this.apiService.getImage(current).pipe(
+          return this.apiService.getQuestionImage(current).pipe(
             map(({ image }) => {
               this.imageCache[current] = image;
               return image;
@@ -161,7 +161,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
           if (upcomingPic) {
             return of('');
           }
-          return this.apiService.getImage(upcoming).pipe(
+          return this.apiService.getQuestionImage(upcoming).pipe(
             map(({ image }) => {
               this.imageCache[upcoming] = image;
               return image;
@@ -307,8 +307,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     this.activeQuestionIndex = index;
     this.activeQuestion = question as PCheckboxQuestion | PRadioQuestion;
     this.image$.next({
-      current: question.imageId || '',
-      upcoming: this.questions[index + 1]?.imageId || '',
+      current: question.imageId ? question.id : '',
+      upcoming: this.questions[index + 1]?.imageId ? this.questions[index + 1].id : '',
     });
   }
 

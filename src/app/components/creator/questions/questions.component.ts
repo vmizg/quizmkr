@@ -51,7 +51,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   image: string = '';
   imageLoading = false;
   imageCache: { [key: string]: string } = {};
-  existingImageId: string = '';
+  hasImageQuestionId: string = '';
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -98,19 +98,19 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
     this.image$
       .pipe(
-        concatMap((imageId) => {
-          this.existingImageId = imageId || '';
-          if (!imageId) {
+        concatMap((questionId) => {
+          this.hasImageQuestionId = questionId || '';
+          if (!questionId) {
             return of('');
           }
-          const image = this.imageCache[imageId];
+          const image = this.imageCache[questionId];
           if (image) {
             return of(image);
           }
           this.imageLoading = true;
-          return this.apiService.getImage(imageId).pipe(
+          return this.apiService.getQuestionImage(questionId).pipe(
             map(({ image }) => {
-              this.imageCache[imageId] = image;
+              this.imageCache[questionId] = image;
               return image;
             }),
             catchError(() => of(''))
@@ -203,7 +203,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       title: title,
       options: [],
       ...(answerNote ? { answerNote } : {}),
-      ...(!this.existingImageId && this.image ? { image: { image: this.image } } : {}),
+      ...(!this.hasImageQuestionId && this.image ? { image: { image: this.image } } : {}),
     };
     const titleMap: any = {};
     let totalCorrect = 0;
@@ -344,7 +344,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
 
     if (question.imageId !== undefined) {
-      this.image$.next(question.imageId);
+      this.image$.next(question.id);
     }
   }
 
@@ -418,7 +418,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       tap(({ dataUrl }) => {
         if (dataUrl) {
           this.image = dataUrl;
-          this.existingImageId = '';
+          this.hasImageQuestionId = '';
         } else {
           throw Error('Did not receive a dataUrl while resizing the image');
         }
