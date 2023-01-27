@@ -39,12 +39,11 @@ sl-avatar::part(base) {
 app-root {
   display: flex;
   flex-direction: column;
-  overflow: overlay;
   height: 100%;
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 0.5rem;
   /* width of the entire scrollbar */
 }
 

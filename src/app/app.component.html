@@ -1,5 +1,5 @@
 <div class="quizmkr">
-  <div class="quizmkr-spacer"></div>
+  <div class="grow-0 shrink-0 basis-4 md:basis-8"></div>
   <div class="flex flex-col flex-1 md:max-w-5xl">
     <div class="logo text-center font-light pt-12 flex flex-row items-center gap-4">
       <span class="text-4xl">{{ appTitle }}</span>
@@ -14,18 +14,18 @@
             (click)="onNavigate(link)"
           >
             <sl-icon name="{{ link.icon }}"></sl-icon>
-            <span class="hidden lg:inline lg:pl-3">{{ link.title }}</span>
+            <span class="hidden md:inline md:pl-3">{{ link.title }}</span>
           </sl-button>
         </sl-button-group>
         <sl-button-group>
           <sl-button size="medium" (click)="toggleTheme()">
             <sl-icon name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
-            <span class="hidden lg:inline lg:pl-3">Theme</span>
+            <span class="hidden md:inline md:pl-3">Theme</span>
           </sl-button>
-          <sl-button size="medium">
+          <!-- <sl-button size="medium">
             <sl-icon name="gear"></sl-icon>
-            <span class="hidden lg:inline lg:pl-3">Settings</span>
-          </sl-button>
+            <span class="hidden md:inline md:pl-3">Settings</span>
+          </sl-button> -->
         </sl-button-group>
       </div>
       <sl-button
@@ -33,11 +33,11 @@
         variant="{{ authenticating || loggedIn ? 'warning' : 'success' }}"
         (click)="authenticating ? null : loggedIn ? handleLogout() : handleLogin()"
       >
-        <sl-icon slot="suffix" name="{{ loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon
-        >{{ authenticating && !loggedIn ? 'Logging in...' : loggedIn ? 'Log out' : 'Log in' }}
+        <span class="pr-3">{{ authenticating && !loggedIn ? 'Logging in...' : loggedIn ? 'Log out' : 'Log in' }}</span>
+        <sl-icon name="{{ loggedIn ? 'box-arrow-in-right' : 'door-open' }}"></sl-icon>
       </sl-button>
     </div>
     <router-outlet></router-outlet>
   </div>
-  <div class="quizmkr-spacer"></div>
+  <div class="grow-0 shrink-0 basis-4 md:basis-8"></div>
 </div>

@@ -9,6 +9,10 @@
   gap: 8px;
 }
 
+.option-toggle::part(label) {
+  padding-left: 0.25rem;
+}
+
 form {
   display: contents;
 }
@@ -18,17 +22,16 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
 }
 
 .question-container {
-  &::part(header) {
-  }
+  &::part(header) {}
+
   &.edit-mode {
-    &::part(header) {
-    }
+    &::part(header) {}
   }
 }
 
 .question-card {
-  &::part(base) {
-  }
+  &::part(base) {}
+
   &.edit-mode {
     &::part(base) {
       font-weight: bold;
@@ -37,7 +40,7 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
 }
 
 .question-statement {
-  width: 100%;
+  width: 60%;
 
   &::part(textarea) {
     min-height: 12rem;
@@ -45,7 +48,7 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
 }
 
 .question-image {
-  width: 24rem;
+  flex: 1;
   height: 12rem;
   border: solid var(--sl-input-border-width) var(--sl-input-border-color);
   border-radius: var(--sl-border-radius-medium);

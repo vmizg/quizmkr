@@ -7,55 +7,15 @@
   place-content: center;
 }
 
-.quizmkr-spacer {
-  flex: 0 0 2rem;
-}
-
 .logo {
   color: var(--text-color-dark);
 }
 
-.quizmkr-nav {
-  sl-button::part(base) {
-    font-size: 1rem;
-  }
-
-  sl-button::part(suffix),
-  sl-button::part(prefix) {
-    font-size: 1rem;
-  }
+sl-button::part(base) {
+  font-size: 1rem;
 }
 
-.theme-switch {
-  sl-switch {
-    display: contents;
-  }
-
-  sl-switch::part(base) {
-    --width: 48px;
-    --height: 24px;
-    --thumb-size: 24px;
-  }
-
-  sl-switch::part(control) {
-
-    &,
-    &:active {
-      background-color: transparent;
-    }
-
-    &:hover {
-      background-color: var(--sl-color-yellow-500);
-    }
-  }
-
-  sl-icon::part(base) {
-    color: var(--text-color-dark);
-  }
-
-  &.checked {
-    sl-switch::part(control):hover {
-      background-color: var(--sl-color-primary-600);
-    }
-  }
+sl-button::part(suffix),
+sl-button::part(prefix) {
+  font-size: 1rem;
 }

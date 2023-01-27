@@ -19,8 +19,8 @@
       </div>
       <form style="display: contents">
         <div class="flex flex-col gap-4">
-          <div class="flex flex-row">
-            <div *ngIf="!imageLoading && !!image">
+          <div class="flex flex-col sm:flex-row">
+            <div *ngIf="!imageLoading && !!image" class="flex place-content-center sm:place-content-start">
               <img [src]="image" class="max-h-64" />
             </div>
             <div *ngIf="imageLoading" class="image-placeholder">
@@ -28,7 +28,7 @@
                 <sl-spinner></sl-spinner>
               </div>
             </div>
-            <div *ngIf="!activeQuestion.multiSelect" class="ml-8">
+            <div *ngIf="!activeQuestion.multiSelect" class="mt-4 sm:mt-0 ml-8">
               <sl-radio-group [value]="activeQuestion.selectedAnswer?.[0]" (sl-change)="handleAnswerInput($event)">
                 <sl-radio
                   *ngFor="let option of activeQuestion.options; let i = index"

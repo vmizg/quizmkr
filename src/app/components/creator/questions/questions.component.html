@@ -56,19 +56,19 @@
           </div>
           <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
             <sl-button
-              style="width: 6rem"
+              class="option-toggle"
               variant="{{ correctToggle.checked ? 'success' : 'neutral' }}"
               [outline]="!correctToggle.checked"
               (click)="correctToggle.checked = !correctToggle.checked; handleEdit()"
             >
-              <sl-icon *ngIf="!correctToggle.checked" name="x-circle" label="incorrect" outline style="font-size: 1rem">
+              <sl-icon *ngIf="!correctToggle.checked" slot="prefix" name="x-circle" label="incorrect" outline>
               </sl-icon>
               <sl-icon
                 *ngIf="correctToggle.checked"
+                slot="prefix"
                 name="check-circle"
                 label="correct"
                 outline
-                style="font-size: 1rem"
               >
               </sl-icon>
               <span class="ml-2">{{ alphabet[i] }}.</span>

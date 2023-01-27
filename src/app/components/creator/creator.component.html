@@ -1,7 +1,7 @@
 <app-page-layout>
   <ng-container headerContent>
     <app-card-header
-      [title]="isExisting ? title || '~' : 'Q U I Z M K R'"
+      title="Q U I Z M K R"
       [subtitle]="isExisting ? 'Edit quiz' : 'Create a new quiz'"
       icon="magic"
     >
@@ -18,7 +18,7 @@
     <sl-card>
       <div slot="header" class="font-semibold">Tags</div>
       <div class="grid gap-4">
-        <div class="flex flex-row justify-between gap-2">
+        <div class="flex flex-row justify-between flex-wrap md:flex-nowrap gap-2">
           <sl-input
           class="mr-auto w-full"
           placeholder="Add tags separated by comma"

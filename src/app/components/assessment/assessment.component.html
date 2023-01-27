@@ -23,6 +23,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex flex-row gap-4 items-end">
           <sl-input
+            class="w-full sm:w-auto"
             label="Time limit (0 - no limit)"
             (sl-input)="handleTimeLimitInput($event)"
             [value]="settings.timeLimit"
@@ -35,7 +36,7 @@
         </div>
         <div class="flex flex-col sm:flex-row gap-4">
           <sl-input
-            class="w-1/2"
+            class="w-full sm:w-1/2"
             type="number"
             [label]="'Total questions (out of ' + totalQuizQuestions + ')'"
             (sl-input)="handleTotalQuestionsInput($event)"
