@@ -16,6 +16,7 @@ export interface ImageOptions {
 }
 
 const DEFAULT_SIZE = 400;
+const DEFAULT_FORMAT = 'jpeg';
 
 const dataURLtoBlob = (dataURI: string) => {
   const bytes =
@@ -32,9 +33,9 @@ const dataURLtoBlob = (dataURI: string) => {
 const resize = (
   image: HTMLImageElement,
   canvas: HTMLCanvasElement,
-  options: ImageOptions = { maxWidth: DEFAULT_SIZE, maxHeight: DEFAULT_SIZE, type: 'png' }
+  options: ImageOptions = { maxWidth: DEFAULT_SIZE, maxHeight: DEFAULT_SIZE, type: DEFAULT_FORMAT }
 ) => {
-  const { maxHeight = DEFAULT_SIZE, maxWidth = DEFAULT_SIZE, type = 'png' } = options;
+  const { maxHeight = DEFAULT_SIZE, maxWidth = DEFAULT_SIZE, type = DEFAULT_FORMAT } = options;
   let width = image.width;
   let height = image.height;
 
@@ -78,7 +79,7 @@ const resize = (
   providedIn: 'root',
 })
 export class ImageService {
-  constructor() {}
+  constructor() { }
 
   resizeImage = (file: File, options?: ImageOptions): Observable<{ dataUrl: string; blob: Blob }> => {
     const reader = new FileReader();
