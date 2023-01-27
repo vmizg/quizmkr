@@ -33,6 +33,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
   @ViewChildren('questionOptions') questionOptions!: QueryList<ElementRef<HTMLDivElement>>;
   @ViewChild('answerNote') answerNote!: ElementRef<HTMLInputElement>;
 
+  hasError = false;
+  errorMsg?: string;
+
   alphabet = 'ABCDEFGHIJKLMNO';
   questions: Question[] = [];
   quizId: string = '';
@@ -191,7 +194,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
     const title = (formData.get('title') as string).trim();
     if (!title) {
-      alert('Please fill out the question statement field.');
+      this.showErrorDialog('Please fill out the question statement field.');
       return;
     }
     const answerNote = (formData.get('answer-note') as string).trim();
@@ -215,7 +218,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         correct: (formData.get(`correct-${i}`) as string) === 'on',
       };
       if (!option.title) {
-        alert('Please fill out the empty option field(-s).');
+        this.showErrorDialog('Please fill out the empty option field(-s).');
         return;
       }
       // If question title is already prefixed with the letter, such as A., (A), 1., (1), remove it
@@ -225,7 +228,7 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         option.title = option.title.substring(4).trim();
       }
       if (titleMap[option.title]) {
-        alert('One or more options are duplicated.');
+        this.showErrorDialog('One or more options are duplicated.');
         return;
       }
       titleMap[option.title] = true;
@@ -236,10 +239,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     }
 
     if (totalCorrect === question.options.length) {
-      alert('At least one option must be marked as incorrect.');
+      this.showErrorDialog('At least one option must be marked as incorrect.');
       return;
     } else if (totalCorrect === 0) {
-      alert('At least one option must be marked as correct.');
+      this.showErrorDialog('At least one option must be marked as correct.');
       return;
     }
 
@@ -252,8 +255,8 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       $obs = this.apiService.updateQuestion(questionId, question);
     }
 
-    $obs.subscribe(
-      (question) => {
+    $obs.subscribe({
+      next: (question) => {
         if (!question) {
           this.adding = false;
           return;
@@ -272,10 +275,12 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
         this.handleCancelEdit();
         this.adding = false;
       },
-      (err) => {
-        console.log(err);
+      error: (err) => {
+        console.error(err);
+        this.adding = false;
+        this.showErrorDialog('An error has occurred while updating the question. Please wait for some time and try again.');
       }
-    );
+    });
   }
 
   private onEdit(question: Question): void {
@@ -400,6 +405,19 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
   isEditing(q: Question): boolean {
     return this.existingQuestion ? q.id === this.existingQuestion.id : false;
+  }
+
+  showErrorDialog(msg: string) {
+    this.hasError = true;
+    this.errorMsg = msg;
+  }
+
+  closeErrorDialog() {
+    this.hasError = false;
+  }
+
+  afterCloseErrorDialog() {
+    this.errorMsg = undefined;
   }
 
   private handleQueryParamChange(params: any) {

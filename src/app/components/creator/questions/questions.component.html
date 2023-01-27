@@ -149,3 +149,7 @@
     </sl-card>
   </ng-container>
 </app-page-layout>
+<sl-dialog label="Error" [open]="hasError" (sl-after-hide)="afterCloseErrorDialog()">
+  {{ errorMsg }}
+  <sl-button slot="footer" (click)="closeErrorDialog()">Close</sl-button>
+</sl-dialog>

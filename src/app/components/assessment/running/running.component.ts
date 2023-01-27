@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, of, interval, Subject, EMPTY, ReplaySubject } from 'rxjs';
 import { catchError, concatMap, map, takeUntil, tap } from 'rxjs/operators';
 import { Assessment, AssessmentResult, BaseAssesmentResult, Question } from 'src/app/models/quiz';
+import { SlDialog } from 'src/app/models/html';
 import { ApiService } from 'src/app/services/api.service';
 
 interface PQuestion extends Question {
@@ -21,11 +22,6 @@ interface PCheckboxQuestion extends PQuestion {
 
 interface AssessmentRouteState {
   assessment?: Assessment;
-}
-
-interface SlDialog extends HTMLElement {
-  show: () => void;
-  hide: () => void;
 }
 
 @Component({
