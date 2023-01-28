@@ -46,7 +46,7 @@ import { environment } from '../environments/environment';
       httpInterceptor: {
         allowedList: [
           {
-            uri: '/api/*',
+            uri: environment.apiUrl + '/api/*',
           },
         ],
       },
