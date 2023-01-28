@@ -19,3 +19,7 @@ sl-button::part(suffix),
 sl-button::part(prefix) {
   font-size: 1rem;
 }
+
+.logout-link::part(base) {
+  color: var(--sl-color-red-500);
+}

@@ -6,7 +6,8 @@ import { AuthService } from '@auth0/auth0-angular';
 interface MenuLink {
   id: number | string;
   route: string;
-  title: string;
+  title?: string;
+  public?: boolean;
   icon: string;
 }
 
@@ -21,9 +22,9 @@ const isDarkTheme = (): boolean => {
 };
 
 const MENU_LINKS = [
-  { id: 1, route: '/home', title: 'Home', icon: 'house' },
-  { id: 2, route: '/creator', title: 'Creator', icon: 'magic' },
+  { id: 1, route: '/home', title: 'Home', icon: 'house', public: true },
   { id: 2, route: '/quizzes', title: 'Quizzes', icon: 'grid' },
+  { id: 2, route: '/creator', title: 'Creator', icon: 'magic' },
 ];
 
 @Component({
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   authenticating = true;
   loggedIn = false;
+  username = '';
 
   constructor(private route: ActivatedRoute, private router: Router, auth: AuthService) {
     this.auth = auth;
@@ -94,11 +96,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   toggleMenuLinks(loggedIn: boolean): void {
-    if (loggedIn) {
-      this.menuLinks = MENU_LINKS;
-    } else {
-      this.menuLinks = [MENU_LINKS[0]];
-    }
+    // if (loggedIn) {
+    //   this.menuLinks = MENU_LINKS;
+    // } else {
+    //   this.menuLinks = [MENU_LINKS[0]];
+    // }
   }
 
   isRouteActive(link: MenuLink): boolean {
