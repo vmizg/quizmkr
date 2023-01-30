@@ -1,69 +1,80 @@
-<div class="quizmkr">
-  <div class="grow-0 shrink-0 basis-4 md:basis-8"></div>
-  <div class="flex flex-col flex-1 md:max-w-5xl">
-    <div class="logo text-center font-light pt-12 flex flex-row items-center gap-4">
-      <span class="text-4xl">{{ appTitle }}</span>
+<div class="quizmkr-header">
+  <div class="quizmkr-logo-container">
+    <div class="quizmkr-logo md:max-w-5xl">
+      <span class="text-3xl">{{ appTitle }}</span>
     </div>
-    <div class="quizmkr-nav flex flex-row place-content-between gap-4 pt-12 pb-12">
-      <div class="flex flex-row gap-4">
-        <sl-button-group>
-          <sl-button
-            *ngFor="let link of menuLinks"
-            size="medium"
-            variant="{{ isRouteActive(link) ? 'primary' : 'default' }}"
-            [disabled]="!link.public && !loggedIn"
-            (click)="onNavigate(link)"
-          >
-            <sl-icon name="{{ link.icon }}"></sl-icon>
-            <span *ngIf="link.title" class="hidden md:inline md:pl-3">{{ link.title }}</span>
+  </div>
+  <div class="quizmkr-nav-container">
+    <div class="quizmkr-nav md:max-w-5xl">
+      <div class="flex flex-row place-content-between gap-4 mt-2 mb-2">
+        <div class="flex flex-row gap-4">
+          <sl-button-group>
+            <sl-button
+              *ngFor="let link of menuLinks"
+              size="medium"
+              variant="{{ isRouteActive(link) ? 'primary' : 'default' }}"
+              [disabled]="!link.public && !loggedIn"
+              (click)="onNavigate(link)"
+            >
+              <sl-icon name="{{ link.icon }}"></sl-icon>
+              <span *ngIf="link.title" class="hidden md:inline md:pl-3">{{ link.title }}</span>
+            </sl-button>
+          </sl-button-group>
+        </div>
+        <sl-button-group *ngIf="!loggedIn && !authenticating" label="Log in toggle">
+          <sl-button variant="primary" (click)="handleLogin()">
+            Log in
+            <sl-icon slot="prefix" name="door-open"></sl-icon>
           </sl-button>
+          <sl-dropdown placement="bottom-end">
+            <sl-button slot="trigger" variant="primary" caret>
+              <sl-visually-hidden>More options</sl-visually-hidden>
+            </sl-button>
+            <sl-menu>
+              <sl-menu-item (click)="toggleTheme()">
+                Toggle theme
+                <sl-icon slot="prefix" name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
+              </sl-menu-item>
+            </sl-menu>
+          </sl-dropdown>
         </sl-button-group>
-      </div>
-
-      <sl-button-group *ngIf="!loggedIn && !authenticating" label="Log in toggle">
-        <sl-button variant="primary" (click)="handleLogin()">
-          Log in
-          <sl-icon slot="prefix" name="door-open"></sl-icon>
-        </sl-button>
-        <sl-dropdown placement="bottom-end">
-          <sl-button slot="trigger" variant="primary" caret>
-            <sl-visually-hidden>More options</sl-visually-hidden>
+        <sl-dropdown *ngIf="loggedIn || authenticating" placement="bottom-end">
+          <sl-button
+            slot="trigger"
+            size="medium"
+            variant="primary"
+            caret
+          >
+            <sl-icon name="person-gear"></sl-icon>
           </sl-button>
           <sl-menu>
             <sl-menu-item (click)="toggleTheme()">
               Toggle theme
               <sl-icon slot="prefix" name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
             </sl-menu-item>
+            <sl-menu-item *ngIf="loggedIn">
+              Settings
+              <sl-icon slot="prefix" name="gear"></sl-icon>
+            </sl-menu-item>
+            <sl-divider></sl-divider>
+            <sl-menu-item class="logout-link" (click)="handleLogout()">
+              Log out
+              <sl-icon slot="prefix" name="box-arrow-in-right"></sl-icon>
+            </sl-menu-item>
           </sl-menu>
         </sl-dropdown>
-      </sl-button-group>
-    
-      <sl-dropdown *ngIf="loggedIn || authenticating" placement="bottom-end">
-        <sl-button
-          slot="trigger"
-          size="medium"
-          variant="primary"
-          caret
-        >
-          <sl-icon name="person-gear"></sl-icon>
-        </sl-button>
-        <sl-menu>
-          <sl-menu-item (click)="toggleTheme()">
-            Toggle theme
-            <sl-icon slot="prefix" name="{{ darkMode ? 'moon' : 'sun' }}"></sl-icon>
-          </sl-menu-item>
-          <sl-menu-item *ngIf="loggedIn">
-            Settings
-            <sl-icon slot="prefix" name="gear"></sl-icon>
-          </sl-menu-item>
-          <sl-divider></sl-divider>
-          <sl-menu-item class="logout-link" (click)="handleLogout()">
-            Log out
-            <sl-icon slot="prefix" name="box-arrow-in-right"></sl-icon>
-          </sl-menu-item>
-        </sl-menu>
-      </sl-dropdown>
+      </div>
+      <div class="links">
+        <sl-button variant="text" size="small">Text</sl-button>
+        <sl-button variant="text" size="small">Text</sl-button>
+        <sl-button variant="text" size="small">Text</sl-button>
+      </div>
     </div>
+  </div>
+</div>
+<div class="quizmkr">
+  <div class="grow-0 shrink-0 basis-4 md:basis-8"></div>
+  <div class="flex flex-col flex-1 md:max-w-5xl">
     <router-outlet></router-outlet>
   </div>
   <div class="grow-0 shrink-0 basis-4 md:basis-8"></div>

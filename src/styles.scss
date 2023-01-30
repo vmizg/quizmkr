@@ -12,28 +12,13 @@ body {
 
 body {
   font-family: var(--sl-font-sans);
-  color: var(--text-color-light);
-  background: linear-gradient(to bottom, #3B4371, #F3904F);
+  color: var(--app-text-color);
+  background: var(--app-background);
   background-attachment: fixed;
   transition: background-image 100ms ease;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.sl-theme-dark body {
-  color: var(--text-color-dark);
-  background: #1b1b1b;
-}
-
-sl-card::part(header) {
-  background: var(--sl-color-blue-gray-200);
-  border-top-left-radius: var(--border-radius);
-  border-top-right-radius: var(--border-radius);
-}
-
-sl-avatar::part(base) {
-  background-color: var(--sl-color-primary-600);
 }
 
 app-root {
