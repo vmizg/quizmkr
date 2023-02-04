@@ -37,8 +37,9 @@ export class AppComponent implements OnInit, OnDestroy {
   loggedIn$?: Subscription;
 
   auth: AuthService;
-  appTitle = 'Q U I Z M K R';
+  appTitle = 'quizmkr';
   menuLinks: MenuLink[] = MENU_LINKS;
+  breadcrumbs = [];
   darkMode: boolean;
 
   authenticating = true;
