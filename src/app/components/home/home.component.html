@@ -30,7 +30,7 @@
           <sl-spinner></sl-spinner>
           <span>Loading...</span>
         </div>
-        <div *ngIf="!loadingResults && results.length === 0" class="flex flex-col text-gray-500">
+        <div *ngIf="!loadingResults && results.length === 0" class="flex flex-col">
           <ng-container *ngIf="loggedIn">
             <span>You have no recent assessment results.</span>
           </ng-container>
@@ -49,7 +49,7 @@
                 {{ result.assessment.quiz.title }}</a
               >
             </div>
-            <span class="text-gray-500">{{ result.dateCompleted | date: 'medium' }}</span>
+            <span>{{ result.dateCompleted | date: 'medium' }}</span>
           </div>
           <div class="flex flex-col text-right">
             <div>
@@ -66,7 +66,7 @@
     <sl-card [class]="loadingResults ? 'loading' : ''">
       <div slot="header" class="font-semibold">Latest quizzes</div>
       <div class="flex flex-col gap-4">
-        <div *ngIf="loadingLatest" class="flex flex-row items-center gap-2 text-gray-500">
+        <div *ngIf="loadingLatest" class="flex flex-row items-center gap-2">
           <sl-spinner></sl-spinner>
           <span>Loading...</span>
         </div>
@@ -76,10 +76,10 @@
               <sl-icon name="compass" style="color: var(--sl-color-primary-600)"></sl-icon>
               <a [routerLink]="['/quizzes', quiz.id]" style="color: var(--sl-color-primary-600)">{{ quiz.title }}</a>
             </div>
-            <span class="text-gray-500">Total questions: {{ quiz.totalQuestions }}</span>
+            <span>Total questions: {{ quiz.totalQuestions }}</span>
           </div>
         </div>
-        <div *ngIf="!loadingLatest && latest.length === 0" class="flex flex-col text-gray-500">
+        <div *ngIf="!loadingLatest && latest.length === 0" class="flex flex-col">
           <span>You have not created any quizzes yet.</span>
           <a [routerLink]="['/quizzes']" style="color: var(--sl-color-primary-600)">Create your first quiz here</a>
         </div>

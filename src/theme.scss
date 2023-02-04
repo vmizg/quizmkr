@@ -9,7 +9,7 @@
 :root,
 :host,
 .sl-theme-light {
-  --app-text-color: #111827;
+  --app-text-color: var(--sl-color-neutral-1000);
   --app-background: linear-gradient(to bottom, #3B4371, #F3904F);
 
   --sl-color-blue-gray-50: rgba(248 250 252);
@@ -27,7 +27,6 @@
 
 :host,
 .sl-theme-dark {
-  --app-text-color: #ffffff;
   --app-background: #1b1b1b;
 
   --sl-color-blue-gray-50: rgba(20 26 40);
@@ -47,6 +46,10 @@ sl-card::part(header) {
   background: var(--sl-color-blue-gray-200);
   border-top-left-radius: var(--border-radius);
   border-top-right-radius: var(--border-radius);
+}
+
+sl-card::part(body) {
+  color: var(--sl-color-gray-600);
 }
 
 sl-avatar::part(base) {

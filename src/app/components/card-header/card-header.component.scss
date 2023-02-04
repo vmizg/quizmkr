@@ -10,3 +10,8 @@ sl-avatar {
 sl-card::part(body) {
   height: 6rem;
 }
+
+.title,
+.suffix {
+  color: var(--sl-color-neutral-950);
+}

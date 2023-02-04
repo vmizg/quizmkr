@@ -29,7 +29,7 @@
         <sl-spinner></sl-spinner>
         <span>Loading...</span>
       </div>
-      <div *ngIf="!loading" class="flex flex-col text-gray-500">
+      <div *ngIf="!loading" class="flex flex-col">
         <span>You have not created any quizzes yet.</span>
         <a [routerLink]="['/creator']" style="color: var(--sl-color-primary-600)">Create one by clicking here!</a>
       </div>
