@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ParamsRecord } from '../models/api';
 import {
   Image,
   PartialQuiz,
@@ -20,9 +21,9 @@ import {
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getQuizzes(params?: any) {
+  getQuizzes(params?: ParamsRecord) {
     return this.http
       .get(`/api/quizzes`, { params: this.constructParams(params) })
       .pipe(map((result) => result as Quiz[]));
@@ -64,7 +65,7 @@ export class ApiService {
     return this.http.get(`/api/questions/${questionId}/image`) as Observable<Image>;
   }
 
-  getAssessments(params?: any) {
+  getAssessments(params?: ParamsRecord) {
     return this.http
       .get(`/api/assessments`, { params: this.constructParams(params) })
       .pipe(map((result) => result as Assessment[]));
@@ -77,14 +78,16 @@ export class ApiService {
   }
 
   createAssessment(quizId: string, payload: BaseAssessment) {
-    return this.http.post(`/api/assessments`, { ...payload, quiz: { id: quizId } }).pipe(map((result) => result as Assessment));
+    return this.http
+      .post(`/api/assessments`, { ...payload, quiz: { id: quizId } })
+      .pipe(map((result) => result as Assessment));
   }
 
   deleteAssessment(id: string) {
     return this.http.delete(`/api/assessments/${id}`).pipe(map((result) => (result ? true : false)));
   }
 
-  getResults(params?: any) {
+  getResults(params?: ParamsRecord) {
     return this.http
       .get(`/api/results`, { params: this.constructParams(params) })
       .pipe(map((result) => result as AssessmentResult[]));
@@ -108,7 +111,7 @@ export class ApiService {
     return this.http.delete(`/api/results/${id}`).pipe(map((result) => (result ? true : false)));
   }
 
-  private constructParams(params?: any): HttpParams {
+  private constructParams(params?: ParamsRecord): HttpParams {
     let httpParams = new HttpParams();
     if (!params) {
       return httpParams;
