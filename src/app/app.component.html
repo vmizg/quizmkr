@@ -1,16 +1,19 @@
 <div class="quizmkr-header">
   <div class="quizmkr-nav-container">
-    <div class="quizmkr-nav md:max-w-5xl">
+    <div class="quizmkr-nav xl:max-w-6xl">
       <div class="flex flex-row place-content-between items-center gap-4">
         <div class="flex flex-row items-center gap-4">
-          <div class="quizmkr-logo md:max-w-5xl">
-            <span class="logo-text">{{ appTitle }}</span>
+          <div class="quizmkr-logo hidden xs:flex">
+            <span class="logo-text">QUIZMKR</span>
             <!-- <div class="breadcrumb md:flex">
               <ng-container *ngFor="let link of breadcrumbs; let i = index">
                 <span *ngIf="i !== 0">/</span>
                 <sl-button variant="text">{{ link }}</sl-button>
               </ng-container>
             </div> -->
+          </div>
+          <div class="quizmkr-logo flex xs:hidden">
+            <span class="logo-text">Q</span>
           </div>
           <div class="flex flex-row">
             <sl-button
@@ -68,7 +71,7 @@
 </div>
 <div class="quizmkr">
   <div class="grow-0 shrink-0 basis-4 md:basis-8"></div>
-  <div class="flex flex-col flex-1 md:max-w-5xl">
+  <div class="flex flex-col flex-1 xl:max-w-6xl">
     <router-outlet></router-outlet>
   </div>
   <div class="grow-0 shrink-0 basis-4 md:basis-8"></div>

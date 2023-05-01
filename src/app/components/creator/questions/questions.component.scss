@@ -7,6 +7,12 @@
   flex-flow: row;
   align-items: flex-end;
   gap: 0.5rem;
+
+  sl-input::part(input) {
+    // Fix an issue with shrinking below a certain level
+    width: 0;
+    max-width: 100%;
+  }
 }
 
 .option-toggle::part(label) {
@@ -77,6 +83,7 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
 
 .question-statement {
   width: 60%;
+  min-width: 10rem;
 
   &::part(textarea) {
     min-height: 12rem;
@@ -90,6 +97,14 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
   border-radius: var(--sl-border-radius-medium);
   display: flex;
   padding: 0.5rem;
+
+  @media screen and (max-width: 30rem) {
+    .image-upload {
+      &::part(base) {
+        padding: 0 !important;
+      }
+    }
+  }
 
   img {
     margin: auto;

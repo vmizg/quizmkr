@@ -19,7 +19,7 @@
         class="question-card"
         [style]="{ '--question-count': questions.length, '--question-index': activeQuestionIndex + 1 }"
       >
-        <div slot="header" class="question-card-header flex flex-row justify-between items-center">
+        <div slot="header" class="flex flex-row justify-between items-center gap-4">
           <!-- <div class="step-indicator-wrapper">
             <div class="step-indicator font-semibold text-sm"></div>
           </div> -->
@@ -34,7 +34,7 @@
         <form style="display: contents">
           <div class="flex flex-col gap-4">
             <div class="flex flex-col sm:flex-row">
-              <div *ngIf="!imageLoading && !!image" class="flex place-content-center sm:place-content-start">
+              <div *ngIf="!imageLoading && !!image" class="flex flex-row place-content-center sm:place-content-start mb-4 sm:mb-0">
                 <img [src]="image" class="max-h-64" />
               </div>
               <div *ngIf="imageLoading" class="image-placeholder">
@@ -42,14 +42,14 @@
                   <sl-spinner></sl-spinner>
                 </div>
               </div>
-              <div *ngIf="!activeQuestion.multiSelect" class="mt-4 sm:mt-0 ml-8">
+              <div *ngIf="!activeQuestion.multiSelect" class="ml-2 xs:ml-8">
                 <sl-radio-group [value]="activeQuestion.selectedAnswer?.[0]" (sl-change)="handleAnswerInput($event)">
                   <sl-radio *ngFor="let option of activeQuestion.options; let i = index" [value]="option.id">
                     {{ alphabet[i] }}. {{ option.title }}
                   </sl-radio>
                 </sl-radio-group>
               </div>
-              <div *ngIf="activeQuestion.multiSelect" class="flex flex-col gap-4 ml-8">
+              <div *ngIf="activeQuestion.multiSelect" class="flex flex-col gap-4 ml-2 xs:ml-8">
                 <sl-checkbox
                   *ngFor="let option of activeQuestion.options; let i = index"
                   [name]="'option-' + i"

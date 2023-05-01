@@ -37,7 +37,6 @@ export class AppComponent implements OnInit, OnDestroy {
   loggedIn$?: Subscription;
 
   auth: AuthService;
-  appTitle = 'quizmkr';
   menuLinks: MenuLink[] = MENU_LINKS;
   breadcrumbs = [];
   darkMode: boolean;
