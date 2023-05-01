@@ -17,6 +17,7 @@ body {
   background-attachment: fixed;
   transition: background-image 100ms ease;
   box-sizing: border-box;
+  overflow-y: overlay;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

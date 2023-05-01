@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private quizzes$ = new Subject<void>();
   private destroyed$ = new Subject<void>();
 
-  constructor(private apiService: ApiService, private auth: AuthService) { }
+  constructor(private apiService: ApiService, private auth: AuthService) {}
 
   ngOnInit() {
     interval(1000)

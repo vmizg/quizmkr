@@ -10,18 +10,6 @@
 .quizmkr-header {
   display: flex;
   flex-direction: column;
-  margin-bottom: 2rem;
-}
-
-.quizmkr-logo-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1.5rem 2rem;
-
-  @media screen and (max-width: 768px) {
-    padding: 1.5rem 1rem;
-  }
 }
 
 .quizmkr-logo {
@@ -29,13 +17,17 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
+  background: var(--sl-color-primary-600);
+  color: var(--sl-color-neutral-0);
+  border-radius: var(--sl-border-radius-medium);
+  padding: 0.625rem 1rem;
 
   .logo-text {
-    color: #ffffff;
     text-transform: uppercase;
-    letter-spacing: 0.5rem;
-    font-size: 1.875rem;
-    line-height: 3rem;
+    letter-spacing: 0.25rem;
+    font-family: 'Margarine', sans-serif;
+    font-size: 1.25rem;
+    line-height: 1;
   }
 }
 
@@ -58,10 +50,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 2rem;
+  padding: 2rem;
 
   @media screen and (max-width: 768px) {
-    padding: 0 1rem;
+    padding: 1rem;
   }
 }
 

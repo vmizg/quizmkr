@@ -1,153 +1,162 @@
 <app-page-layout>
-  <ng-container headerContent>
-    <app-card-header [loading]="loading" [visible]="!!quizTitle" icon="asterisk">
-      <ng-container titleContent>
-        <span>{{ quizTitle }}</span>
-        <sl-icon-button
-          name="pencil"
-          label="Edit quiz"
-          (click)="handleEditQuiz()"
-          class="edit-quiz-button"
-        ></sl-icon-button>
-      </ng-container>
-    </app-card-header>
-  </ng-container>
-  <ng-container leftSideContent>
-    <form (submit)="handleAddQuestion($event)" #questionForm>
-      <sl-card class="question-container" [class.edit-mode]="existingQuestion">
-        <div slot="header" class="font-semibold">
-          <sl-badge [type]="existingQuestion ? 'primary' : 'neutral'" class="mr-2" pill>{{
-            questionIndex + 1
-          }}</sl-badge>
-          {{ existingQuestion ? 'Edit' : 'New' }} question
-        </div>
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-row items-start gap-2">
-            <sl-textarea
-              #statementInput
-              class="question-statement"
-              autofocus
-              name="title"
-              aria-label="Question statement"
-              (sl-input)="handleEdit()"
-              (paste)="handlePaste($event)"
-              required
-            >
-            </sl-textarea>
-            <div class="question-image relative m-auto ml-4">
-              <ng-container *ngIf="!imageLoading && !!image">
-                <img [src]="image" />
-                <div class="image-actions">
-                  <sl-button (click)="uploader.click()" size="small" circle
-                    ><sl-icon name="pencil"></sl-icon
-                  ></sl-button>
-                  <sl-button (click)="image = ''" size="small" circle><sl-icon name="x-lg"></sl-icon></sl-button>
-                </div>
-              </ng-container>
-              <sl-icon-button
-                class="image-upload"
-                *ngIf="!loading && !imageLoading && !image"
-                (click)="uploader.click()"
-                name="image"
-              ></sl-icon-button>
-              <sl-spinner class="image-spinner" *ngIf="imageLoading || loading"></sl-spinner>
-            </div>
-            <input hidden type="file" accept="image/*" (change)="handleUploadImage($event)" #uploader />
-          </div>
-          <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
-            <sl-button
-              class="option-toggle"
-              variant="{{ correctToggle.checked ? 'success' : 'neutral' }}"
-              [outline]="!correctToggle.checked"
-              (click)="correctToggle.checked = !correctToggle.checked; handleEdit()"
-            >
-              <sl-icon *ngIf="!correctToggle.checked" slot="prefix" name="x-circle" label="incorrect" outline>
-              </sl-icon>
-              <sl-icon
-                *ngIf="correctToggle.checked"
-                slot="prefix"
-                name="check-circle"
-                label="correct"
-                outline
-              >
-              </sl-icon>
-              <span class="ml-2">{{ alphabet[i] }}.</span>
-              <input class="correct-toggle" [name]="'correct-' + i" type="checkbox" #correctToggle hidden />
-            </sl-button>
-            <sl-input
-              #optionInput
-              class="option-input"
-              style="width: 100%"
-              label="{{ i === 0 ? 'Options' : '' }}"
-              (sl-input)="handleEdit()"
-              [name]="'option-' + i"
-              required
-            ></sl-input>
-            <sl-button
-              style="width: 4rem"
-              (click)="handleRemoveOption(optionInput)"
-              [disabled]="totalOptions < 3"
-              variant="neutral"
-              outline
-              tabindex="-1"
-            >
-              <sl-icon name="trash"></sl-icon>
-            </sl-button>
-          </div>
-          <div class="option-row add-option" *ngIf="totalOptions < 7">
-            <sl-button class="w-full" (click)="handleAddOption()">Add a new option</sl-button>
-          </div>
-          <div>
-            <sl-input label="Note(-s)" name="answer-note" (sl-input)="handleEdit()" #answerNote></sl-input>
-          </div>
-        </div>
-      </sl-card>
-      <sl-card>
-        <div class="flex flex-row justify-between gap-4">
-          <sl-button class="w-full" variant="primary" [loading]="adding" type="submit">
-            {{ existingQuestion ? 'Save question' : 'Add question' }}
-          </sl-button>
-          <sl-button *ngIf="existingQuestion" (click)="handleCancelEdit()" variant="neutral">Cancel</sl-button>
-        </div>
-      </sl-card>
-    </form>
-  </ng-container>
-  <ng-container rightSideContent>
-    <cdk-virtual-scroll-viewport
-      itemSize="104"
-      class="question-list-container"
-      *ngIf="questions && questions.length > 0"
+  <app-card-header header [loading]="loading" [visible]="!!quizTitle" icon="asterisk">
+    <ng-container titleContent>
+      <span>{{ quizTitle }}</span>
+    </ng-container>
+    <sl-button subtitleContent variant="text" (click)="handleEditQuiz()" class="edit-quiz-button"
+      ><sl-icon slot="prefix" name="pencil-square"></sl-icon>Edit details</sl-button
     >
-      <div class="flex flex-col gap-2">
-        <sl-card
-          *cdkVirtualFor="let q of questions; let i = index"
-          class="question-card"
-          [class.edit-mode]="isEditing(q)"
-          #targetQ
-        >
-          <div class="flex flex-row items-center justify-between gap-4 h-12">
-            <div class="question-title">
-              <sl-badge [type]="isEditing(q) ? 'primary' : 'neutral'" class="mr-2" pill>{{ i + 1 }}</sl-badge>
-              <span>{{ q.title }}</span>
+  </app-card-header>
+  <app-card-layout main>
+    <ng-container leftSide>
+      <form (submit)="handleAddQuestion($event)" #questionForm>
+        <sl-card class="question-container" [class.edit-mode]="existingQuestion">
+          <div slot="header" class="flex flex-row items-center gap-2 font-semibold">
+            <sl-badge pill>{{ questionIndex + 1 }}</sl-badge>
+            {{ existingQuestion ? 'Edit' : 'New' }} question
+          </div>
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-row items-start gap-2">
+              <sl-textarea
+                #statementInput
+                class="question-statement"
+                autofocus
+                name="title"
+                placeholder="Enter a question statement"
+                aria-label="Question statement"
+                (sl-input)="handleEdit()"
+                (paste)="handlePaste($event)"
+                required
+              >
+              </sl-textarea>
+              <div class="question-image relative m-auto">
+                <ng-container *ngIf="!imageLoading && !!image">
+                  <img [src]="image" />
+                  <div class="image-actions">
+                    <sl-button (click)="uploader.click()" size="small" circle
+                      ><sl-icon name="pencil"></sl-icon
+                    ></sl-button>
+                    <sl-button (click)="image = ''" size="small" circle><sl-icon name="x-lg"></sl-icon></sl-button>
+                  </div>
+                </ng-container>
+                <sl-icon-button
+                  class="image-upload"
+                  *ngIf="!loading && !imageLoading && !image"
+                  (click)="uploader.click()"
+                  name="image"
+                ></sl-icon-button>
+                <sl-spinner class="image-spinner" *ngIf="imageLoading || loading"></sl-spinner>
+              </div>
+              <input hidden type="file" accept="image/*" (change)="handleUploadImage($event)" #uploader />
             </div>
-            <div class="flex flex-row gap-2">
-              <sl-button variant="neutral" circle outline (click)="handleEditQuestion(q, targetQ)"
-                ><sl-icon [name]="isEditing(q) ? 'x-lg' : 'pencil-square'"></sl-icon
-              ></sl-button>
-              <sl-button variant="danger" circle outline (click)="handleDeleteQuestion(q)" tabindex="-1"
-                ><sl-icon name="trash"></sl-icon
-              ></sl-button>
+            <div *ngFor="let option of counter(totalOptions); let i = index" class="option-row" #questionOptions>
+              <sl-button
+                class="option-toggle"
+                variant="{{ correctToggle.checked ? 'success' : 'neutral' }}"
+                [outline]="!correctToggle.checked"
+                (click)="correctToggle.checked = !correctToggle.checked; handleEdit()"
+              >
+                <sl-icon *ngIf="!correctToggle.checked" slot="prefix" name="x-circle" label="incorrect" outline>
+                </sl-icon>
+                <sl-icon *ngIf="correctToggle.checked" slot="prefix" name="check-circle" label="correct" outline>
+                </sl-icon>
+                <span class="ml-2">{{ alphabet[i] }}.</span>
+                <input class="correct-toggle" [name]="'correct-' + i" type="checkbox" #correctToggle hidden />
+              </sl-button>
+              <sl-input
+                #optionInput
+                class="option-input"
+                style="width: 100%"
+                label="{{ i === 0 ? 'Options' : '' }}"
+                (sl-input)="handleEdit()"
+                [name]="'option-' + i"
+                required
+              ></sl-input>
+              <sl-button
+                style="width: 4rem"
+                (click)="handleRemoveOption(optionInput)"
+                [disabled]="totalOptions < 3"
+                variant="neutral"
+                outline
+                tabindex="-1"
+              >
+                <sl-icon name="trash"></sl-icon>
+              </sl-button>
+            </div>
+            <div class="option-row add-option" *ngIf="totalOptions < 7">
+              <sl-button class="w-full" (click)="handleAddOption()">Add a new option</sl-button>
+            </div>
+            <div>
+              <sl-input
+                name="answer-note"
+                (sl-input)="handleEdit()"
+                placeholder="Add additional notes for context"
+                #answerNote
+              >
+                <div slot="label" class="flex flex-row gap-2 items-center">
+                  Note(-s)
+                  <sl-tooltip content="These notes will NOT show up during an assessment session"
+                    ><sl-icon name="info-circle"></sl-icon
+                  ></sl-tooltip>
+                </div>
+              </sl-input>
             </div>
           </div>
         </sl-card>
-      </div>
-    </cdk-virtual-scroll-viewport>
-    <sl-card *ngIf="!loading && (!questions || questions.length === 0)">
-      <div class="flex flex-col">
-        <span>You have not added any questions for this quiz yet.</span>
-      </div>
-    </sl-card>
-  </ng-container>
+        <sl-card>
+          <div class="flex flex-row justify-between gap-4">
+            <sl-button class="w-full" variant="primary" [loading]="adding" type="submit">
+              {{ existingQuestion ? 'Save question' : 'Add question' }}
+            </sl-button>
+            <sl-button *ngIf="existingQuestion" (click)="handleCancelEdit()" variant="neutral">Cancel</sl-button>
+          </div>
+        </sl-card>
+      </form>
+    </ng-container>
+    <ng-container rightSide>
+      <cdk-virtual-scroll-viewport
+        autosize
+        class="question-list-container"
+        *ngIf="questions && questions.length > 0"
+      >
+        <div class="flex flex-col gap-4">
+          <sl-card
+            *cdkVirtualFor="let q of questions; let i = index"
+            class="question-card"
+            [class.edit-mode]="questionIndex === i"
+            (click)="handleEditQuestion(q, targetQ)"
+            #targetQ
+          >
+            <div class="flex flex-row justify-between items-center gap-2">
+              <div class="flex flex-row items-center justify-between gap-2">
+                <sl-badge pill>{{ i + 1 }}</sl-badge>
+                <div class="question-title">
+                  {{ q.title }}
+                </div>
+              </div>
+              <div>
+                <sl-icon-button name="trash" variant="danger" label="Delete" (click)="handleDeleteQuestion($event, q)">
+                </sl-icon-button>
+              </div>
+            </div>
+          </sl-card>
+          <sl-card class="question-card" [class.edit-mode]="!existingQuestion" (click)="handleCancelEdit()">
+            <div class="flex flex-row justify-between items-center">
+              <div class="flex flex-row items-center justify-between gap-2">
+                <sl-badge pill>+</sl-badge>
+                <div class="question-title">New question</div>
+              </div>
+            </div>
+          </sl-card>
+        </div>
+      </cdk-virtual-scroll-viewport>
+      <sl-card *ngIf="!loading && (!questions || questions.length === 0)">
+        <div class="flex flex-col">
+          <span>You have not added any questions for this quiz yet.</span>
+        </div>
+      </sl-card>
+    </ng-container>
+  </app-card-layout>
 </app-page-layout>
 <sl-dialog label="Error" [open]="hasError" (sl-after-hide)="afterCloseErrorDialog()">
   {{ errorMsg }}

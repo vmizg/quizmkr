@@ -1,58 +1,75 @@
-<div class="flex flex-col gap-2 pb-12 justify-stretch w-full">
-  <app-card-header [title]="resultSheet?.assessment?.quiz?.title" subtitle="Assessment result sheet" [loading]="loading"
-    [visible]="!!(resultSheet && resultSheet.details.length > 0)" icon="check-circle">
+<app-page-layout>
+  <app-card-header
+    header
+    [title]="resultSheet?.assessment?.quiz?.title"
+    subtitle="Assessment result sheet"
+    [loading]="loading"
+    [visible]="!!(resultSheet && resultSheet.details.length > 0)"
+    icon="check-circle"
+  >
   </app-card-header>
-  <sl-card *ngIf="resultSheet">
-    <div slot="header">Summary</div>
-    <div class="flex flex-col gap-2 w-full">
-      <div class="flex flex-col justify-center items-center">
-        <span class="text-xl">Score:</span>
-        <span class="font-semibold text-3xl">{{ score }}%</span>
-      </div>
-      <div class="flex flex-row justify-between items-center">
-        <span>Answered correctly</span>
-        <span class="font-semibold">{{ answeredCorrectly }} / {{ resultSheet.details.length }}</span>
-      </div>
-      <div class="flex flex-row justify-between items-center">
-        <span>Time taken to complete</span>
-        <span class="font-semibold">{{ timeTaken }}</span>
-      </div>
-      <div class="flex flex-row justify-between items-center">
-        <span>Date completed</span>
-        <span class="font-semibold">{{ resultSheet.dateCompleted | date: 'medium' }}</span>
-      </div>
-    </div>
-  </sl-card>
-  <div class="flex flex-col gap-2 w-full" *ngIf="resultSheet && resultSheet.details.length > 0">
-    <sl-card *ngFor="let result of resultSheet.details; let i = index" [class]="result.answeredCorrectly ? 'outer green' : 'outer red'">
-      <sl-card class="inner w-full">
-        <div class="flex flex-col w-full gap-2">
-          <div class="flex flex-row justify-between gap-2 text-xl">
-            <div class="flex items-start gap-2">
-              <sl-badge variant="neutral" pill>{{ i + 1 }}</sl-badge>
-              {{ result.question.title }}
-            </div>
-          </div>
-          <!-- TODO: include image -->
-          <!-- <div *ngIf="result.imageURI">
-            <img [src]="result.imageURI" class="ml-20 max-h-32" />
-          </div> -->
-          <div *ngFor="let option of result.question.options; let j = index" class="flex flex-row items-center ml-8">
-            <div class="flex text-xl mr-4" style="flex: 0 0 2rem">
-              <sl-icon *ngIf="option.correct" name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
-              <sl-icon *ngIf="!option.correct && isSelected(result, option)" name="x-circle"
-                style="color: var(--sl-color-danger-500)"></sl-icon>
-            </div>
-            <span [style]="{
-                color: option.correct
-                  ? 'var(--sl-color-green-500)'
-                  : !option.correct && isSelected(result, option)
-                  ? 'var(--sl-color-danger-500)'
-                  : ''
-              }">{{ alphabet[j] }}. {{ option.title }}</span>
-          </div>
+  <app-card-layout main [fill]="true">
+    <sl-card *ngIf="resultSheet">
+      <div slot="header">Summary</div>
+      <div class="flex flex-col gap-2 w-full">
+        <div class="flex flex-col justify-center items-center">
+          <span class="text-xl">Score:</span>
+          <span class="font-semibold text-3xl">{{ score }}%</span>
         </div>
-      </sl-card>
+        <div class="flex flex-row justify-between items-center">
+          <span>Answered correctly</span>
+          <span class="font-semibold">{{ answeredCorrectly }} / {{ resultSheet.details.length }}</span>
+        </div>
+        <div class="flex flex-row justify-between items-center">
+          <span>Time taken to complete</span>
+          <span class="font-semibold">{{ timeTaken }}</span>
+        </div>
+        <div class="flex flex-row justify-between items-center">
+          <span>Date completed</span>
+          <span class="font-semibold">{{ resultSheet.dateCompleted | date : 'medium' }}</span>
+        </div>
+      </div>
     </sl-card>
-  </div>
-</div>
+    <div class="flex flex-col gap-4 w-full" *ngIf="resultSheet && resultSheet.details.length > 0">
+      <sl-card
+        *ngFor="let result of resultSheet.details; let i = index"
+        [class]="result.answeredCorrectly ? 'outer green' : 'outer red'"
+      >
+        <sl-card class="inner w-full">
+          <div class="flex flex-col w-full gap-2">
+            <div class="flex flex-row justify-between gap-2 text-xl">
+              <div class="flex items-start gap-2">
+                <sl-badge variant="neutral" pill>{{ i + 1 }}</sl-badge>
+                {{ result.question.title }}
+              </div>
+            </div>
+            <!-- TODO: include image -->
+            <!-- <div *ngIf="result.imageURI">
+              <img [src]="result.imageURI" class="ml-20 max-h-32" />
+            </div> -->
+            <div *ngFor="let option of result.question.options; let j = index" class="flex flex-row items-center ml-8">
+              <div class="flex text-xl mr-4" style="flex: 0 0 2rem">
+                <sl-icon *ngIf="option.correct" name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
+                <sl-icon
+                  *ngIf="!option.correct && isSelected(result, option)"
+                  name="x-circle"
+                  style="color: var(--sl-color-danger-500)"
+                ></sl-icon>
+              </div>
+              <span
+                [style]="{
+                  color: option.correct
+                    ? 'var(--sl-color-green-500)'
+                    : !option.correct && isSelected(result, option)
+                    ? 'var(--sl-color-danger-500)'
+                    : ''
+                }"
+                >{{ alphabet[j] }}. {{ option.title }}</span
+              >
+            </div>
+          </div>
+        </sl-card>
+      </sl-card>
+    </div>
+  </app-card-layout>
+</app-page-layout>

@@ -6,14 +6,14 @@ import { RunningAssessmentComponent } from './components/assessment/running/runn
 import { CreatorComponent } from './components/creator/creator.component';
 import { QuestionsComponent } from './components/creator/questions/questions.component';
 import { HomeComponent } from './components/home/home.component';
-import { QuizzesComponent } from './components/quizzes/quizzes.component';
+import { LibraryComponent } from './components/library/library.component';
 import { AuthGuard } from './guards/auth.guard';
 import { PendingChangesGuard } from './guards/pending-changes.guard';
 
 const routes: Routes = [
   {
     path: 'home',
-    component: HomeComponent
+    component: HomeComponent,
   },
   {
     path: 'creator/:qid/questions',
@@ -59,18 +59,18 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'quizzes/:qid',
+    path: 'library/:qid',
     component: AssessmentComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'quizzes',
-    component: QuizzesComponent,
+    path: 'library',
+    component: LibraryComponent,
     canActivate: [AuthGuard],
   },
   {
     path: 'quiz/:qid',
-    redirectTo: 'quizzes/:qid',
+    redirectTo: 'library/:qid',
     pathMatch: 'full',
   },
   {
@@ -84,4 +84,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

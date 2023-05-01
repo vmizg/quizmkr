@@ -5,10 +5,10 @@ import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class BaseUrlInterceptor implements HttpInterceptor {
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (req.url.startsWith('/api')) {
-            req = req.clone({ url: environment.apiUrl + req.url });
-        }
-        return next.handle(req);
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (req.url.startsWith('/api')) {
+      req = req.clone({ url: environment.apiUrl + req.url });
     }
+    return next.handle(req);
+  }
 }

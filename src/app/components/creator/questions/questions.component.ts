@@ -278,8 +278,10 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
       error: (err) => {
         console.error(err);
         this.adding = false;
-        this.showErrorDialog('An error has occurred while updating the question. Please wait for some time and try again.');
-      }
+        this.showErrorDialog(
+          'An error has occurred while updating the question. Please wait for some time and try again.'
+        );
+      },
     });
   }
 
@@ -303,7 +305,6 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
 
   handleEditQuestion(question: Question, target?: HTMLElement): void {
     if (this.isEditing(question)) {
-      this.handleCancelEdit();
       return;
     }
 
@@ -362,7 +363,9 @@ export class QuestionsComponent implements OnInit, OnDestroy, AfterViewInit, Com
     });
   }
 
-  handleDeleteQuestion(question: Question): void {
+  handleDeleteQuestion(event: Event, question: Question): void {
+    event.stopPropagation();
+
     if (confirm('WARNING: are you sure you would like to delete this question?')) {
       this.apiService.deleteQuestion(question.id).subscribe((result) => {
         if (result) {

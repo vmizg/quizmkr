@@ -23,8 +23,8 @@ const isDarkTheme = (): boolean => {
 
 const MENU_LINKS = [
   { id: 1, route: '/home', title: 'Home', icon: 'house', public: true },
-  { id: 2, route: '/quizzes', title: 'Quizzes', icon: 'grid' },
-  { id: 2, route: '/creator', title: 'Creator', icon: 'magic' },
+  { id: 2, route: '/library', title: 'Library', icon: 'book' },
+  { id: 2, route: '/creator', title: 'Create', icon: 'magic' },
 ];
 
 @Component({
@@ -59,7 +59,6 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authenticating = status;
     });
     this.loggedIn$ = this.auth.isAuthenticated$.subscribe((loggedIn) => {
-      this.toggleMenuLinks(loggedIn);
       this.loggedIn = loggedIn;
     });
   }
@@ -94,14 +93,6 @@ export class AppComponent implements OnInit, OnDestroy {
       htmlElement.classList.remove('sl-theme-dark');
     }
     localStorage.setItem(THEME_KEY, this.darkMode ? 'dark' : 'light');
-  }
-
-  toggleMenuLinks(loggedIn: boolean): void {
-    // if (loggedIn) {
-    //   this.menuLinks = MENU_LINKS;
-    // } else {
-    //   this.menuLinks = [MENU_LINKS[0]];
-    // }
   }
 
   isRouteActive(link: MenuLink): boolean {

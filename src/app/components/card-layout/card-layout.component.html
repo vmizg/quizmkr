@@ -1,0 +1,15 @@
+<div class="flex flex-col lg:flex-row gap-4">
+  <ng-container *ngIf="!fill">
+    <div class="flex flex-col gap-4 grow w-full lg:w-3/5 left-side">
+      <ng-content select="[leftSide]"></ng-content>
+    </div>
+    <div class="flex flex-col gap-4 w-full lg:w-2/5 right-side">
+      <ng-content select="[rightSide]"></ng-content>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="fill">
+    <div class="flex flex-col gap-4 w-full">
+      <ng-content></ng-content>
+    </div>
+  </ng-container>
+</div>

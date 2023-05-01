@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RedirectComponent } from './redirect.component';
+import { GridLayoutComponent } from './grid-layout.component';
 
-describe('RedirectComponent', () => {
-  let component: RedirectComponent;
-  let fixture: ComponentFixture<RedirectComponent>;
+describe('GridLayoutComponent', () => {
+  let component: GridLayoutComponent;
+  let fixture: ComponentFixture<GridLayoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RedirectComponent],
+      declarations: [GridLayoutComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RedirectComponent);
+    fixture = TestBed.createComponent(GridLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

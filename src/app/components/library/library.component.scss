@@ -1,0 +1,28 @@
+:host {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+sl-icon-button[name='star']::part(base) {
+  &:hover,
+  &:focus {
+    color: var(--sl-color-yellow-400);
+  }
+
+  &:active {
+    color: var(--sl-color-yellow-500);
+  }
+}
+
+sl-icon-button[name='trash']::part(base) {
+  &:hover,
+  &:focus {
+    color: var(--sl-color-danger-400);
+  }
+
+  &:active {
+    color: var(--sl-color-danger-500);
+  }
+}

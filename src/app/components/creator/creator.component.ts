@@ -32,7 +32,7 @@ export class CreatorComponent implements OnInit, OnDestroy {
       .pipe(
         concatMap(([params, queryParams]) => {
           if (params.qid) {
-            if (queryParams.prev === 'quizzes') {
+            if (queryParams.prev === 'library') {
               this.redirectTo = queryParams.prev;
             }
             return this.apiService.getQuiz(params.qid);
@@ -66,8 +66,19 @@ export class CreatorComponent implements OnInit, OnDestroy {
     this.desc = (e.target as HTMLTextAreaElement).value;
   }
 
+  handleTagKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.handleAddTags();
+    }
+  }
+
   handleTagInput(e: Event) {
-    this.tag = (e.target as HTMLInputElement).value;
+    const value = (e.target as HTMLInputElement).value;
+    if (value.includes(',')) {
+      this.handleAddTags();
+    } else {
+      this.tag = value;
+    }
   }
 
   handleAddTags() {
@@ -129,8 +140,8 @@ export class CreatorComponent implements OnInit, OnDestroy {
         return;
       }
       switch (this.redirectTo) {
-        case 'quizzes':
-          this.router.navigate(['/quizzes']);
+        case 'library':
+          this.router.navigate(['/library']);
           break;
         default:
           this.router.navigate(['/creator', result.id, 'questions']);

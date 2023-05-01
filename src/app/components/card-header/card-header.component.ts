@@ -6,11 +6,12 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./card-header.component.scss'],
 })
 export class CardHeaderComponent implements OnInit {
-  @Input('icon') icon?: string = '';
-  @Input('title') title?: string = '';
-  @Input('subtitle') subtitle?: string = '';
-  @Input('loading') loading?: boolean = false;
-  @Input('visible') visible?: boolean = true;
+  @Input() icon?: string = '';
+  @Input() title?: string = '';
+  @Input() subtitle?: string = '';
+  @Input() info?: string = '';
+  @Input() loading?: boolean = false;
+  @Input() visible?: boolean = true;
 
   constructor() {}
 

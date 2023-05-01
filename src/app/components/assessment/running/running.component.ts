@@ -96,7 +96,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         }),
         catchError(() => {
           this.loading = false;
-          this.router.navigate(['/quizzes']);
+          this.router.navigate(['/library']);
           return EMPTY;
         }),
         takeUntil(this.destroyed$)
@@ -213,9 +213,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
     }
     this.timeLeft = timeLimit * 60; // In seconds
     this.interval$ = interval(1000)
-      .pipe(
-        takeUntil(this.timeLimit$),
-      )
+      .pipe(takeUntil(this.timeLimit$))
       .subscribe({
         next: () => {
           this.timeLeft!--;
@@ -226,7 +224,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           this.timesUpDialog?.nativeElement.show();
-        }
+        },
       });
   }
 
@@ -241,8 +239,8 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
 
     let seconds: string | number = total;
 
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
 
     let time = `${minutes}:${seconds}`;
     if (hours >= 1) {
@@ -277,7 +275,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
       error: () => {
         this.submitting = false;
         this.errorDialog?.nativeElement.show();
-      }
+      },
     });
   }
 
@@ -370,7 +368,7 @@ export class RunningAssessmentComponent implements OnInit, OnDestroy {
   }
 
   handleAbandonConfirm() {
-    this.router.navigate(['/quizzes', this.settings?.quiz.id]);
+    this.router.navigate(['/library', this.settings?.quiz.id]);
   }
 
   closeDialog(dialog?: HTMLElement) {

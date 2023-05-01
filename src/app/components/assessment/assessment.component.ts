@@ -30,7 +30,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
   };
   overshoot = false;
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.loading = true;
@@ -50,12 +50,12 @@ export class AssessmentComponent implements OnInit, OnDestroy {
             this.settings.totalQuestions = this.totalQuizQuestions > 50 ? 50 : this.totalQuizQuestions;
             this.settings.rangeTo = this.totalQuizQuestions;
           } else {
-            this.router.navigate(['/quizzes']);
+            this.router.navigate(['/library']);
           }
         }),
         catchError(() => {
           this.loading = false;
-          this.router.navigate(['/quizzes']);
+          this.router.navigate(['/library']);
           return EMPTY;
         }),
         takeUntil(this.destroyed$)
@@ -157,7 +157,7 @@ export class AssessmentComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.beginning = false;
         console.log(err);
-      }
+      },
     });
   }
 }

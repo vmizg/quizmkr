@@ -79,7 +79,7 @@ const resize = (
   providedIn: 'root',
 })
 export class ImageService {
-  constructor() { }
+  constructor() {}
 
   resizeImage = (file: File, options?: ImageOptions): Observable<{ dataUrl: string; blob: Blob }> => {
     const reader = new FileReader();

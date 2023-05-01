@@ -14,7 +14,7 @@ sl-radio {
   margin-bottom: 0;
 }
 
-sl-radio+sl-radio {
+sl-radio + sl-radio {
   margin-top: 1rem;
 }
 
@@ -53,11 +53,13 @@ sl-radio+sl-radio {
 .step-indicator {
   height: 100%;
   color: var(--sl-color-gray-50);
-  background-image: linear-gradient(to right,
-      var(--sl-color-green-200) 0%,
-      var(--sl-color-green-700) 33%,
-      var(--sl-color-green-500) 66%,
-      var(--sl-color-green-200) 100%);
+  background-image: linear-gradient(
+    to right,
+    var(--sl-color-green-200) 0%,
+    var(--sl-color-green-700) 33%,
+    var(--sl-color-green-500) 66%,
+    var(--sl-color-green-200) 100%
+  );
   background-size: 400% 400%;
   animation: gradient 5s ease infinite alternate-reverse;
 

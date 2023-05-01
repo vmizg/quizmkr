@@ -55,7 +55,7 @@
                 "styles": {
                   "minify": true,
                   "inlineCritical": false
-                  },
+                },
                 "fonts": true
               },
               "outputHashing": "all"
@@ -115,9 +115,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   }
 }

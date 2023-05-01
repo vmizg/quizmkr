@@ -1,31 +1,29 @@
 <div class="quizmkr-header">
-  <div class="quizmkr-logo-container">
-    <div class="quizmkr-logo md:max-w-5xl">
-      <span class="logo-text">{{ appTitle }}</span>
-      <div class="breadcrumb hidden md:flex">
-        <ng-container *ngFor="let link of breadcrumbs; let i = index">
-          <span *ngIf="i !== 0">/</span>
-          <sl-button variant="text">{{ link }}</sl-button>
-        </ng-container>
-      </div>
-    </div>
-  </div>
   <div class="quizmkr-nav-container">
     <div class="quizmkr-nav md:max-w-5xl">
-      <div class="flex flex-row place-content-between gap-4">
-        <div class="flex flex-row gap-4">
-          <sl-button-group>
+      <div class="flex flex-row place-content-between items-center gap-4">
+        <div class="flex flex-row items-center gap-4">
+          <div class="quizmkr-logo md:max-w-5xl">
+            <span class="logo-text">{{ appTitle }}</span>
+            <!-- <div class="breadcrumb md:flex">
+              <ng-container *ngFor="let link of breadcrumbs; let i = index">
+                <span *ngIf="i !== 0">/</span>
+                <sl-button variant="text">{{ link }}</sl-button>
+              </ng-container>
+            </div> -->
+          </div>
+          <div class="flex flex-row">
             <sl-button
               *ngFor="let link of menuLinks"
               size="medium"
-              variant="{{ isRouteActive(link) ? 'primary' : 'default' }}"
+              variant="{{ isRouteActive(link) ? 'primary' : 'text' }}"
               [disabled]="!link.public && !loggedIn"
               (click)="onNavigate(link)"
             >
               <sl-icon name="{{ link.icon }}"></sl-icon>
               <span *ngIf="link.title" class="hidden md:inline md:pl-3">{{ link.title }}</span>
             </sl-button>
-          </sl-button-group>
+          </div>
         </div>
         <sl-button-group *ngIf="!loggedIn && !authenticating" label="Log in toggle">
           <sl-button variant="primary" (click)="handleLogin()">
@@ -45,12 +43,7 @@
           </sl-dropdown>
         </sl-button-group>
         <sl-dropdown *ngIf="loggedIn || authenticating" placement="bottom-end">
-          <sl-button
-            slot="trigger"
-            size="medium"
-            variant="primary"
-            caret
-          >
+          <sl-button slot="trigger" size="medium" variant="text" caret>
             <sl-icon name="person-circle"></sl-icon>
           </sl-button>
           <sl-menu>

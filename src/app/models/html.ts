@@ -1,4 +1,4 @@
 export interface SlDialog extends HTMLElement {
-    show: () => void;
-    hide: () => void;
+  show: () => void;
+  hide: () => void;
 }

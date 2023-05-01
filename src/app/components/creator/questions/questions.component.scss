@@ -22,20 +22,56 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
 }
 
 .question-container {
-  &::part(header) {}
+  &::part(header) {
+  }
 
   &.edit-mode {
-    &::part(header) {}
+    &::part(header) {
+    }
   }
 }
 
 .question-card {
-  &::part(base) {}
-
-  &.edit-mode {
-    &::part(base) {
-      font-weight: bold;
+  &:hover {
+    &::part(body) {
+      background-color: var(--sl-color-primary-500);
+      color: var(--sl-color-neutral-0);
     }
+  }
+
+  &:active,
+  &.edit-mode {
+    &::part(body) {
+      background-color: var(--sl-color-primary-600);
+      color: var(--sl-color-neutral-0);
+    }
+  }
+
+  &:hover,
+  &:active,
+  &.edit-mode {
+    sl-icon-button {
+      color: var(--sl-color-neutral-0);
+    }
+  }
+
+  &::part(base) {
+    cursor: pointer;
+  }
+
+  &::part(body) {
+    padding: 0.5rem var(--padding);
+    border-radius: var(--border-radius);
+    transition: color 150ms ease, background-color 150ms ease;
+  }
+
+  sl-icon-button[name='trash']::part(base) {
+    transition: color 150ms ease, background-color 150ms ease;
+  }
+
+  sl-icon-button[name='trash']:hover::part(base) {
+    background-color: var(--sl-color-danger-50);
+    color: var(--sl-color-danger-500);
   }
 }
 
@@ -103,11 +139,4 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
   @media screen and (max-width: 80rem) {
     height: 24rem;
   }
-}
-
-.question-title {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
 }

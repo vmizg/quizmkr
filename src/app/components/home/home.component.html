@@ -1,89 +1,91 @@
 <app-page-layout>
-  <ng-container headerContent>
-    <app-card-header>
-      <ng-container titleContent>Hey, {{ username }}!</ng-container>
-      <ng-container suffixContent>
-        <div class="flex items-center gap-2 text-xl"><sl-icon name="clock"></sl-icon>{{ currentDate | date:'HH:mm' }}</div>
-      </ng-container>
-    </app-card-header>
-  </ng-container>
-  <ng-container leftSideContent>
-    <sl-card *ngIf="inProgress.length > 0">
-      <div slot="header" class="font-semibold">Assessments in progress</div>
-      <div class="flex flex-col gap-4">
-        <div *ngIf="loadingInProgress" class="flex flex-row items-center gap-2">
-          <sl-spinner></sl-spinner>
-          <span>Loading...</span>
-        </div>
-        <div *ngFor="let asm of inProgress; let i = index" class="flex flex-row items-center gap-2">
-          <sl-icon name="record-circle" style="color: var(--sl-color-amber-500)"></sl-icon>
-          <a [routerLink]="['/quizzes', asm.quiz.id, 'assessment', asm.id]" style="color: var(--sl-color-primary-600)"
-            >({{ asm.id }}) {{ asm.quiz.title }}</a
-          >
-        </div>
-      </div>
-    </sl-card>
-    <sl-card [class]="loadingResults ? 'loading' : ''">
-      <div slot="header" class="font-semibold">Latest assessment results</div>
-      <div class="flex flex-col gap-4">
-        <div *ngIf="loadingResults" class="flex flex-row items-center gap-2">
-          <sl-spinner></sl-spinner>
-          <span>Loading...</span>
-        </div>
-        <div *ngIf="!loadingResults && results.length === 0" class="flex flex-col">
-          <ng-container *ngIf="loggedIn">
-            <span>You have no recent assessment results.</span>
-          </ng-container>
-          <ng-container *ngIf="!loggedIn">
-            <span>You are not logged in.</span>
-            <a (click)="handleLogin()" style="cursor: pointer; color: var(--sl-color-primary-600)"
-              >Please log in to see your latest assessment results.</a
+  <app-card-header header>
+    <ng-container titleContent>Hey, {{ username }}!</ng-container>
+    <ng-container subtitleContent>
+      <div class="flex items-center gap-2">{{ currentDate | date : 'HH:mm' }}<sl-icon name="clock"></sl-icon></div>
+    </ng-container>
+  </app-card-header>
+  <app-card-layout main>
+    <ng-container leftSide>
+      <sl-card *ngIf="inProgress.length > 0">
+        <div slot="header" class="font-semibold">Assessments in progress</div>
+        <div class="flex flex-col gap-4">
+          <div *ngIf="loadingInProgress" class="flex flex-row items-center gap-2">
+            <sl-spinner></sl-spinner>
+            <span>Loading...</span>
+          </div>
+          <div *ngFor="let asm of inProgress; let i = index" class="flex flex-row items-center gap-2">
+            <sl-icon name="record-circle" style="color: var(--sl-color-amber-500)"></sl-icon>
+            <a [routerLink]="['/library', asm.quiz.id, 'assessment', asm.id]" style="color: var(--sl-color-primary-600)"
+              >({{ asm.id }}) {{ asm.quiz.title }}</a
             >
-          </ng-container>
+          </div>
         </div>
-        <div *ngFor="let result of results; let i = index" class="flex flex-row justify-between gap-2">
-          <div class="flex flex-col">
-            <div class="flex flex-row items-center gap-2">
-              <sl-icon name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
-              <a [routerLink]="['/results', result.id]" style="color: var(--sl-color-primary-600)">
-                {{ result.assessment.quiz.title }}</a
+      </sl-card>
+      <sl-card [class]="loadingResults ? 'loading' : ''">
+        <div slot="header" class="font-semibold">Latest assessment results</div>
+        <div class="flex flex-col gap-4">
+          <div *ngIf="loadingResults" class="flex flex-row items-center gap-2">
+            <sl-spinner></sl-spinner>
+            <span>Loading...</span>
+          </div>
+          <div *ngIf="!loadingResults && results.length === 0" class="flex flex-col">
+            <ng-container *ngIf="loggedIn">
+              <span>You have no recent assessment results.</span>
+            </ng-container>
+            <ng-container *ngIf="!loggedIn">
+              <span>You are not logged in.</span>
+              <a (click)="handleLogin()" style="cursor: pointer; color: var(--sl-color-primary-600)"
+                >Please log in to see your latest assessment results.</a
+              >
+            </ng-container>
+          </div>
+          <div *ngFor="let result of results; let i = index" class="flex flex-row justify-between gap-2">
+            <div class="flex flex-col">
+              <div class="flex flex-row items-center gap-2">
+                <sl-icon name="check-circle" style="color: var(--sl-color-green-500)"></sl-icon>
+                <a [routerLink]="['/results', result.id]" style="color: var(--sl-color-primary-600)">
+                  {{ result.assessment.quiz.title }}</a
+                >
+              </div>
+              <span>{{ result.dateCompleted | date : 'medium' }}</span>
+            </div>
+            <div class="flex flex-col text-right">
+              <div>
+                <span>Score: </span>
+                <span class="font-semibold">{{ result.score }}%</span>
+              </div>
+              <a (click)="handleDeleteResult(result)" style="cursor: pointer; color: var(--sl-color-danger-600)"
+                >Clear</a
               >
             </div>
-            <span>{{ result.dateCompleted | date: 'medium' }}</span>
           </div>
-          <div class="flex flex-col text-right">
-            <div>
-              <span>Score: </span>
-              <span class="font-semibold">{{ result.score }}%</span>
+        </div>
+      </sl-card>
+    </ng-container>
+    <ng-container *ngIf="loggedIn" rightSide>
+      <sl-card [class]="loadingResults ? 'loading' : ''">
+        <div slot="header" class="font-semibold">Latest quizzes</div>
+        <div class="flex flex-col gap-4">
+          <div *ngIf="loadingLatest" class="flex flex-row items-center gap-2">
+            <sl-spinner></sl-spinner>
+            <span>Loading...</span>
+          </div>
+          <div *ngFor="let quiz of latest; let i = index" class="flex flex-row items-center gap-2">
+            <div class="flex flex-col">
+              <div class="flex flex-row items-center gap-2">
+                <sl-icon name="compass" style="color: var(--sl-color-primary-600)"></sl-icon>
+                <a [routerLink]="['/library', quiz.id]" style="color: var(--sl-color-primary-600)">{{ quiz.title }}</a>
+              </div>
+              <span>Total questions: {{ quiz.totalQuestions }}</span>
             </div>
-            <a (click)="handleDeleteResult(result)" style="cursor: pointer; color: var(--sl-color-danger-600)">Clear</a>
+          </div>
+          <div *ngIf="!loadingLatest && latest.length === 0" class="flex flex-col">
+            <span>You have not created any quizzes yet.</span>
+            <a [routerLink]="['/library']" style="color: var(--sl-color-primary-600)">Create your first quiz here</a>
           </div>
         </div>
-      </div>
-    </sl-card>
-  </ng-container>
-  <ng-container *ngIf="loggedIn" rightSideContent>
-    <sl-card [class]="loadingResults ? 'loading' : ''">
-      <div slot="header" class="font-semibold">Latest quizzes</div>
-      <div class="flex flex-col gap-4">
-        <div *ngIf="loadingLatest" class="flex flex-row items-center gap-2">
-          <sl-spinner></sl-spinner>
-          <span>Loading...</span>
-        </div>
-        <div *ngFor="let quiz of latest; let i = index" class="flex flex-row items-center gap-2">
-          <div class="flex flex-col">
-            <div class="flex flex-row items-center gap-2">
-              <sl-icon name="compass" style="color: var(--sl-color-primary-600)"></sl-icon>
-              <a [routerLink]="['/quizzes', quiz.id]" style="color: var(--sl-color-primary-600)">{{ quiz.title }}</a>
-            </div>
-            <span>Total questions: {{ quiz.totalQuestions }}</span>
-          </div>
-        </div>
-        <div *ngIf="!loadingLatest && latest.length === 0" class="flex flex-col">
-          <span>You have not created any quizzes yet.</span>
-          <a [routerLink]="['/quizzes']" style="color: var(--sl-color-primary-600)">Create your first quiz here</a>
-        </div>
-      </div>
-    </sl-card>
-  </ng-container>
+      </sl-card>
+    </ng-container>
+  </app-card-layout>
 </app-page-layout>

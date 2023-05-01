@@ -5,11 +5,11 @@ import { Quiz } from 'src/app/models/quiz';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
-  selector: 'app-quizzes',
-  templateUrl: './quizzes.component.html',
-  styleUrls: ['./quizzes.component.scss'],
+  selector: 'app-library',
+  templateUrl: './library.component.html',
+  styleUrls: ['./library.component.scss'],
 })
-export class QuizzesComponent implements OnInit {
+export class LibraryComponent implements OnInit {
   quizzes: Quiz[] = [];
   loading = true;
 
@@ -33,7 +33,7 @@ export class QuizzesComponent implements OnInit {
   }
 
   handleDeleteQuiz(quiz: Quiz): void {
-    if (confirm(`WARNING: this will delete the quiz ${quiz.title} permanently! Are you sure you want to do this?`)) {
+    if (confirm(`WARNING: this will delete the quiz "${quiz.title}" permanently! Are you sure you want to do this?`)) {
       this.loading = true;
       this.apiService
         .deleteQuiz(quiz.id)
@@ -50,6 +50,6 @@ export class QuizzesComponent implements OnInit {
   }
 
   handleBeginAssessment(quiz: Quiz): void {
-    this.router.navigate(['/quizzes', quiz.id]);
+    this.router.navigate(['/library', quiz.id]);
   }
 }

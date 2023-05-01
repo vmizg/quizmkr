@@ -8,10 +8,14 @@ sl-avatar {
 }
 
 sl-card::part(body) {
-  height: 6rem;
+  padding: 0.5rem 1.25rem;
 }
 
-.title,
+.content,
 .suffix {
   color: var(--sl-color-neutral-950);
+}
+
+.content {
+  min-height: 4rem;
 }

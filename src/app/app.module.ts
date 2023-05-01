@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ScrollingModule as ExperimentalScrollingModule } from '@angular/cdk-experimental/scrolling';
 import { AuthModule, AuthHttpInterceptor } from '@auth0/auth0-angular';
 import { BaseUrlInterceptor } from './interceptors/base-url.interceptor';
 import { AppRoutingModule } from './app-routing.module';
@@ -12,13 +13,15 @@ import { ApiService } from './services/api.service';
 import { QuestionsComponent } from './components/creator/questions/questions.component';
 import { AuthGuard } from './guards/auth.guard';
 import { PendingChangesGuard } from './guards/pending-changes.guard';
-import { QuizzesComponent } from './components/quizzes/quizzes.component';
+import { LibraryComponent } from './components/library/library.component';
 import { AssessmentComponent } from './components/assessment/assessment.component';
 import { RunningAssessmentComponent } from './components/assessment/running/running.component';
 import { ResultsComponent } from './components/assessment/results/results.component';
 import { CardHeaderComponent } from './components/card-header/card-header.component';
 import { PageLayoutComponent } from './components/page-layout/page-layout.component';
 import { environment } from '../environments/environment';
+import { CardLayoutComponent } from './components/card-layout/card-layout.component';
+import { GridLayoutComponent } from './components/grid-layout/grid-layout.component';
 
 @NgModule({
   declarations: [
@@ -28,10 +31,12 @@ import { environment } from '../environments/environment';
     AssessmentComponent,
     RunningAssessmentComponent,
     QuestionsComponent,
-    QuizzesComponent,
+    LibraryComponent,
     ResultsComponent,
     CardHeaderComponent,
     PageLayoutComponent,
+    CardLayoutComponent,
+    GridLayoutComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,17 +58,18 @@ import { environment } from '../environments/environment';
     }),
     AppRoutingModule,
     ScrollingModule,
+    ExperimentalScrollingModule,
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: BaseUrlInterceptor,
-      multi: true
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHttpInterceptor,
-      multi: true
+      multi: true,
     },
     ApiService,
     AuthGuard,
@@ -72,4 +78,4 @@ import { environment } from '../environments/environment';
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule { }
+export class AppModule {}
