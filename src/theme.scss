@@ -68,11 +68,6 @@ sl-card::part(base) {
   box-shadow: var(--sl-shadow-medium);
 }
 
-sl-card::part(header) {
-  border-top-left-radius: var(--border-radius);
-  border-top-right-radius: var(--border-radius);
-}
-
 sl-card::part(body) {
   color: var(--sl-color-gray-700);
 }

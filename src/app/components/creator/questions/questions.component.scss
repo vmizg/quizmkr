@@ -6,7 +6,7 @@
   display: flex;
   flex-flow: row;
   align-items: flex-end;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .option-toggle::part(label) {
@@ -136,7 +136,7 @@ sl-button[outline]::part(base):not(:hover):not(:active):not(:focus) {
   border-radius: var(--sl-border-radius-medium);
   height: 38.25rem;
 
-  @media screen and (max-width: 80rem) {
+  @media screen and (max-width: 48rem) {
     height: 24rem;
   }
 }
