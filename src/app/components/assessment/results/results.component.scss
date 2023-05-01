@@ -24,3 +24,33 @@ sl-card.outer {
 sl-card.inner {
   --border-radius: 0;
 }
+
+.result-col {
+  width: 24rem;
+
+  @media (max-width: 48rem) {
+    width: 100%;
+  }
+
+  &:first-child {
+    margin-left: 2rem;
+
+    @media (max-width: 48rem) {
+      + .result-col {
+        margin-top: 1rem;
+      }
+    }
+  }
+
+  &:not(:first-child) {
+    border-left: solid 1px var(--sl-panel-border-color);
+    padding-left: 1rem;
+
+    @media (max-width: 48rem) {
+      border-left: none;
+      border-top: solid 1px var(--sl-panel-border-color);
+      padding-top: 1rem;
+      padding-left: 2rem;
+    }
+  }
+}
