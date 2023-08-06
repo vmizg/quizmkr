@@ -1,4 +1,4 @@
-import { CanDeactivate } from '@angular/router';
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -7,7 +7,7 @@ export interface ComponentCanDeactivate {
 }
 
 @Injectable()
-export class PendingChangesGuard implements CanDeactivate<ComponentCanDeactivate> {
+export class PendingChangesGuard  {
   canDeactivate(component: ComponentCanDeactivate): boolean | Observable<boolean> {
     if (!component.canDeactivate || component.canDeactivate()) {
       return true;
