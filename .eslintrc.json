@@ -3,6 +3,9 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "overrides": [
     {
       "files": [
