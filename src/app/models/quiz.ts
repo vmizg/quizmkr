@@ -38,6 +38,7 @@ export interface Question extends BaseQuestion {
 export interface PartialQuiz {
   title?: string;
   description?: string;
+  sharedWith?: string[];
   tags?: string[];
 }
 

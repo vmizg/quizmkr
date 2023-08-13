@@ -1,47 +1,88 @@
 <app-page-layout>
   <app-card-header header title="Library" subtitle="Browse your question collections" icon="grid"> </app-card-header>
   <app-grid-layout main>
-    <sl-card *ngFor="let quiz of quizzes" class="quiz-card">
+    <sl-card *ngFor="let collection of library" class="quiz-card">
       <div class="flex flex-col justify-between gap-4">
         <div class="flex flex-col gap-4">
           <div class="flex flex-row items-center justify-between gap-2">
-            <div class="leading-tight">{{ quiz.title }}</div>
+            <div class="leading-tight">{{ collection.title }}</div>
             <div class="flex flex-row gap-2">
               <sl-icon-button name="star" label="Add Collection to Favourites"></sl-icon-button>
               <sl-icon-button
+                name="share"
+                label="Share Collection"
+                (click)="handleEditSharing(collection)"
+              ></sl-icon-button>
+              <sl-icon-button
                 name="pencil-square"
                 label="Edit Collection"
-                (click)="handleEditQuiz(quiz)"
+                (click)="handleEditQuestions(collection)"
               ></sl-icon-button>
               <sl-icon-button
                 name="trash"
                 variant="danger"
                 label="Delete Collection"
-                (click)="handleDeleteQuiz(quiz)"
+                (click)="handleRequestDelete(collection)"
               ></sl-icon-button>
             </div>
           </div>
           <div class="flex flex-row gap-1">
-            <sl-badge variant="neutral" *ngFor="let tag of quiz.tags">{{ tag }}</sl-badge>
+            <sl-badge variant="neutral" *ngFor="let tag of collection.tags">{{ tag }}</sl-badge>
           </div>
         </div>
         <div class="flex flex-row justify-between gap-2">
-          <sl-button variant="success" outline style="width: 100%" (click)="handleBeginAssessment(quiz)">
+          <sl-button variant="success" outline style="width: 100%" (click)="handleBeginAssessment(collection)">
             Begin assessment
             <sl-icon slot="prefix" name="arrow-right-circle"></sl-icon>
           </sl-button>
         </div>
       </div>
     </sl-card>
-    <sl-card *ngIf="!quizzes || quizzes.length === 0">
+    <sl-card *ngIf="!library || library.length === 0">
       <div *ngIf="loading" class="flex flex-row items-center gap-2">
         <sl-spinner></sl-spinner>
         <span>Loading...</span>
       </div>
       <div *ngIf="!loading" class="flex flex-col">
-        <span>You have not created any quizzes yet.</span>
+        <span>You have not created any collections yet.</span>
         <a [routerLink]="['/creator']" style="color: var(--sl-color-primary-600)">Create one by clicking here!</a>
       </div>
     </sl-card>
   </app-grid-layout>
 </app-page-layout>
+
+<sl-dialog label="Share {{ itemToShare?.title }}" (sl-hide-end)="(itemToShare = undefined)" #shareDialog>
+  <div class="flex flex-row items-end justify-between flex-wrap md:flex-nowrap gap-2">
+    <sl-input
+      class="mr-auto w-full"
+      label="Share with:"
+      placeholder="Enter usernames separated by a comma"
+      (keydown)="handleUserKeyDown($event)"
+      (sl-input)="handleUserInput($event)"
+      [value]="shareValue"
+    ></sl-input>
+    <sl-button (click)="addSharedWith()" variant="primary" outline>Add user(-s)</sl-button>
+  </div>
+  <sl-divider></sl-divider>
+  <div class="flex flex-col gap-2" *ngIf="itemToShare">
+    <div class="flex flex-row justify-between" *ngFor="let user of itemToShare.sharedWith">
+      <span>{{ user }}</span>
+      <sl-icon-button name="trash"
+      variant="danger"
+      label="Remove user"
+      (click)="handleUserRemove(user)"></sl-icon-button>
+    </div>
+  </div>
+  <div slot="footer" class="dialog-footer">
+    <sl-button (click)="closeDialog(shareDialog)">Cancel</sl-button>
+    <sl-button variant="primary" (click)="handleShare()">Share</sl-button>
+  </div>
+</sl-dialog>
+
+<sl-dialog label="Delete {{ itemToDelete?.title }}" (sl-hide-end)="(itemToDelete = undefined)" #deleteDialog>
+  WARNING: this will delete the collection permanently! Are you sure you want to do this?
+  <div slot="footer" class="dialog-footer">
+    <sl-button (click)="closeDialog(deleteDialog)">Cancel</sl-button>
+    <sl-button variant="danger" (click)="handleDelete()">Delete</sl-button>
+  </div>
+</sl-dialog>

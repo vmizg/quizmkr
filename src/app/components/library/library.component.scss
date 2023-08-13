@@ -26,3 +26,8 @@ sl-icon-button[name='trash']::part(base) {
     color: var(--sl-color-danger-500);
   }
 }
+
+.dialog-footer {
+  display: flex;
+  place-content: space-between;
+}
